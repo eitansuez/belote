@@ -1,4 +1,4 @@
-package eitan.belotte
+package eitan.belote
 
 enum Suite
 {

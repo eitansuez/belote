@@ -1,4 +1,4 @@
-package eitan.belotte
+package eitan.belote
 
 class Deck
 {
@@ -29,8 +29,10 @@ class Deck
     Math.random() * cards.size()
   }
 
-  def deal(players)
+  def deal(Player... players)
   {
+    assert players?.size() == 4
+
     players.each { player ->
       player.dealCards(takeCards(3))
     }
@@ -40,7 +42,7 @@ class Deck
     }
   }
 
-  def dealRemaining(players)
+  def dealRemaining(Player... players)
   {
     assert size() == 12
 
@@ -50,6 +52,6 @@ class Deck
   }
 
   def size() {
-    cards.size()
+    cards?.size()
   }
 }

@@ -1,7 +1,8 @@
-package eitan.belotte
+package eitan.belote
 
 class Player
 {
+  String name
   List<Card> cards = new ArrayList<Card>()
 
   def dealCard(Card card)
@@ -14,5 +15,10 @@ class Player
     cards.each { card ->
       dealCard(card)
     }
+  }
+
+  def hand()
+  {
+    cards
   }
 }

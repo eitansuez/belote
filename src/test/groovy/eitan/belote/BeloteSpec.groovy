@@ -1,17 +1,23 @@
-package eitan.belotte
+package eitan.belote
 
 import spock.lang.Specification
 
-class BelotteSpec extends Specification
+class BeloteSpec extends Specification
 {
-
   Deck deck
-  List<Player> players
+  Player eitan, rony, johnny, corinne
+  Game game
 
   def setup()
   {
-    deck = new Deck()
-    players = [new Player(), new Player(), new Player(), new Player()]
+    deck = Spy(Deck)
+
+    eitan = new Player(name: "Eitan")
+    johnny = new Player(name: "Johnny")
+    corinne = new Player(name: "Corinne")
+    rony = new Player(name: "Rony")
+
+    game = new Game(deck: deck, team1: [eitan, rony], team2: [johnny, corinne])
   }
 
   def "deck should have 32 cards"()
@@ -54,21 +60,18 @@ class BelotteSpec extends Specification
 
   def "player can be dealt a card"()
   {
-    given:
-    def player = players[0]
-
     when:
-    player.dealCard(deck.takeCard())
+    eitan.dealCard(deck.takeCard())
 
     then:
     deck.size() == 31
-    player.cards.size() == 1
+    eitan.cards.size() == 1
   }
 
   def "should deal a whole deck"()
   {
     when:
-    deck.deal(players)
+    deck.deal(eitan, rony, johnny, corinne)
 
     then:
     deck.size() == 12
@@ -77,14 +80,23 @@ class BelotteSpec extends Specification
   def "should be able to deal remainder after selection phase"()
   {
     given:
-    deck.deal(players)
+    deck.deal(eitan, rony, johnny, corinne)
 
     when:
-    deck.dealRemaining(players)
+    deck.dealRemaining(eitan, rony, johnny, corinne)
 
     then:
     deck.cards.empty
   }
 
+  def "should be able to construct a game with two teams and a card deck"()
+  {
+    when:
+    game.start()
+
+    then:
+    1 * deck.deal(_)
+    eitan.cards.size() == 5
+  }
 
 }
