@@ -28,4 +28,14 @@ class PlayerSpec extends Specification
     eitan.cards.size() == 1
   }
 
+  def "player can be dealt multiple cards"()
+  {
+    when:
+    eitan.dealCards(deck.takeCards(3))
+
+    then:
+    deck.size() == 29
+    eitan.hand().size() == 3
+  }
+
 }
