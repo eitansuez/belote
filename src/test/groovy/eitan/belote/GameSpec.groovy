@@ -35,4 +35,21 @@ class GameSpec extends Specification
     game.team2.score == 0
   }
 
+  def "initially no atout is set"()
+  {
+    expect:
+    game.atout == null
+  }
+
+  def "envoi should set atout and designate team"()
+  {
+    when:
+    game.envoi(Suite.Trefle, eitan)
+
+    then:
+    game.atout == Suite.Trefle
+    game.committedPlayer == eitan
+    game.committedTeam == game.team1
+  }
+
 }

@@ -4,6 +4,7 @@ class Player
 {
   String name
   List<Card> cards = new ArrayList<Card>()
+  Team team
 
   def dealCard(Card card)
   {
