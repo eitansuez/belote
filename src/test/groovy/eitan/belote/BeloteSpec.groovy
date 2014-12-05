@@ -17,7 +17,9 @@ class BeloteSpec extends Specification
     corinne = new Player(name: "Corinne")
     rony = new Player(name: "Rony")
 
-    game = new Game(deck: deck, team1: [eitan, rony], team2: [johnny, corinne])
+    game = new Game(deck: deck,
+        team1: new Team(first: eitan, second: rony),
+        team2: new Team(first: johnny, second: corinne))
   }
 
   def "deck should have 32 cards"()
@@ -97,6 +99,9 @@ class BeloteSpec extends Specification
     then:
     1 * deck.deal(_)
     eitan.cards.size() == 5
+    deck.size() == 12
+    game.team1.score == 0
+    game.team2.score == 0
   }
 
 }

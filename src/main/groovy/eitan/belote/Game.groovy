@@ -3,13 +3,16 @@ package eitan.belote
 class Game
 {
   Deck deck = new Deck()
-
-  List<Player> team1 = []
-  List<Player> team2 = []
+  Team team1, team2
 
   def start()
   {
-    deck.deal(team1[0], team1[1], team2[0], team2[1])
+    dealCards()
+  }
+
+  private void dealCards()
+  {
+    deck.deal(team1.first, team2.first, team1.second, team2.second)
   }
 
 }
