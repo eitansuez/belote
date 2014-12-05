@@ -5,17 +5,12 @@ import spock.lang.Specification
 class PlayerSpec extends Specification
 {
   Deck deck
-  Player eitan, rony, johnny, corinne
-  Game game
+  Player eitan
 
   def setup()
   {
     deck = new Deck()
-
     eitan = new Player(name: "Eitan")
-    johnny = new Player(name: "Johnny")
-    corinne = new Player(name: "Corinne")
-    rony = new Player(name: "Rony")
   }
 
   def "player can be dealt a card"()
