@@ -2,24 +2,19 @@ package eitan.belote
 
 import spock.lang.Specification
 
-class BeloteSpec extends Specification
+class DeckSpec extends Specification
 {
   Deck deck
   Player eitan, rony, johnny, corinne
-  Game game
 
   def setup()
   {
-    deck = Spy(Deck)
+    deck = new Deck()
 
     eitan = new Player(name: "Eitan")
     johnny = new Player(name: "Johnny")
     corinne = new Player(name: "Corinne")
     rony = new Player(name: "Rony")
-
-    game = new Game(deck: deck,
-        team1: new Team(first: eitan, second: rony),
-        team2: new Team(first: johnny, second: corinne))
   }
 
   def "deck should have 32 cards"()
@@ -28,7 +23,7 @@ class BeloteSpec extends Specification
     deck.cards.size() == 32
   }
 
-  def "should be able to take a card"()
+  def "should be able to take a card from deck"()
   {
     when:
     deck.takeCard()
@@ -60,17 +55,7 @@ class BeloteSpec extends Specification
     cards.size() == 3
   }
 
-  def "player can be dealt a card"()
-  {
-    when:
-    eitan.dealCard(deck.takeCard())
-
-    then:
-    deck.size() == 31
-    eitan.cards.size() == 1
-  }
-
-  def "should deal the deck (first phase)"()
+  def "should deal a deck (first phase)"()
   {
     when:
     deck.deal(eitan, rony, johnny, corinne)
@@ -89,19 +74,6 @@ class BeloteSpec extends Specification
 
     then:
     deck.cards.empty
-  }
-
-  def "should be able to construct a game with two teams and a card deck"()
-  {
-    when:
-    game.start()
-
-    then:
-    1 * deck.deal(_)
-    eitan.cards.size() == 5
-    deck.size() == 12
-    game.team1.score == 0
-    game.team2.score == 0
   }
 
 }

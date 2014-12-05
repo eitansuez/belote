@@ -10,4 +10,9 @@ class Card
     "${type.name()} de ${suite.name()}"
   }
 
+  def points()
+  {
+    return type.points
+  }
+
 }

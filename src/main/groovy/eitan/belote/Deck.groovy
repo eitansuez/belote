@@ -16,17 +16,17 @@ class Deck
   {
     cards.remove(randomIndex())
   }
+  private int randomIndex()
+  {
+    Math.random() * cards.size()
+  }
+
 
   List takeCards(int howMany)
   {
     List dealt = []
     howMany.times { dealt << takeCard() }
     dealt
-  }
-
-  private int randomIndex()
-  {
-    Math.random() * cards.size()
   }
 
   def deal(Player... players)
