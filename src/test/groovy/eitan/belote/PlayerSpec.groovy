@@ -33,7 +33,22 @@ class PlayerSpec extends Specification
     eitan.hand().size() == 3
   }
 
-  def "check toString"()
+  def "player can play a card by index"()
+  {
+    given:
+    eitan.dealCards(deck.takeCards(8))
+    def firstCard = eitan.hand()[0]
+
+    when:
+    def played = eitan.playCard(0)
+
+    then:
+    eitan.hand().size() == 7
+    played == firstCard
+  }
+
+
+  def "toString is meaningful"()
   {
     expect:
     eitan.toString() == "Player: Eitan"

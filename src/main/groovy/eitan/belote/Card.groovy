@@ -1,14 +1,12 @@
 package eitan.belote
 
+import groovy.transform.EqualsAndHashCode
+
+@EqualsAndHashCode
 class Card
 {
   Suite suite
   CardType type
-
-  def title()
-  {
-    "${type.name()} de ${suite.name()}"
-  }
 
   def points()
   {
@@ -20,4 +18,8 @@ class Card
     atout == suite ? type.pointsWhenAtout : type.points
   }
 
+  @Override
+  String toString() {
+    "${type.name()} de ${suite.name()}"
+  }
 }

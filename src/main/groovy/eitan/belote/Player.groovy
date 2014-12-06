@@ -18,6 +18,16 @@ class Player
     }
   }
 
+  def playRandomCard()
+  {
+    playCard(randomIndex())
+  }
+  private int randomIndex()
+  {
+    Math.random() * cards.size()
+  }
+
+
   def hand()
   {
     cards
@@ -26,5 +36,10 @@ class Player
   @Override
   String toString() {
     "Player: $name"
+  }
+
+  def playCard(int index)
+  {
+    cards.remove(index)
   }
 }

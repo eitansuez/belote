@@ -112,4 +112,19 @@ class GameSpec extends Specification
     game.starter == rony
   }
 
+  def "cards drawn from players"()
+  {
+    given:
+    game.begin()
+    game.envoi(Trefle, eitan)
+
+    when:
+    game.playRandomHand()
+
+    then:
+    [eitan, rony, corinne, johnny].each { player ->
+      player.cards.size() == 4
+    }
+  }
+
 }

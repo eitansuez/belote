@@ -56,11 +56,6 @@ class Game
     scores[team]
   }
 
-  boolean done()
-  {
-    false
-  }
-
   void playHand(List<Card> cards)
   {
     assert cards.size() == 4
@@ -77,6 +72,14 @@ class Game
     starter = hand.winner
 
     hands << hand
+  }
 
+  void playRandomHand()
+  {
+    def cards = []
+    players().each { player ->
+      cards << player.playRandomCard()
+    }
+    playHand(cards)
   }
 }
