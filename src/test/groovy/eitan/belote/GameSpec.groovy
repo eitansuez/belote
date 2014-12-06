@@ -125,6 +125,25 @@ class GameSpec extends Specification
     [eitan, rony, corinne, johnny].each { player ->
       player.cards.size() == 4
     }
+    !game.done
+  }
+
+  def "players should have no more cards after eight hands"()
+  {
+    given:
+    game.begin()
+    game.envoi(Trefle, eitan)
+
+    when:
+    8.times { game.playRandomHand() }
+
+    then:
+    [eitan, rony, corinne, johnny].each { player ->
+      player.hand().empty
+    }
+    game.hands.size() == 8
+    game.scoreFor(game.team1) + game.scoreFor(game.team2) == 162
+    game.done
   }
 
 }

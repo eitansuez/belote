@@ -1,8 +1,5 @@
 package eitan.belote
 
-import static eitan.belote.Suite.Coeur
-import static eitan.belote.Suite.Trefle
-
 class Game
 {
   Deck deck = new Deck()
@@ -12,9 +9,11 @@ class Game
   def scores = [:]
   def hands = []
   Player starter
+  boolean done
 
   def begin()
   {
+    done = false
     initScores()
     starter = team1.first
     dealCards()
@@ -68,10 +67,23 @@ class Game
     def hand = new Hand(cards: cardMap, atout: atout)
     hand.resolve()
 
-    scores[hand.winner.team] = scoreFor(hand.winner.team) + hand.points
-    starter = hand.winner
-
     hands << hand
+
+    def winnerTeam = hand.winner.team
+    scores[winnerTeam] += hand.points
+    if (lastHand())
+    {
+      scores[winnerTeam] += 10
+      done = true
+    }
+    else
+    {
+      starter = hand.winner
+    }
+  }
+
+  boolean lastHand() {
+    hands.size() == 8
   }
 
   void playRandomHand()
