@@ -7,7 +7,7 @@ enum CardType
   Neuf(0,14),
   Dix(10),
   Valet(2,20),
-  Damme(3),
+  Dame(3),
   Roi(4),
   Ace(11)
 

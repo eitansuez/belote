@@ -15,4 +15,9 @@ class Card
     return type.points
   }
 
+  def points(Suite atout)
+  {
+    atout == suite ? type.pointsWhenAtout : type.points
+  }
+
 }

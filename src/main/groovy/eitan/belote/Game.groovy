@@ -27,4 +27,9 @@ class Game
   {
     committedPlayer.team
   }
+
+  int points(Card card)
+  {
+    card.points(atout)
+  }
 }

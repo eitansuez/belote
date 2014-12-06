@@ -33,4 +33,10 @@ class PlayerSpec extends Specification
     eitan.hand().size() == 3
   }
 
+  def "check toString"()
+  {
+    expect:
+    eitan.toString() == "Player: Eitan"
+  }
+
 }

@@ -22,4 +22,9 @@ class Player
   {
     cards
   }
+
+  @Override
+  String toString() {
+    "Player: $name"
+  }
 }

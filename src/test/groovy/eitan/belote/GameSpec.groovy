@@ -2,6 +2,9 @@ package eitan.belote
 
 import spock.lang.Specification
 
+import static eitan.belote.CardType.*
+import static eitan.belote.Suite.*
+
 class GameSpec extends Specification
 {
   Deck deck
@@ -44,12 +47,27 @@ class GameSpec extends Specification
   def "envoi should set atout and designate team"()
   {
     when:
-    game.envoi(Suite.Trefle, eitan)
+    game.envoi(Trefle, eitan)
 
     then:
-    game.atout == Suite.Trefle
+    game.atout == Trefle
     game.committedPlayer == eitan
     game.committedTeam == game.team1
+  }
+
+  def "after envoi should know points for cards"()
+  {
+    when:
+    game.envoi(Trefle, eitan)
+
+    then:
+    game.points(new Card(type: Ace, suite: Trefle)) == 11
+    game.points(new Card(type: Neuf, suite: Trefle)) == 14
+    game.points(new Card(type: Valet, suite: Trefle)) == 20
+
+    game.points(new Card(type: Ace, suite: Coeur)) == 11
+    game.points(new Card(type: Neuf, suite: Coeur)) == 0
+    game.points(new Card(type: Valet, suite: Coeur)) == 2
   }
 
 }

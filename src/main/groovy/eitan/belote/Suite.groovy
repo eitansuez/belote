@@ -12,4 +12,8 @@ enum Suite
     }
   }
 
+  @Override
+  String toString() {
+    "Suite: ${name()}"
+  }
 }
