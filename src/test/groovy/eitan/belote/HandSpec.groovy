@@ -25,15 +25,32 @@ class HandSpec extends Specification
         (new Card(type: CardType.Ace, suite: Coeur)): eitan,
         (new Card(type: CardType.Dix, suite: Coeur)): johnny,
         (new Card(type: CardType.Sept, suite: Coeur)): corinne,
-        (new Card(type: CardType.Dame, suite: Coeur)): rony]
+        (new Card(type: CardType.Valet, suite: Coeur)): rony]
     def hand = new Hand(cards: cards, atout: Trefle)
 
     when:
     hand.resolve()
 
     then:
-    hand.points == 24
+    hand.points == 23
     hand.winner == eitan
+  }
+
+  def "all atout hand, largest card wins"() {
+    given:
+    def cards = [
+        (new Card(type: CardType.Ace, suite: Coeur)): eitan,
+        (new Card(type: CardType.Dix, suite: Coeur)): johnny,
+        (new Card(type: CardType.Sept, suite: Coeur)): corinne,
+        (new Card(type: CardType.Valet, suite: Coeur)): rony]
+    def hand = new Hand(cards: cards, atout: Coeur)
+
+    when:
+    hand.resolve()
+
+    then:
+    hand.points == 41
+    hand.winner == rony
   }
 
   def "cut with large atout"() {
