@@ -76,4 +76,10 @@ class DeckSpec extends Specification
     deck.cards.empty
   }
 
+  def "deck is initially full"()
+  {
+    expect:
+    deck.full()
+  }
+
 }

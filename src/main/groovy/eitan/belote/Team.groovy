@@ -5,8 +5,6 @@ class Team
   Player first
   Player second
 
-  int score = 0
-
   public void setFirst(Player p)
   {
     this.first = p
@@ -17,5 +15,10 @@ class Team
   {
     this.second = p
     p.team = this
+  }
+
+  @Override
+  String toString() {
+    "Team: ${first.name}/${second.name}"
   }
 }

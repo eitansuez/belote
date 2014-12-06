@@ -3,7 +3,8 @@ package eitan.belote
 import spock.lang.Specification
 
 import static eitan.belote.CardType.*
-import static eitan.belote.Suite.*
+import static eitan.belote.Suite.Coeur
+import static eitan.belote.Suite.Trefle
 
 class GameSpec extends Specification
 {
@@ -28,14 +29,14 @@ class GameSpec extends Specification
   def "should be able to construct a game with two teams and a card deck"()
   {
     when:
-    game.start()
+    game.begin()
 
     then:
     1 * deck.deal(_)
     eitan.cards.size() == 5
     deck.size() == 12
-    game.team1.score == 0
-    game.team2.score == 0
+    game.scoreFor(game.team1) == 0
+    game.scoreFor(game.team2) == 0
   }
 
   def "initially no atout is set"()
@@ -46,6 +47,9 @@ class GameSpec extends Specification
 
   def "envoi should set atout and designate team"()
   {
+    given:
+    game.begin()
+
     when:
     game.envoi(Trefle, eitan)
 
@@ -57,6 +61,9 @@ class GameSpec extends Specification
 
   def "after envoi should know points for cards"()
   {
+    given:
+    game.begin()
+
     when:
     game.envoi(Trefle, eitan)
 
@@ -68,6 +75,41 @@ class GameSpec extends Specification
     game.points(new Card(type: Ace, suite: Coeur)) == 11
     game.points(new Card(type: Neuf, suite: Coeur)) == 0
     game.points(new Card(type: Valet, suite: Coeur)) == 2
+  }
+
+  def "envoi should trigger deal remaining cards"()
+  {
+    given:
+    game.begin()
+
+    when:
+    game.envoi(Trefle, eitan)
+
+    then:
+    1 * deck.dealRemaining(_)
+    deck.empty()
+    game.starter == eitan
+  }
+
+  def "play first hand"()
+  {
+    given:
+    game.begin()
+    game.envoi(Trefle, eitan)
+
+    when:
+    def cards = [
+        new Card(type: Ace, suite: Coeur),
+        new Card(type: Dix, suite: Coeur),
+        new Card(type: Sept, suite: Trefle),
+        new Card(type: Dame, suite: Coeur)]
+
+    game.playHand(cards)
+
+    then:
+    game.scoreFor(game.team1) == 24
+    game.scoreFor(game.team2) == 0
+    game.starter == rony
   }
 
 }

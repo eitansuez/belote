@@ -54,4 +54,13 @@ class Deck
   def size() {
     cards?.size()
   }
+
+  def full()
+  {
+    size() == 32
+  }
+  def empty()
+  {
+    size() == 0
+  }
 }
