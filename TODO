@@ -1,8 +1,9 @@
 
 1. game
- - should be able to tell who won
  x should detect dedans and update score accordingly
  x should detect capot and credit 100 bonus and withhold dixdedere
+ x should detect litige
+ x should be able to tell who won
 
 2. partie
  - introduce notion of
@@ -17,4 +18,4 @@
 
 --read on
 - fsm's in groovy
-> spock mocking
+x spock mocking

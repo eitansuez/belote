@@ -49,6 +49,17 @@ class Game
   {
     (committedTeam == team1) ? team2 : team1
   }
+  def getWinningTeam()
+  {
+    assert done
+
+    if (scoreFor(team1) > scoreFor(team2)) {
+      return team1
+    } else if (scoreFor(team2) > scoreFor(team1)) {
+      return team2
+    }
+    null // a tie implies no winning team
+  }
 
   int points(Card card)
   {
@@ -75,7 +86,7 @@ class Game
 
     updateScore(hand)
 
-    if (lastHand())
+    if (isLastHand())
     {
       finalizeScore()
       done = true
@@ -104,7 +115,9 @@ class Game
     {
       scores[committedTeam] = 0
       scores[otherTeam] = 162
+      return
     }
+
   }
 
   private void addDixDedere(Team team)
@@ -127,7 +140,11 @@ class Game
     scoreFor(committedTeam) < 81
   }
 
-  boolean lastHand() {
+  boolean litige() {
+    scoreFor(committedTeam) == 81
+  }
+
+  boolean isLastHand() {
     hands.size() == 8
   }
 

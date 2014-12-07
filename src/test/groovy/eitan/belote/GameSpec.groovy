@@ -142,7 +142,8 @@ class GameSpec extends Specification
       player.hand().empty
     }
     game.hands.size() == 8
-    game.scoreFor(game.team1) + game.scoreFor(game.team2) == 162
+    int totalScore = game.scoreFor(game.team1) + game.scoreFor(game.team2)
+    totalScore == 162 || totalScore == 250
     game.done
   }
 
@@ -160,6 +161,7 @@ class GameSpec extends Specification
 
     then:
     game.scoreFor(game.team1) == 152
+    game.winningTeam == game.team1
   }
 
   def "score finalization handles capot"() {
@@ -174,8 +176,10 @@ class GameSpec extends Specification
     game.finalizeScore()
 
     then:
+    game.capot()
     game.scoreFor(game.team1) == 252
     game.scoreFor(game.team2) == 0
+    game.winningTeam == game.team1
   }
 
   def "score finalization handles dedans"() {
@@ -191,8 +195,29 @@ class GameSpec extends Specification
     game.finalizeScore()
 
     then:
+    game.dedans()
     game.scoreFor(game.team1) == 0
     game.scoreFor(game.team2) == 162
+    game.winningTeam == game.team2
+  }
+
+  def "score finalization handles litige"() {
+    given:
+    game.begin()
+    game.envoi(Trefle, eitan)
+    8.times { game.playRandomHand() }
+    game.scores[game.team1] = 81
+    game.scores[game.team2] = 71
+    game.hands.last().winner = corinne
+
+    when:
+    game.finalizeScore()
+
+    then:
+    game.scoreFor(game.team1) == 81
+    game.scoreFor(game.team2) == 81
+    game.litige()
+    game.winningTeam == null
   }
 
 }
