@@ -2,6 +2,8 @@ package eitan.belote
 
 import spock.lang.Specification
 
+import static eitan.belote.Suite.Trefle
+
 class PartieSpec extends Specification
 {
   def Partie partie
@@ -115,5 +117,47 @@ class PartieSpec extends Specification
     game.starter == eitan
   }
 
+  def "game rounded score transfers to partie"()
+  {
+    given:
+    partie.begin()
+    playGameWithScoreBeforeFinalize(75, 77)
+
+    when:
+    partie.gameDone()
+
+    then:
+    partie.scores[partie.team1] == 90
+    partie.scores[partie.team2] == 80
+  }
+
+  private playGameWithScoreBeforeFinalize(int score1, int score2)
+  {
+    def game = partie.nextGame()
+    game.begin()
+    game.envoi(Trefle, eitan)
+    game.playRandomly()
+    game.scores[game.team1] = score1
+    game.scores[game.team2] = score2
+    game.hands.last().winner = eitan
+    game.finalizeScore()
+    game
+  }
+
+  def "game score accumulates across multiple games"()
+  {
+    given:
+    partie.begin()
+    playGameWithScoreBeforeFinalize(75, 77)
+    partie.gameDone()
+    playGameWithScoreBeforeFinalize(100, 52)
+
+    when:
+    partie.gameDone()
+
+    then:
+    partie.scores[partie.team1] == 200
+    partie.scores[partie.team2] == 130
+  }
 
 }

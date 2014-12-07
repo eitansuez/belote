@@ -30,6 +30,24 @@ class Partie
     game
   }
 
+  def gameDone()
+  {
+    def game = games.last()
+    assert game.done
+
+    transferScores(game)
+  }
+
+  private void transferScores(game)
+  {
+    scores[team1] += round(game.scores[team1])
+    scores[team2] += round(game.scores[team2])
+  }
+
+  int round(int score) {
+    Math.round(score/10) * 10
+  }
+
   private void selectNextStarter()
   {
     if (starter == null) {

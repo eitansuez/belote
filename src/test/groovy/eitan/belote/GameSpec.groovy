@@ -141,7 +141,8 @@ class GameSpec extends Specification
     game.envoi(Trefle, eitan)
 
     when:
-    8.times { game.playRandomHand() }
+    game.playRandomly()
+    game.finalizeScore()
 
     then:
     [eitan, rony, corinne, johnny].each { player ->
@@ -157,7 +158,7 @@ class GameSpec extends Specification
     given:
     game.begin()
     game.envoi(Trefle, eitan)
-    8.times { game.playRandomHand() }
+    game.playRandomly()
     game.scores[game.team1] = 142
     game.scores[game.team2] = 10
     game.hands.last().winner = eitan
@@ -174,7 +175,7 @@ class GameSpec extends Specification
     given:
     game.begin()
     game.envoi(Trefle, eitan)
-    8.times { game.playRandomHand() }
+    game.playRandomly()
     game.scores[game.team1] = 152
     game.scores[game.team2] = 0
 
@@ -192,7 +193,7 @@ class GameSpec extends Specification
     given:
     game.begin()
     game.envoi(Trefle, eitan)
-    8.times { game.playRandomHand() }
+    game.playRandomly()
     game.scores[game.team1] = 80
     game.scores[game.team2] = 72
     game.hands.last().winner = corinne
@@ -211,7 +212,7 @@ class GameSpec extends Specification
     given:
     game.begin()
     game.envoi(Trefle, eitan)
-    8.times { game.playRandomHand() }
+    game.playRandomly()
     game.scores[game.team1] = 81
     game.scores[game.team2] = 71
     game.hands.last().winner = corinne

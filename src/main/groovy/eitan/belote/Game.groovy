@@ -90,12 +90,7 @@ class Game
 
     updateScore(hand)
 
-    if (isLastHand())
-    {
-      finalizeScore()
-      done = true
-    }
-    else
+    if (!isLastHand())
     {
       starter = hand.winner
     }
@@ -106,8 +101,11 @@ class Game
     scores[hand.winner.team] += hand.points
   }
 
-  private void finalizeScore()
+  void finalizeScore()
   {
+    assert isLastHand()
+    done = true
+
     Hand lastHand = hands.last()
     if (capot()) {
       addCapotCredit()
@@ -121,7 +119,6 @@ class Game
       scores[otherTeam] = 162
       return
     }
-
   }
 
   private void addDixDedere(Team team)
@@ -159,5 +156,10 @@ class Game
       cards << player.playRandomCard()
     }
     playHand(cards)
+  }
+
+  void playRandomly()
+  {
+    8.times { playRandomHand() }
   }
 }
