@@ -73,13 +73,18 @@ class Game
     scores[winnerTeam] += hand.points
     if (lastHand())
     {
-      scores[winnerTeam] += 10
+      addDixDedere(winnerTeam)
       done = true
     }
     else
     {
       starter = hand.winner
     }
+  }
+
+  private void addDixDedere(Team team)
+  {
+    scores[team] += 10
   }
 
   boolean lastHand() {
