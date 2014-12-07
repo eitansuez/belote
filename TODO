@@ -2,7 +2,7 @@
 1. game
  - should be able to tell who won
  - should detect dedans and update score accordingly
- - should detect capot and credit 100 bonus and withhold dixdedere
+ x should detect capot and credit 100 bonus and withhold dixdedere
 
 2. partie
  - introduce notion of

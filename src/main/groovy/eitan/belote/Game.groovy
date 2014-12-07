@@ -69,11 +69,11 @@ class Game
 
     hands << hand
 
-    def winnerTeam = hand.winner.team
-    scores[winnerTeam] += hand.points
+    updateScore(hand)
+
     if (lastHand())
     {
-      addDixDedere(winnerTeam)
+      finalizeScore()
       done = true
     }
     else
@@ -82,9 +82,37 @@ class Game
     }
   }
 
+  private void updateScore(Hand hand)
+  {
+    scores[hand.winner.team] += hand.points
+  }
+
+  private void finalizeScore()
+  {
+    Hand lastHand = hands.last()
+    if (capot()) {
+      addCapotCredit()
+    }
+    else
+    {
+      addDixDedere(lastHand.winner.team)
+    }
+  }
+
   private void addDixDedere(Team team)
   {
     scores[team] += 10
+  }
+
+  private void addCapotCredit()
+  {
+    assert capot()
+    Team creditee = ( scores[team2] == 152 ) ? team2 : team1
+    scores[creditee] += 100
+  }
+
+  boolean capot() {
+    scoreFor(team1) == 0 || scoreFor(team2) == 0
   }
 
   boolean lastHand() {

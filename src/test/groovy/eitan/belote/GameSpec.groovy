@@ -146,4 +146,36 @@ class GameSpec extends Specification
     game.done
   }
 
+  def "score finalization adds dix dedere"() {
+    given:
+    game.begin()
+    game.envoi(Trefle, eitan)
+    8.times { game.playRandomHand() }
+    game.scores[game.team1] = 142
+    game.scores[game.team2] = 10
+    game.hands.last().winner = eitan
+
+    when:
+    game.finalizeScore()
+
+    then:
+    game.scoreFor(game.team1) == 152
+  }
+
+  def "score finalization handles capot"() {
+    given:
+    game.begin()
+    game.envoi(Trefle, eitan)
+    8.times { game.playRandomHand() }
+    game.scores[game.team1] = 152
+    game.scores[game.team2] = 0
+
+    when:
+    game.finalizeScore()
+
+    then:
+    game.scoreFor(game.team1) == 252
+    game.scoreFor(game.team2) == 0
+  }
+
 }
