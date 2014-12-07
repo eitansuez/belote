@@ -1,0 +1,19 @@
+
+1. game
+ - should be able to tell who won
+ - should detect dedans and update score accordingly
+ - should detect capot and credit 100 bonus and withhold dixdedere
+
+2. partie
+ - introduce notion of
+ - parti as factory for nextGame
+ - parti keeps track of who's turn it is to start
+ - parti has its notion of won at 1000 points
+ - parti keeps track of teams, not game?
+
+3. flesh out the development of a hand, and the play of a hand in turns,
+  including what cards in a player's hand are valid to play in context
+
+--read on
+- fsm's in groovy
+> spock mocking
