@@ -6,15 +6,18 @@
  x should be able to tell who won
 
 2. partie
- - introduce notion of
+ x introduce notion of
  - parti as factory for nextGame
  - parti keeps track of who's turn it is to start
- - parti has its notion of won at 1000 points
+ x parti has its notion of won at 1000 points
  - parti keeps track of teams, not game?
  - notion of score rounding to nearest 10 (round half up)
 
 3. flesh out the development of a hand, and the play of a hand in turns,
   including what cards in a player's hand are valid to play in context
+
+4. flesh out the envoi selection process/phase.  first selection round, second, fact that
+   game may end without any hands played if no one envoie's
 
 --read on
 - fsm's in groovy

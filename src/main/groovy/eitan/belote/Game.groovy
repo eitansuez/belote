@@ -2,6 +2,7 @@ package eitan.belote
 
 class Game
 {
+  Partie partie
   Deck deck = new Deck()
   Team team1, team2
   Suite atout
@@ -9,13 +10,16 @@ class Game
   def scores = [:]
   def hands = []
   Player starter
-  boolean done
+  boolean done  // do i need this field?
 
   def begin()
   {
+    team1 = partie.team1
+    team2 = partie.team2
+    starter = partie.starter
+
     done = false
     initScores()
-    starter = team1.first
     dealCards()
   }
 

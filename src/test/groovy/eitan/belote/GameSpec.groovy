@@ -11,6 +11,7 @@ class GameSpec extends Specification
   Deck deck
   Player eitan, rony, johnny, corinne
   Game game
+  Partie partie
 
   def setup()
   {
@@ -21,9 +22,13 @@ class GameSpec extends Specification
     corinne = new Player(name: "Corinne")
     rony = new Player(name: "Rony")
 
-    game = new Game(deck: deck,
+    partie = new Partie(
         team1: new Team(first: eitan, second: rony),
-        team2: new Team(first: johnny, second: corinne))
+        team2: new Team(first: johnny, second: corinne)
+    )
+    partie.begin()
+
+    game = new Game(deck: deck, partie: partie)
   }
 
   def "should be able to construct a game with two teams and a card deck"()
