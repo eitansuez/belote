@@ -178,4 +178,21 @@ class GameSpec extends Specification
     game.scoreFor(game.team2) == 0
   }
 
+  def "score finalization handles dedans"() {
+    given:
+    game.begin()
+    game.envoi(Trefle, eitan)
+    8.times { game.playRandomHand() }
+    game.scores[game.team1] = 80
+    game.scores[game.team2] = 72
+    game.hands.last().winner = corinne
+
+    when:
+    game.finalizeScore()
+
+    then:
+    game.scoreFor(game.team1) == 0
+    game.scoreFor(game.team2) == 162
+  }
+
 }

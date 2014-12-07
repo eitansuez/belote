@@ -45,6 +45,10 @@ class Game
   {
     committedPlayer.team
   }
+  def getOtherTeam()
+  {
+    (committedTeam == team1) ? team2 : team1
+  }
 
   int points(Card card)
   {
@@ -92,10 +96,14 @@ class Game
     Hand lastHand = hands.last()
     if (capot()) {
       addCapotCredit()
+      return
     }
-    else
+    addDixDedere(lastHand.winner.team)
+
+    if (dedans())
     {
-      addDixDedere(lastHand.winner.team)
+      scores[committedTeam] = 0
+      scores[otherTeam] = 162
     }
   }
 
@@ -113,6 +121,10 @@ class Game
 
   boolean capot() {
     scoreFor(team1) == 0 || scoreFor(team2) == 0
+  }
+
+  boolean dedans() {
+    scoreFor(committedTeam) < 81
   }
 
   boolean lastHand() {
