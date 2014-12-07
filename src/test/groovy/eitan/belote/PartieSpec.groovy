@@ -35,7 +35,6 @@ class PartieSpec extends Specification
     then:
     partie.scores[partie.team1] == 0
     partie.scores[partie.team2] == 0
-    partie.starter == eitan
   }
 
   def "partie should be done if one of the teams has arrived at or crossed 1000"()
@@ -67,12 +66,16 @@ class PartieSpec extends Specification
   {
     given:
     partie.begin()
+    def game = partie.nextGame()
 
     when:
-    partie.startGame()
+    game.begin()
 
     then:
-    partie.games[0].team1 == partie.team1
+    game.team1 == partie.team1
+    game.starter == eitan
   }
+
+
 
 }

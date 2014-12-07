@@ -28,7 +28,8 @@ class GameSpec extends Specification
     )
     partie.begin()
 
-    game = new Game(deck: deck, partie: partie)
+    game = partie.nextGame()
+    game.deck = deck // so can spy
   }
 
   def "should be able to construct a game with two teams and a card deck"()

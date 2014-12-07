@@ -10,7 +10,6 @@ class Partie
   def begin()
   {
     initScores()
-    starter = team1.first
   }
 
   private void initScores() {
@@ -23,10 +22,23 @@ class Partie
     scores[team1] >= 1000 || scores[team2] >= 1000
   }
 
-  def startGame()
+  def nextGame()
   {
     def game = new Game(partie: this)
-    game.begin()
+    selectNextStarter()
     games << game
+    game
+  }
+
+  private void selectNextStarter()
+  {
+    if (starter == null) {
+      starter = team1.first
+      return
+    }
+//
+//    def previousStarter = starter;
+//    def team = (previousStarter.team == team1) ? team2 : team1
+//    starter = (previousStarter.team.first == previousStarter) ? team.first : team.second
   }
 }
