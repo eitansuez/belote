@@ -7,10 +7,10 @@
 
 2. partie
  x introduce notion of
- - parti as factory for nextGame
- - parti keeps track of who's turn it is to start
+ x parti as factory for nextGame
+ x parti keeps track of who's turn it is to start
  x parti has its notion of won at 1000 points
- - parti keeps track of teams, not game?
+ x parti keeps track of teams, not game?
  - notion of score rounding to nearest 10 (round half up)
 
 3. flesh out the development of a hand, and the play of a hand in turns,

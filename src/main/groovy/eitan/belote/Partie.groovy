@@ -36,9 +36,11 @@ class Partie
       starter = team1.first
       return
     }
-//
-//    def previousStarter = starter;
-//    def team = (previousStarter.team == team1) ? team2 : team1
-//    starter = (previousStarter.team.first == previousStarter) ? team.first : team.second
+
+    def players = [team1.first, team2.first, team1.second, team2.second]
+    def index = players.indexOf(starter)
+    index += 1
+    index %= 4
+    starter = players[index]
   }
 }

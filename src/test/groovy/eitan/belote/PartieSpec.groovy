@@ -76,6 +76,44 @@ class PartieSpec extends Specification
     game.starter == eitan
   }
 
+  def "partie rotate starter with each new game"()
+  {
+    when:
+    partie.begin()
+    def game = partie.nextGame()
+    game.begin()
+
+    then:
+    game.starter == eitan
+
+    when:
+    game = partie.nextGame()
+    game.begin()
+
+    then:
+    game.starter == johnny
+
+    when:
+    game = partie.nextGame()
+    game.begin()
+
+    then:
+    game.starter == rony
+
+    when:
+    game = partie.nextGame()
+    game.begin()
+
+    then:
+    game.starter == corinne
+
+    when:
+    game = partie.nextGame()
+    game.begin()
+
+    then:
+    game.starter == eitan
+  }
 
 
 }
