@@ -139,7 +139,7 @@ class PartieSpec extends Specification
     game.playRandomly()
     game.scores[game.team1] = score1
     game.scores[game.team2] = score2
-    game.hands.last().winner = eitan
+    game.rounds.last().winner = eitan
     game.finalizeScore()
     game
   }

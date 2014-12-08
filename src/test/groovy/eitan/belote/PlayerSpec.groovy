@@ -2,6 +2,10 @@ package eitan.belote
 
 import spock.lang.Specification
 
+import static eitan.belote.CardType.Huit
+import static eitan.belote.CardType.Sept
+import static eitan.belote.Suite.Pique
+
 class PlayerSpec extends Specification
 {
   Deck deck
@@ -52,6 +56,18 @@ class PlayerSpec extends Specification
   {
     expect:
     eitan.toString() == "Player: Eitan"
+  }
+
+  def "attempt to play a card not in player's hand should throw an exception"()
+  {
+    given:
+    eitan.dealCard(new Card(suite: Pique, type: Sept))
+
+    when:
+    eitan.playCard(new Card(suite: Pique, type: Huit))
+
+    then:
+    thrown(NoSuchElementException)
   }
 
 }

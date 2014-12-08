@@ -25,7 +25,7 @@ class Partie
   def nextGame()
   {
     def game = new Game(partie: this)
-    selectNextStarter()
+    starter = nextStarter()
     games << game
     game
   }
@@ -48,17 +48,21 @@ class Partie
     Math.round(score/10) * 10
   }
 
-  private void selectNextStarter()
+  private Player nextStarter()
   {
     if (starter == null) {
-      starter = team1.first
-      return
+      return team1.first
     }
 
+    nextPlayer(starter)
+  }
+
+  Player nextPlayer(Player from)
+  {
     def players = [team1.first, team2.first, team1.second, team2.second]
-    def index = players.indexOf(starter)
+    def index = players.indexOf(from)
     index += 1
     index %= 4
-    starter = players[index]
+    players[index]
   }
 }

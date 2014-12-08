@@ -1,6 +1,6 @@
 package eitan.belote
 
-class Hand
+class Round
 {
   Map<Card, Player> cards
   Suite atout

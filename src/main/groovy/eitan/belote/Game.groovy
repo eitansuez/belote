@@ -8,7 +8,7 @@ class Game
   Suite atout
   def committedPlayer
   def scores = [:]
-  def hands = []
+  def rounds = []
   Player starter
   boolean done  // do i need this field?
 
@@ -74,7 +74,7 @@ class Game
     scores[team]
   }
 
-  void playHand(List<Card> cards)
+  void playRound(List<Card> cards)
   {
     assert cards.size() == 4
     def cardMap = [
@@ -83,35 +83,35 @@ class Game
         (cards[2]): team1.second,
         (cards[3]): team2.second]
 
-    def hand = new Hand(cards: cardMap, atout: atout)
-    hand.resolve()
+    def round = new Round(cards: cardMap, atout: atout)
+    round.resolve()
 
-    hands << hand
+    rounds << round
 
-    updateScore(hand)
+    updateScore(round)
 
-    if (!isLastHand())
+    if (!isLastRound())
     {
-      starter = hand.winner
+      starter = round.winner
     }
   }
 
-  private void updateScore(Hand hand)
+  private void updateScore(Round round)
   {
-    scores[hand.winner.team] += hand.points
+    scores[round.winner.team] += round.points
   }
 
   void finalizeScore()
   {
-    assert isLastHand()
+    assert isLastRound()
     done = true
 
-    Hand lastHand = hands.last()
+    Round lastRound = rounds.last()
     if (capot()) {
       addCapotCredit()
       return
     }
-    addDixDedere(lastHand.winner.team)
+    addDixDedere(lastRound.winner.team)
 
     if (dedans())
     {
@@ -145,21 +145,26 @@ class Game
     scoreFor(committedTeam) == 81
   }
 
-  boolean isLastHand() {
-    hands.size() == 8
+  boolean isLastRound() {
+    rounds.size() == 8
   }
 
-  void playRandomHand()
+  void playRandomRound()
   {
     def cards = []
-    players().each { player ->
-      cards << player.playRandomCard()
+
+    Player player = starter
+    4.times {
+      Card validCard = player.validCard(cards, atout)
+      cards << player.playCard(validCard)
+      player = partie.nextPlayer(player)
     }
-    playHand(cards)
+
+    playRound(cards)
   }
 
   void playRandomly()
   {
-    8.times { playRandomHand() }
+    8.times { playRandomRound() }
   }
 }

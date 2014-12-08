@@ -7,7 +7,7 @@ import static eitan.belote.Suite.Coeur
 import static eitan.belote.Suite.Pique
 import static eitan.belote.Suite.Trefle
 
-class HandSpec extends Specification
+class RoundSpec extends Specification
 {
   Player eitan, rony, johnny, corinne
 
@@ -19,38 +19,38 @@ class HandSpec extends Specification
     rony = new Player(name: "Rony")
   }
 
-  def "mono-suite hand, largest card wins"() {
+  def "mono-suite round, largest card wins"() {
     given:
     def cards = [
         (new Card(type: CardType.Ace, suite: Coeur)): eitan,
         (new Card(type: CardType.Dix, suite: Coeur)): johnny,
         (new Card(type: CardType.Sept, suite: Coeur)): corinne,
         (new Card(type: CardType.Valet, suite: Coeur)): rony]
-    def hand = new Hand(cards: cards, atout: Trefle)
+    def round = new Round(cards: cards, atout: Trefle)
 
     when:
-    hand.resolve()
+    round.resolve()
 
     then:
-    hand.points == 23
-    hand.winner == eitan
+    round.points == 23
+    round.winner == eitan
   }
 
-  def "all atout hand, largest card wins"() {
+  def "all atout round, largest card wins"() {
     given:
     def cards = [
         (new Card(type: CardType.Ace, suite: Coeur)): eitan,
         (new Card(type: CardType.Dix, suite: Coeur)): johnny,
         (new Card(type: CardType.Sept, suite: Coeur)): corinne,
         (new Card(type: CardType.Valet, suite: Coeur)): rony]
-    def hand = new Hand(cards: cards, atout: Coeur)
+    def round = new Round(cards: cards, atout: Coeur)
 
     when:
-    hand.resolve()
+    round.resolve()
 
     then:
-    hand.points == 41
-    hand.winner == rony
+    round.points == 41
+    round.winner == rony
   }
 
   def "cut with large atout"() {
@@ -60,14 +60,14 @@ class HandSpec extends Specification
         (new Card(type: CardType.Dix, suite: Coeur)): johnny,
         (new Card(type: CardType.Neuf, suite: Trefle)): corinne,
         (new Card(type: CardType.Dame, suite: Coeur)): rony]
-    def hand = new Hand(cards: cards, atout: Trefle)
+    def round = new Round(cards: cards, atout: Trefle)
 
     when:
-    hand.resolve()
+    round.resolve()
 
     then:
-    hand.points == 38
-    hand.winner == corinne
+    round.points == 38
+    round.winner == corinne
   }
 
   def "cut with small atout"() {
@@ -77,14 +77,14 @@ class HandSpec extends Specification
         (new Card(type: CardType.Dix, suite: Coeur)): johnny,
         (new Card(type: CardType.Sept, suite: Trefle)): corinne,
         (new Card(type: CardType.Dame, suite: Coeur)): rony]
-    def hand = new Hand(cards: cards, atout: Trefle)
+    def round = new Round(cards: cards, atout: Trefle)
 
     when:
-    hand.resolve()
+    round.resolve()
 
     then:
-    hand.points == 24
-    hand.winner == corinne
+    round.points == 24
+    round.winner == corinne
   }
 
   def "ask for a suite that no one has"() {
@@ -94,14 +94,14 @@ class HandSpec extends Specification
         (new Card(type: CardType.Dix, suite: Pique)): johnny,
         (new Card(type: CardType.Roi, suite: Carreau)): corinne,
         (new Card(type: CardType.Huit, suite: Carreau)): rony]
-    def hand = new Hand(cards: cards, atout: Trefle)
+    def round = new Round(cards: cards, atout: Trefle)
 
     when:
-    hand.resolve()
+    round.resolve()
 
     then:
-    hand.points == 14
-    hand.winner == eitan
+    round.points == 14
+    round.winner == eitan
   }
 
 }

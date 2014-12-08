@@ -1,12 +1,12 @@
 
-1. flesh out the development of a hand, and the play of a hand in turns,
+ flesh out the development of a hand, and the play of a hand in turns,
   including what cards in a player's hand are valid to play in context
 
-2. flesh out the envoi selection process/phase.  first selection round, second, fact that
-   game may end without any hands played if no one envoie's
-
-3. handle belotte rebelotte
-
-technical:
- build out fsm for game, partie
  look into fsm's in groovy
+ build out fsm for game, partie
+
+ flesh out the envoi selection process/phase:
+   first selection round, second, fact that game may end without any hands played if no one envoie's
+
+ handle belotte rebelotte
+

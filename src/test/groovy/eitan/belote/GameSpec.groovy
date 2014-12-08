@@ -97,7 +97,7 @@ class GameSpec extends Specification
     game.starter == eitan
   }
 
-  def "play first hand"()
+  def "play first round"()
   {
     given:
     game.begin()
@@ -110,7 +110,7 @@ class GameSpec extends Specification
         new Card(type: Sept, suite: Trefle),
         new Card(type: Dame, suite: Coeur)]
 
-    game.playHand(cards)
+    game.playRound(cards)
 
     then:
     game.scoreFor(game.team1) == 24
@@ -125,7 +125,7 @@ class GameSpec extends Specification
     game.envoi(Trefle, eitan)
 
     when:
-    game.playRandomHand()
+    game.playRandomRound()
 
     then:
     [eitan, rony, corinne, johnny].each { player ->
@@ -134,7 +134,7 @@ class GameSpec extends Specification
     !game.done
   }
 
-  def "players should have no more cards after eight hands"()
+  def "players should have no more cards after eight rounds"()
   {
     given:
     game.begin()
@@ -148,7 +148,7 @@ class GameSpec extends Specification
     [eitan, rony, corinne, johnny].each { player ->
       player.hand().empty
     }
-    game.hands.size() == 8
+    game.rounds.size() == 8
     int totalScore = game.scoreFor(game.team1) + game.scoreFor(game.team2)
     totalScore == 162 || totalScore == 250
     game.done
@@ -161,7 +161,7 @@ class GameSpec extends Specification
     game.playRandomly()
     game.scores[game.team1] = 142
     game.scores[game.team2] = 10
-    game.hands.last().winner = eitan
+    game.rounds.last().winner = eitan
 
     when:
     game.finalizeScore()
@@ -196,7 +196,7 @@ class GameSpec extends Specification
     game.playRandomly()
     game.scores[game.team1] = 80
     game.scores[game.team2] = 72
-    game.hands.last().winner = corinne
+    game.rounds.last().winner = corinne
 
     when:
     game.finalizeScore()
@@ -215,7 +215,7 @@ class GameSpec extends Specification
     game.playRandomly()
     game.scores[game.team1] = 81
     game.scores[game.team2] = 71
-    game.hands.last().winner = corinne
+    game.rounds.last().winner = corinne
 
     when:
     game.finalizeScore()
