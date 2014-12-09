@@ -10,6 +10,7 @@ class GameSpec extends Specification
 {
   Deck deck
   Player eitan, rony, johnny, corinne
+  List<Player> players
   Game game
   Partie partie
 
@@ -21,6 +22,8 @@ class GameSpec extends Specification
     johnny = new Player(name: "Johnny")
     corinne = new Player(name: "Corinne")
     rony = new Player(name: "Rony")
+
+    players = [eitan, johnny, rony, corinne]
 
     partie = new Partie(
         team1: new Team(first: eitan, second: rony),
@@ -108,9 +111,10 @@ class GameSpec extends Specification
         new Card(type: Ace, suite: Coeur),
         new Card(type: Dix, suite: Coeur),
         new Card(type: Sept, suite: Trefle),
-        new Card(type: Dame, suite: Coeur)]
+        new Card(type: Dame, suite: Coeur)
+    ]
 
-    game.playRound(cards)
+    game.playRound(cards, players)
 
     then:
     game.scores[game.team1] == 24
@@ -128,7 +132,7 @@ class GameSpec extends Specification
     game.playRandomRound()
 
     then:
-    [eitan, rony, corinne, johnny].each { player ->
+    players.each { player ->
       player.hand.size() == 4
     }
     !game.done
@@ -145,7 +149,7 @@ class GameSpec extends Specification
     game.finalizeScore()
 
     then:
-    [eitan, rony, corinne, johnny].each { player ->
+    players.each { player ->
       player.hand.empty
     }
     game.rounds.size() == 8

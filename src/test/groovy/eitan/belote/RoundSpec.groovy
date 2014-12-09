@@ -10,6 +10,7 @@ import static eitan.belote.Suite.Trefle
 class RoundSpec extends Specification
 {
   Player eitan, rony, johnny, corinne
+  def players
 
   def setup()
   {
@@ -17,16 +18,19 @@ class RoundSpec extends Specification
     johnny = new Player(name: "Johnny")
     corinne = new Player(name: "Corinne")
     rony = new Player(name: "Rony")
+
+    players = [eitan, johnny, corinne, rony]
   }
 
   def "mono-suite round, largest card wins"() {
     given:
     def cards = [
-        (new Card(type: CardType.Ace, suite: Coeur)): eitan,
-        (new Card(type: CardType.Dix, suite: Coeur)): johnny,
-        (new Card(type: CardType.Sept, suite: Coeur)): corinne,
-        (new Card(type: CardType.Valet, suite: Coeur)): rony]
-    def round = new Round(cards: cards, atout: Trefle)
+        new Card(type: CardType.Ace, suite: Coeur),
+        new Card(type: CardType.Dix, suite: Coeur),
+        new Card(type: CardType.Sept, suite: Coeur),
+        new Card(type: CardType.Valet, suite: Coeur)
+    ]
+    def round = new Round(cards: cards, players: players, atout: Trefle)
 
     when:
     round.resolve()
@@ -39,11 +43,12 @@ class RoundSpec extends Specification
   def "all atout round, largest card wins"() {
     given:
     def cards = [
-        (new Card(type: CardType.Ace, suite: Coeur)): eitan,
-        (new Card(type: CardType.Dix, suite: Coeur)): johnny,
-        (new Card(type: CardType.Sept, suite: Coeur)): corinne,
-        (new Card(type: CardType.Valet, suite: Coeur)): rony]
-    def round = new Round(cards: cards, atout: Coeur)
+        new Card(type: CardType.Ace, suite: Coeur),
+        new Card(type: CardType.Dix, suite: Coeur),
+        new Card(type: CardType.Sept, suite: Coeur),
+        new Card(type: CardType.Valet, suite: Coeur)
+    ]
+    def round = new Round(cards: cards, players: players, atout: Coeur)
 
     when:
     round.resolve()
@@ -56,11 +61,12 @@ class RoundSpec extends Specification
   def "cut with large atout"() {
     given:
     def cards = [
-        (new Card(type: CardType.Ace, suite: Coeur)): eitan,
-        (new Card(type: CardType.Dix, suite: Coeur)): johnny,
-        (new Card(type: CardType.Neuf, suite: Trefle)): corinne,
-        (new Card(type: CardType.Dame, suite: Coeur)): rony]
-    def round = new Round(cards: cards, atout: Trefle)
+        new Card(type: CardType.Ace, suite: Coeur),
+        new Card(type: CardType.Dix, suite: Coeur),
+        new Card(type: CardType.Neuf, suite: Trefle),
+        new Card(type: CardType.Dame, suite: Coeur)
+    ]
+    def round = new Round(cards: cards, players: players, atout: Trefle)
 
     when:
     round.resolve()
@@ -73,11 +79,12 @@ class RoundSpec extends Specification
   def "cut with small atout"() {
     given:
     def cards = [
-        (new Card(type: CardType.Ace, suite: Coeur)): eitan,
-        (new Card(type: CardType.Dix, suite: Coeur)): johnny,
-        (new Card(type: CardType.Sept, suite: Trefle)): corinne,
-        (new Card(type: CardType.Dame, suite: Coeur)): rony]
-    def round = new Round(cards: cards, atout: Trefle)
+        new Card(type: CardType.Ace, suite: Coeur),
+        new Card(type: CardType.Dix, suite: Coeur),
+        new Card(type: CardType.Sept, suite: Trefle),
+        new Card(type: CardType.Dame, suite: Coeur)
+    ]
+    def round = new Round(cards: cards, players: players, atout: Trefle)
 
     when:
     round.resolve()
@@ -90,11 +97,12 @@ class RoundSpec extends Specification
   def "ask for a suite that no one has"() {
     given:
     def cards = [
-        (new Card(type: CardType.Sept, suite: Coeur)): eitan,
-        (new Card(type: CardType.Dix, suite: Pique)): johnny,
-        (new Card(type: CardType.Roi, suite: Carreau)): corinne,
-        (new Card(type: CardType.Huit, suite: Carreau)): rony]
-    def round = new Round(cards: cards, atout: Trefle)
+        new Card(type: CardType.Sept, suite: Coeur),
+        new Card(type: CardType.Dix, suite: Pique),
+        new Card(type: CardType.Roi, suite: Carreau),
+        new Card(type: CardType.Huit, suite: Carreau)
+    ]
+    def round = new Round(cards: cards, players: players, atout: Trefle)
 
     when:
     round.resolve()

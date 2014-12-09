@@ -135,28 +135,25 @@ class Game
 
   void playRandomRound()
   {
-    def cards = []
+    def cards = [], players = []
 
     Player player = starter
     4.times {
       Set<Card> validCards = player.validCards(cards, atout)
       cards << player.playCard(validCards.first())
+      players << player
       player = partie.nextPlayer(player)
     }
 
-    playRound(cards)
+    playRound(cards, players)
   }
 
-  void playRound(List<Card> cards)
+  void playRound(List<Card> cards, List<Player> players)
   {
     assert cards.size() == 4
-    def cardMap = [
-        (cards[0]): team1.first,
-        (cards[1]): team2.first,
-        (cards[2]): team1.second,
-        (cards[3]): team2.second]
+    assert players.size() == 4
 
-    def round = new Round(cards: cardMap, atout: atout)
+    def round = new Round(cards: cards, players: players, atout: atout)
     round.resolve()
 
     rounds << round
