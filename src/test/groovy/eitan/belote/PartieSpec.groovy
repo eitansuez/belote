@@ -160,4 +160,50 @@ class PartieSpec extends Specification
     partie.scores[partie.team2] == 130
   }
 
+  def "points withheld from envoyeur when litige"()
+  {
+    given:
+    partie.begin()
+    playGameWithScoreBeforeFinalize(71, 81)
+
+    when:
+    partie.gameDone()
+
+    then:
+    partie.scores[partie.team1] == 0
+    partie.scores[partie.team2] == 80
+  }
+
+  def "points returned to envoyeur after litige if win next game"()
+  {
+    given:
+    partie.begin()
+    playGameWithScoreBeforeFinalize(71, 81)
+    partie.gameDone()
+
+    when:
+    playGameWithScoreBeforeFinalize(130, 22)
+    partie.gameDone()
+
+    then:
+    partie.scores[partie.team1] == 220
+    partie.scores[partie.team2] == 100
+  }
+
+  def "points given to opposing team when litigee loses next game"()
+  {
+    given:
+    partie.begin()
+    playGameWithScoreBeforeFinalize(71, 81)
+    partie.gameDone()
+
+    when:
+    playGameWithScoreBeforeFinalize(40, 112)
+    partie.gameDone()
+
+    then:
+    partie.scores[partie.team1] == 0
+    partie.scores[partie.team2] == 320
+  }
+
 }

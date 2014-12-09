@@ -1,5 +1,5 @@
 
- flesh out the development of a hand, and the play of a hand in turns,
+> flesh out the development of a hand, and the play of a hand in turns,
   including what cards in a player's hand are valid to play in context
 
  look into fsm's in groovy

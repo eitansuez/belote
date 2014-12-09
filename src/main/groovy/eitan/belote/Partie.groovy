@@ -38,10 +38,38 @@ class Partie
     transferScores(game)
   }
 
-  private void transferScores(game)
+  private void transferScores(Game game)
   {
-    scores[team1] += round(game.scores[team1])
-    scores[team2] += round(game.scores[team2])
+    if (game.litige()) {
+      def otherTeam = game.otherTeam
+      scores[otherTeam] += round(game.scores[otherTeam])
+    }
+    else
+    {
+      scores[team1] += round(game.scores[team1])
+      scores[team2] += round(game.scores[team2])
+    }
+
+    def previousGame = previousGame(game)
+    if (previousGame && previousGame.litige())
+    {
+      if (game.winningTeam == previousGame.committedTeam) {
+        scores[game.committedTeam] += round(previousGame.scores[game.committedTeam])
+      } else {
+        scores[game.otherTeam] += round(previousGame.scores[game.committedTeam])
+      }
+    }
+
+  }
+
+  private Game previousGame(Game game)
+  {
+    int index = games.indexOf(game) - 1
+    if (index >= 0)
+    {
+      return games[index]
+    }
+    null
   }
 
   int round(int score) {

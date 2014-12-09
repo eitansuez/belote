@@ -2,9 +2,15 @@ package eitan.belote
 
 import spock.lang.Specification
 
+import static eitan.belote.CardType.Ace
+import static eitan.belote.CardType.Dame
+import static eitan.belote.CardType.Dix
 import static eitan.belote.CardType.Huit
 import static eitan.belote.CardType.Sept
+import static eitan.belote.Suite.Carreau
+import static eitan.belote.Suite.Coeur
 import static eitan.belote.Suite.Pique
+import static eitan.belote.Suite.Trefle
 
 class PlayerSpec extends Specification
 {
@@ -70,4 +76,70 @@ class PlayerSpec extends Specification
     thrown(NoSuchElementException)
   }
 
+  def "player 1 can play any card"()
+  {
+    given:
+    eitan.dealCards(deck.takeCards(8))
+
+    when:
+    def set = eitan.validCards([], Trefle)
+
+    then:
+    set == eitan.hand
+  }
+
+  def "player 2 must follow suite"()
+  {
+    given:
+    eitan.dealCard(new Card(type: Ace, suite: Trefle))
+    eitan.dealCard(new Card(type: Dix, suite: Coeur))
+    eitan.dealCard(new Card(type: Huit, suite: Carreau))
+    eitan.dealCard(new Card(type: Dame, suite: Pique))
+    eitan.dealCard(new Card(type: Dame, suite: Coeur))
+
+    def placed = [new Card(type: Huit, suite: Coeur)]
+
+    when:
+    def set = eitan.validCards(placed, Trefle)
+
+    then:
+    set == [new Card(type: Dix, suite: Coeur), new Card(type: Dame, suite: Coeur)] as HashSet<Card>
+  }
+
+
+  def "player 2 must cut"()
+  {
+    given:
+    eitan.dealCard(new Card(type: Ace, suite: Trefle))
+    eitan.dealCard(new Card(type: Dix, suite: Coeur))
+    eitan.dealCard(new Card(type: Huit, suite: Carreau))
+    eitan.dealCard(new Card(type: Dame, suite: Trefle))
+    eitan.dealCard(new Card(type: Dame, suite: Coeur))
+
+    def placed = [new Card(type: Huit, suite: Pique)]
+
+    when:
+    def set = eitan.validCards(placed, Trefle)
+
+    then:
+    set == [new Card(type: Ace, suite: Trefle), new Card(type: Dame, suite: Trefle)] as HashSet<Card>
+  }
+
+  def "player 2 who cannot follow suite and cannot cut should play any card"()
+  {
+    given:
+    eitan.dealCard(new Card(type: Ace, suite: Coeur))
+    eitan.dealCard(new Card(type: Dix, suite: Coeur))
+    eitan.dealCard(new Card(type: Dame, suite: Coeur))
+    eitan.dealCard(new Card(type: Huit, suite: Carreau))
+    eitan.dealCard(new Card(type: Dame, suite: Carreau))
+
+    def placed = [new Card(type: Huit, suite: Pique)]
+
+    when:
+    def set = eitan.validCards(placed, Trefle)
+
+    then:
+    set == eitan.hand
+  }
 }
