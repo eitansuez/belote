@@ -9,3 +9,6 @@
 
  handle belotte rebelotte
 
+ rules i encoded for cutting/raising are incorrect:
+ if partner cut, then you're not obligated to play an atout.
+ find out either way and update tests & fix implementation accordingly

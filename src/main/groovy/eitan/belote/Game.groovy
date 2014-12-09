@@ -1,5 +1,8 @@
 package eitan.belote
 
+import groovy.util.logging.Log
+
+@Log
 class Game
 {
   Partie partie
@@ -8,7 +11,7 @@ class Game
   Suite atout
   def committedPlayer
   def scores = [:]
-  def rounds = []
+  List<Round> rounds = []
   Player starter
   boolean done  // do i need this field?
 
@@ -30,13 +33,21 @@ class Game
 
   private void dealCards()
   {
+    log.info("Dealing cards..")
     deck.deal(players())
   }
 
-  def envoi(Suite suite, Player p)
+  def envoi(Suite suite, Player player)
   {
-    this.committedPlayer = p
+    this.committedPlayer = player
     this.atout = suite
+    log.info("Game starting with ${player} envoie a ${suite}")
+    dealRemainingCards()
+  }
+
+  private void dealRemainingCards()
+  {
+    log.info("Dealing remaining cards..")
     deck.dealRemaining(players())
   }
 
@@ -57,9 +68,9 @@ class Game
   {
     assert done
 
-    if (scoreFor(team1) > scoreFor(team2)) {
+    if (scores[team1] > scores[team2]) {
       return team1
-    } else if (scoreFor(team2) > scoreFor(team1)) {
+    } else if (scores[team2] > scores[team1]) {
       return team2
     }
     null // a tie implies no winning team
@@ -70,8 +81,70 @@ class Game
     card.points(atout)
   }
 
-  int scoreFor(Team team) {
-    scores[team]
+  void finalizeScore()
+  {
+    assert isLastRound()
+    done = true
+
+    Round lastRound = rounds.last()
+    if (capot()) {
+      addCapotCredit()
+      return
+    }
+    addDixDedere(lastRound.winner.team)
+
+    if (dedans())
+    {
+      scores[committedTeam] = 0
+      scores[otherTeam] = 162
+    }
+  }
+
+  private void addDixDedere(Team team)
+  {
+    scores[team] += 10
+  }
+
+  private void addCapotCredit()
+  {
+    assert capot()
+    Team creditee = ( scores[team2] == 152 ) ? team2 : team1
+    scores[creditee] += 100
+  }
+
+  boolean capot() {
+    scores[team1] == 0 || scores[team2] == 0
+  }
+
+  boolean dedans() {
+    scores[committedTeam] < 81
+  }
+
+  boolean litige() {
+    scores[committedTeam] == 81
+  }
+
+  boolean isLastRound() {
+    rounds.size() == 8
+  }
+
+  void playRandomly()
+  {
+    8.times { playRandomRound() }
+  }
+
+  void playRandomRound()
+  {
+    def cards = []
+
+    Player player = starter
+    4.times {
+      Set<Card> validCards = player.validCards(cards, atout)
+      cards << player.playCard(validCards.first())
+      player = partie.nextPlayer(player)
+    }
+
+    playRound(cards)
   }
 
   void playRound(List<Card> cards)
@@ -101,70 +174,5 @@ class Game
     scores[round.winner.team] += round.points
   }
 
-  void finalizeScore()
-  {
-    assert isLastRound()
-    done = true
 
-    Round lastRound = rounds.last()
-    if (capot()) {
-      addCapotCredit()
-      return
-    }
-    addDixDedere(lastRound.winner.team)
-
-    if (dedans())
-    {
-      scores[committedTeam] = 0
-      scores[otherTeam] = 162
-      return
-    }
-  }
-
-  private void addDixDedere(Team team)
-  {
-    scores[team] += 10
-  }
-
-  private void addCapotCredit()
-  {
-    assert capot()
-    Team creditee = ( scores[team2] == 152 ) ? team2 : team1
-    scores[creditee] += 100
-  }
-
-  boolean capot() {
-    scoreFor(team1) == 0 || scoreFor(team2) == 0
-  }
-
-  boolean dedans() {
-    scoreFor(committedTeam) < 81
-  }
-
-  boolean litige() {
-    scoreFor(committedTeam) == 81
-  }
-
-  boolean isLastRound() {
-    rounds.size() == 8
-  }
-
-  void playRandomRound()
-  {
-    def cards = []
-
-    Player player = starter
-    4.times {
-      Set<Card> validCards = player.validCards(cards, atout)
-      cards << player.playCard(validCards.first())
-      player = partie.nextPlayer(player)
-    }
-
-    playRound(cards)
-  }
-
-  void playRandomly()
-  {
-    8.times { playRandomRound() }
-  }
 }

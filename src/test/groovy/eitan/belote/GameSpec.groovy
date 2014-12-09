@@ -41,8 +41,8 @@ class GameSpec extends Specification
     1 * deck.deal(_)
     eitan.hand.size() == 5
     deck.size() == 12
-    game.scoreFor(game.team1) == 0
-    game.scoreFor(game.team2) == 0
+    game.scores[game.team1] == 0
+    game.scores[game.team2] == 0
   }
 
   def "initially no atout is set"()
@@ -113,8 +113,8 @@ class GameSpec extends Specification
     game.playRound(cards)
 
     then:
-    game.scoreFor(game.team1) == 24
-    game.scoreFor(game.team2) == 0
+    game.scores[game.team1] == 24
+    game.scores[game.team2] == 0
     game.starter == rony
   }
 
@@ -149,7 +149,7 @@ class GameSpec extends Specification
       player.hand.empty
     }
     game.rounds.size() == 8
-    int totalScore = game.scoreFor(game.team1) + game.scoreFor(game.team2)
+    int totalScore = game.scores[game.team1] + game.scores[game.team2]
     totalScore == 162 || totalScore == 250
     game.done
   }
@@ -167,7 +167,7 @@ class GameSpec extends Specification
     game.finalizeScore()
 
     then:
-    game.scoreFor(game.team1) == 152
+    game.scores[game.team1] == 152
     game.winningTeam == game.team1
   }
 
@@ -184,8 +184,8 @@ class GameSpec extends Specification
 
     then:
     game.capot()
-    game.scoreFor(game.team1) == 252
-    game.scoreFor(game.team2) == 0
+    game.scores[game.team1] == 252
+    game.scores[game.team2] == 0
     game.winningTeam == game.team1
   }
 
@@ -203,8 +203,8 @@ class GameSpec extends Specification
 
     then:
     game.dedans()
-    game.scoreFor(game.team1) == 0
-    game.scoreFor(game.team2) == 162
+    game.scores[game.team1] == 0
+    game.scores[game.team2] == 162
     game.winningTeam == game.team2
   }
 
@@ -221,8 +221,8 @@ class GameSpec extends Specification
     game.finalizeScore()
 
     then:
-    game.scoreFor(game.team1) == 81
-    game.scoreFor(game.team2) == 81
+    game.scores[game.team1] == 81
+    game.scores[game.team2] == 81
     game.litige()
     game.winningTeam == null
   }

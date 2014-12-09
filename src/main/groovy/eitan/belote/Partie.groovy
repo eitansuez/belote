@@ -1,5 +1,8 @@
 package eitan.belote
 
+import groovy.util.logging.Log
+
+@Log
 class Partie
 {
   Team team1, team2
@@ -9,6 +12,7 @@ class Partie
 
   def begin()
   {
+    log.info("La partie commence avec teams: ${team1} & ${team2}")
     initScores()
   }
 
@@ -27,6 +31,7 @@ class Partie
     def game = new Game(partie: this)
     starter = nextStarter()
     games << game
+    log.info("Game #${games.size()} about to begin..")
     game
   }
 
