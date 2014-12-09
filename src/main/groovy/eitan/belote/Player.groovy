@@ -31,70 +31,67 @@ class Player
     throw new NoSuchElementException("Player doesn't have card ${card} to play!")
   }
 
-  Card validCard(List<Card> placed, Suite atout)
+  Set<Card> validCards(List<Card> placed, Suite atout)
   {
-    Card anyCard = hand.first()
     if (placed.empty)
     {
-      return anyCard
+      return hand
     }
 
     Suite requested = placed.first().suite
 
     if (requested == atout)
     {
-      Card higherAtout = findHigherAtout(placed, atout)
-      if (higherAtout != null) {
-        return higherAtout
+      Set<Card> higherAtouts = findHigherAtouts(placed, atout)
+      if (higherAtouts) {
+        return higherAtouts
       }
 
-      Card anyAtout = hand.find { card ->
+      Set<Card> allAtouts = hand.findAll { card ->
         card.suite == atout
       }
-      if (anyAtout != null) {
-        return anyAtout
+      if (allAtouts) {
+        return allAtouts
       }
-      return anyCard
+      return hand
     }
 
-    Card matchingSuite = hand.find { card -> card.suite == requested }
-    if (matchingSuite != null) {
+    Set<Card> matchingSuite = hand.findAll { card -> card.suite == requested }
+    if (matchingSuite) {
       return matchingSuite
     }
 
     if (haveAtout(atout))
     {
       if (placed.find { card -> card.suite == atout }) {
-        Card higherAtout = findHigherAtout(placed, atout)
-        if (higherAtout != null) {
-          return higherAtout
+        Set<Card> higherAtouts = findHigherAtouts(placed, atout)
+        if (higherAtouts) {
+          return higherAtouts
         }
       }
 
-      Card anyAtout = hand.find { card ->
+      Set<Card> allAtouts = hand.findAll { card ->
         card.suite == atout
       }
-      if (anyAtout != null) {
-        return anyAtout
+      if (allAtouts) {
+        return allAtouts
       }
 
     }
 
-    return anyCard
-
+    hand
   }
 
-  private Card findHigherAtout(List<Card> placed, Suite atout)
+  private Set<Card> findHigherAtouts(List<Card> placed, Suite atout)
   {
     Card highestAtout = placed.findAll { card -> card.suite == atout }.max { card -> card.points(atout) }
-    Card higherAtout = hand.find { card ->
+    hand.findAll { card ->
       (card.suite == atout) && (card.points(atout) > highestAtout.points(atout))
     }
-    higherAtout
   }
 
   private boolean haveAtout(Suite atout)
   {
-    hand.find { card -> card.suite == atout } != null
+    hand.find { card -> card.suite == atout }
   }
 }

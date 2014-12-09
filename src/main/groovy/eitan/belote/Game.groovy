@@ -155,8 +155,8 @@ class Game
 
     Player player = starter
     4.times {
-      Card validCard = player.validCard(cards, atout)
-      cards << player.playCard(validCard)
+      Set<Card> validCards = player.validCards(cards, atout)
+      cards << player.playCard(validCards.first())
       player = partie.nextPlayer(player)
     }
 
