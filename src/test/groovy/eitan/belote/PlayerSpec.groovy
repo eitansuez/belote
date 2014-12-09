@@ -6,6 +6,7 @@ import static eitan.belote.CardType.Ace
 import static eitan.belote.CardType.Dame
 import static eitan.belote.CardType.Dix
 import static eitan.belote.CardType.Huit
+import static eitan.belote.CardType.Roi
 import static eitan.belote.CardType.Sept
 import static eitan.belote.Suite.Carreau
 import static eitan.belote.Suite.Coeur
@@ -138,6 +139,97 @@ class PlayerSpec extends Specification
 
     when:
     def set = eitan.validCards(placed, Trefle)
+
+    then:
+    set == eitan.hand
+  }
+
+  def "player 3 must raise cut of previous player"()
+  {
+    given:
+    eitan.dealCard(new Card(type: Ace, suite: Trefle))
+    eitan.dealCard(new Card(type: Roi, suite: Trefle))
+    eitan.dealCard(new Card(type: Sept, suite: Trefle))
+    eitan.dealCard(new Card(type: Huit, suite: Carreau))
+    eitan.dealCard(new Card(type: Dame, suite: Coeur))
+
+    def placed = [new Card(type: Huit, suite: Pique), new Card(type: Dame, suite: Trefle)]
+
+    when:
+    def set = eitan.validCards(placed, Trefle)
+
+    then:
+    set == [new Card(type: Ace, suite: Trefle), new Card(type: Roi, suite: Trefle)] as HashSet<Card>
+  }
+
+  def "player 3 cannot raise cut, but must play an atout nonetheless"()
+  {
+    given:
+    eitan.dealCard(new Card(type: Ace, suite: Coeur))
+    eitan.dealCard(new Card(type: Roi, suite: Coeur))
+    eitan.dealCard(new Card(type: Sept, suite: Trefle))
+    eitan.dealCard(new Card(type: Huit, suite: Carreau))
+    eitan.dealCard(new Card(type: Dame, suite: Coeur))
+
+    def placed = [new Card(type: Huit, suite: Pique), new Card(type: Dame, suite: Trefle)]
+
+    when:
+    def set = eitan.validCards(placed, Trefle)
+
+    then:
+    set == [new Card(type: Sept, suite: Trefle)] as HashSet<Card>
+  }
+
+  def "a round of atout, player 3 must raise"()
+  {
+    given:
+    eitan.dealCard(new Card(type: Ace, suite: Trefle))
+    eitan.dealCard(new Card(type: Roi, suite: Trefle))
+    eitan.dealCard(new Card(type: Sept, suite: Trefle))
+    eitan.dealCard(new Card(type: Huit, suite: Carreau))
+    eitan.dealCard(new Card(type: Dame, suite: Coeur))
+
+    def placed = [new Card(type: Huit, suite: Trefle), new Card(type: Dame, suite: Trefle)]
+
+    when:
+    def set = eitan.validCards(placed, Trefle)
+
+    then:
+    set == [new Card(type: Roi, suite: Trefle), new Card(type: Ace, suite: Trefle)] as HashSet<Card>
+  }
+
+  def "a round of atout, player 3 cannot raise"()
+  {
+    given:
+    eitan.dealCard(new Card(type: Dame, suite: Trefle))
+    eitan.dealCard(new Card(type: Roi, suite: Trefle))
+    eitan.dealCard(new Card(type: Sept, suite: Trefle))
+    eitan.dealCard(new Card(type: Huit, suite: Carreau))
+    eitan.dealCard(new Card(type: Dame, suite: Coeur))
+
+    def placed = [new Card(type: Huit, suite: Trefle), new Card(type: Ace, suite: Trefle)]
+
+    when:
+    def set = eitan.validCards(placed, Trefle)
+
+    then:
+    set == [new Card(type: Roi, suite: Trefle), new Card(type: Sept, suite: Trefle),
+            new Card(type: Dame, suite: Trefle)] as HashSet<Card>
+  }
+
+  def "a round of atout, player 3 doesn't have any"()
+  {
+    given:
+    eitan.dealCard(new Card(type: Dame, suite: Trefle))
+    eitan.dealCard(new Card(type: Roi, suite: Trefle))
+    eitan.dealCard(new Card(type: Sept, suite: Trefle))
+    eitan.dealCard(new Card(type: Huit, suite: Carreau))
+    eitan.dealCard(new Card(type: Dame, suite: Coeur))
+
+    def placed = [new Card(type: Huit, suite: Pique), new Card(type: Ace, suite: Pique)]
+
+    when:
+    def set = eitan.validCards(placed, Pique)
 
     then:
     set == eitan.hand
