@@ -3,12 +3,12 @@ package eitan.belote
 class Player
 {
   String name
-  List<Card> cards = new ArrayList<Card>()
+  Set<Card> hand = [] as HashSet<Card>
   Team team
 
   def dealCard(Card card)
   {
-    cards << card
+    hand << card
   }
 
   def dealCards(List<Card> cards)
@@ -18,24 +18,14 @@ class Player
     }
   }
 
-  def hand()
-  {
-    cards
-  }
-
   @Override
   String toString() {
     "Player: $name"
   }
 
-  def playCard(int index)
-  {
-    cards.remove(index)
-  }
-
   def playCard(Card card)
   {
-    if (cards.remove(card)) {
+    if (hand.remove(card)) {
       return card
     }
     throw new NoSuchElementException("Player doesn't have card ${card} to play!")
@@ -43,7 +33,7 @@ class Player
 
   Card validCard(List<Card> placed, Suite atout)
   {
-    Card anyCard = cards.first()
+    Card anyCard = hand.first()
     if (placed.empty)
     {
       return anyCard
@@ -58,7 +48,7 @@ class Player
         return higherAtout
       }
 
-      Card anyAtout = cards.find { card ->
+      Card anyAtout = hand.find { card ->
         card.suite == atout
       }
       if (anyAtout != null) {
@@ -67,7 +57,7 @@ class Player
       return anyCard
     }
 
-    Card matchingSuite = cards.find { card -> card.suite == requested }
+    Card matchingSuite = hand.find { card -> card.suite == requested }
     if (matchingSuite != null) {
       return matchingSuite
     }
@@ -81,7 +71,7 @@ class Player
         }
       }
 
-      Card anyAtout = cards.find { card ->
+      Card anyAtout = hand.find { card ->
         card.suite == atout
       }
       if (anyAtout != null) {
@@ -97,7 +87,7 @@ class Player
   private Card findHigherAtout(List<Card> placed, Suite atout)
   {
     Card highestAtout = placed.findAll { card -> card.suite == atout }.max { card -> card.points(atout) }
-    Card higherAtout = cards.find { card ->
+    Card higherAtout = hand.find { card ->
       (card.suite == atout) && (card.points(atout) > highestAtout.points(atout))
     }
     higherAtout
@@ -105,6 +95,6 @@ class Player
 
   private boolean haveAtout(Suite atout)
   {
-    cards.find { card -> card.suite == atout } != null
+    hand.find { card -> card.suite == atout } != null
   }
 }

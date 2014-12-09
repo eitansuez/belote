@@ -24,7 +24,7 @@ class PlayerSpec extends Specification
 
     then:
     deck.size() == 31
-    eitan.cards.size() == 1
+    eitan.hand.size() == 1
   }
 
   def "player can be dealt multiple cards"()
@@ -34,20 +34,20 @@ class PlayerSpec extends Specification
 
     then:
     deck.size() == 29
-    eitan.hand().size() == 3
+    eitan.hand.size() == 3
   }
 
-  def "player can play a card by index"()
+  def "player can play a card"()
   {
     given:
     eitan.dealCards(deck.takeCards(8))
-    def firstCard = eitan.hand()[0]
+    def firstCard = eitan.hand.first()
 
     when:
-    def played = eitan.playCard(0)
+    def played = eitan.playCard(firstCard)
 
     then:
-    eitan.hand().size() == 7
+    eitan.hand.size() == 7
     played == firstCard
   }
 

@@ -39,7 +39,7 @@ class GameSpec extends Specification
 
     then:
     1 * deck.deal(_)
-    eitan.cards.size() == 5
+    eitan.hand.size() == 5
     deck.size() == 12
     game.scoreFor(game.team1) == 0
     game.scoreFor(game.team2) == 0
@@ -129,7 +129,7 @@ class GameSpec extends Specification
 
     then:
     [eitan, rony, corinne, johnny].each { player ->
-      player.cards.size() == 4
+      player.hand.size() == 4
     }
     !game.done
   }
@@ -146,7 +146,7 @@ class GameSpec extends Specification
 
     then:
     [eitan, rony, corinne, johnny].each { player ->
-      player.hand().empty
+      player.hand.empty
     }
     game.rounds.size() == 8
     int totalScore = game.scoreFor(game.team1) + game.scoreFor(game.team2)
