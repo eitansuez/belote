@@ -1,3 +1,22 @@
+ finish the logging:
+
+ extend to partie:  show partie score as move along
+ would like card placement wording to be semantic:  "Eitan cuts with .."
+  or "Johnny follows suite with .."
+  or "Corinne montes with .."
+
+ want test that plays a full partie to 1000 and displays winner
+
+ likewise should state at end of each game "stat" such as:
+  - team x remporte after having committed to trefle
+  or
+  - team x dedans
+  - or team y capot
+  - or team x litige
+
+rarities though possibilities:  envoyeur is capot
+what happens if two litige d'affiles?
+
 
  look into fsm's in groovy
  build out fsm for game, partie

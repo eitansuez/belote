@@ -121,6 +121,13 @@ class Game
       scores[committedTeam] = 0
       scores[otherTeam] = 162
     }
+
+    showScore()
+  }
+
+  private void showScore()
+  {
+    log.info("${team1}: ${scores[team1]} / ${team2}: ${scores[team2]}")
   }
 
   private void addDixDedere(Team team)
@@ -160,6 +167,7 @@ class Game
   {
     def cards = []
 
+    log.info("Round #${rounds.size()+1}")
     def players = withEachPlayer { player ->
       Set<Card> validCards = player.validCards(cards, atout)
       def card = player.playCard(validCards.first())
