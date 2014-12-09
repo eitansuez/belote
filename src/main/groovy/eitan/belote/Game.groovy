@@ -35,6 +35,17 @@ class Game
   {
     log.info("Dealing cards..")
     deck.deal(players())
+    showPlayerCards()
+  }
+
+  private List<Player> showPlayerCards()
+  {
+    withEachPlayer { Player player ->
+      log.info("${player}'s hand:")
+      player.hand.each { Card card ->
+        log.info("\t${card}")
+      }
+    }
   }
 
   def envoi(Suite suite, Player player)
@@ -49,11 +60,23 @@ class Game
   {
     log.info("Dealing remaining cards..")
     deck.dealRemaining(players())
+    showPlayerCards()
   }
 
-  private Player[] players()
+  List<Player> players()
   {
-    [team1.first, team2.first, team1.second, team2.second]
+    withEachPlayer { player -> }
+  }
+
+  List<Player> withEachPlayer(Closure closure) {
+    List<Player> players = []
+    Player player = starter
+    4.times {
+      closure.call(player)
+      players << player
+      player = partie.nextPlayer(player)
+    }
+    players
   }
 
   def getCommittedTeam()
@@ -135,14 +158,13 @@ class Game
 
   void playRandomRound()
   {
-    def cards = [], players = []
+    def cards = []
 
-    Player player = starter
-    4.times {
+    def players = withEachPlayer { player ->
       Set<Card> validCards = player.validCards(cards, atout)
-      cards << player.playCard(validCards.first())
-      players << player
-      player = partie.nextPlayer(player)
+      def card = player.playCard(validCards.first())
+      cards << card
+      log.info("${player} plays ${card}")
     }
 
     playRound(cards, players)

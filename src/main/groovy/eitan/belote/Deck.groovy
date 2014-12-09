@@ -2,7 +2,7 @@ package eitan.belote
 
 class Deck
 {
-  List cards = []
+  List<Card> cards = []
 
   Deck() {
     Suite.values().each { suite ->
@@ -29,7 +29,7 @@ class Deck
     dealt
   }
 
-  def deal(Player... players)
+  def deal(List<Player> players)
   {
     assert players?.size() == 4
 
@@ -42,7 +42,7 @@ class Deck
     }
   }
 
-  def dealRemaining(Player... players)
+  def dealRemaining(List<Player> players)
   {
     assert size() == 12
 

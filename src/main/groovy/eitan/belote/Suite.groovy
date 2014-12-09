@@ -4,7 +4,7 @@ enum Suite
 {
   Coeur, Carreau, Pique, Trefle
 
-  List cards = []
+  List<Card> cards = []
 
   Suite() {
     CardType.values().each { cardType ->

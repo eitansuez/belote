@@ -1,5 +1,8 @@
 package eitan.belote
 
+import groovy.util.logging.Log
+
+@Log
 class Round
 {
   List<Card> cards
@@ -24,6 +27,7 @@ class Round
       cards.findAll { card -> card.suite == requested }.max { Card card -> card.points() }
 
     winner = players[cards.indexOf(winningCard)]
+    log.info(">>${winner} wins hand (${points} points)\n")
   }
 
 }

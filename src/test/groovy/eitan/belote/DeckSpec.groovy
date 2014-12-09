@@ -58,7 +58,7 @@ class DeckSpec extends Specification
   def "should deal a deck (first phase)"()
   {
     when:
-    deck.deal(eitan, rony, johnny, corinne)
+    deck.deal([eitan, rony, johnny, corinne])
 
     then:
     deck.size() == 12
@@ -67,10 +67,10 @@ class DeckSpec extends Specification
   def "should be able to deal remainder after selection phase"()
   {
     given:
-    deck.deal(eitan, rony, johnny, corinne)
+    deck.deal([eitan, rony, johnny, corinne])
 
     when:
-    deck.dealRemaining(eitan, rony, johnny, corinne)
+    deck.dealRemaining([eitan, rony, johnny, corinne])
 
     then:
     deck.cards.empty

@@ -231,4 +231,49 @@ class GameSpec extends Specification
     game.winningTeam == null
   }
 
+  def "players ordering from eitan"()
+  {
+    when:
+    game.team1 = partie.team1
+    game.team2 = partie.team2
+    game.starter = eitan
+
+    then:
+    game.players() == [eitan, johnny, rony, corinne]
+  }
+
+  def "players ordering from johnny"()
+  {
+    when:
+    game.team1 = partie.team1
+    game.team2 = partie.team2
+    game.starter = johnny
+
+    then:
+    game.players() == [johnny, rony, corinne, eitan]
+  }
+
+  def "players ordering from rony"()
+  {
+    when:
+    game.team1 = partie.team1
+    game.team2 = partie.team2
+    game.starter = rony
+
+    then:
+    game.players() == [rony, corinne, eitan, johnny]
+  }
+
+  def "players ordering from corinne"()
+  {
+    when:
+    game.team1 = partie.team1
+    game.team2 = partie.team2
+    game.starter = corinne
+
+    then:
+    game.players() == [corinne, eitan, johnny, rony]
+  }
+
+
 }
