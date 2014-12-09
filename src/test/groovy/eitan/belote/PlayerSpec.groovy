@@ -62,7 +62,7 @@ class PlayerSpec extends Specification
   def "toString is meaningful"()
   {
     expect:
-    eitan.toString() == "Player: Eitan"
+    eitan.toString() == "Eitan"
   }
 
   def "attempt to play a card not in player's hand should throw an exception"()

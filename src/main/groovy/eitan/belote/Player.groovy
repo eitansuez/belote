@@ -20,7 +20,7 @@ class Player
 
   @Override
   String toString() {
-    "Player: $name"
+    name
   }
 
   def playCard(Card card)

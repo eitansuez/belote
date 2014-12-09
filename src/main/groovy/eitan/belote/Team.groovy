@@ -19,6 +19,6 @@ class Team
 
   @Override
   String toString() {
-    "Team: ${first.name}/${second.name}"
+    "${first}-${second}"
   }
 }

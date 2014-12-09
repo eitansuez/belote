@@ -20,9 +20,9 @@ class TeamSpec extends Specification
     team.second.name == 'jane'
   }
 
-  def "team properly identified via its toString"()
+  def "team toString cites members"()
   {
     expect:
-    team.toString() == "Team: john/jane"
+    team.toString() == "john-jane"
   }
 }

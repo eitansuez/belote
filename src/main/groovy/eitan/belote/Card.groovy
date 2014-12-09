@@ -20,6 +20,6 @@ class Card
 
   @Override
   String toString() {
-    "${type.name()} de ${suite.name()}"
+    "${type} de ${suite}"
   }
 }

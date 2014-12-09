@@ -4,10 +4,10 @@ import spock.lang.Specification
 
 class SuiteSpec extends Specification
 {
-  def "check toString"()
+  def "toString should return suite name"()
   {
     expect:
-    Suite.Trefle.toString() == "Suite: Trefle"
+    Suite.Trefle.toString() == "Trefle"
   }
 
 }

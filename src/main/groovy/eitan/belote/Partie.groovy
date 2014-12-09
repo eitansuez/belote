@@ -12,7 +12,7 @@ class Partie
 
   def begin()
   {
-    log.info("La partie commence avec teams: ${team1} & ${team2}")
+    log.info("La partie commence avec teams: ${team1} vs ${team2}")
     initScores()
   }
 
