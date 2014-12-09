@@ -29,5 +29,11 @@ what happens if two litige d'affiles?
  handle belotte rebelotte
 
  rules i encoded for cutting/raising are incorrect:
- if partner cut, then you're not obligated to play an atout.
- find out either way and update tests & fix implementation accordingly
+   if partner cut, then you're not obligated to play an atout.
+   find out either way and update tests & fix implementation accordingly
+
+ start refactoring implementation of "random play" as a pluggable strategy
+ then come up with a more intelligent strategy and try it out for an ai
+
+ then setup three ai's and play with them to see how well this works out.
+ or.. come up with an algorithm to teach behavior based on desired outcomes.
