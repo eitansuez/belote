@@ -1,47 +1,63 @@
  finish the logging:
-
- extend to partie:  show partie score as move along
- would like card placement wording to be semantic:  "Eitan cuts with .."
-  or "Johnny follows suite with .."
-  or "Corinne montes with .."
-
  want a test that plays a full partie to 1000 and displays winner
-
- likewise should state at end of each game "stat" such as:
-  - team x remporte after having committed to trefle
-  or
-  - team x dedans
-  - or team y capot
-  - or team x litige
-
-rarities though possibilities:  envoyeur is capot
-what happens if two litige d'affiles?
-
------
- look into fsm's in groovy
- build out fsm for game, partie
-
------
- flesh out the development of a hand, and the play of a hand in turns
-
------
- flesh out the envoi selection process/phase:
-   first selection round, second, fact that game may end without any hands played if no one envoie's
-
------
- handle belotte rebelotte
+ extend to partie:  show partie score as move along
 
 -----bugs:
  rules for valid cards completely ignore the notion of master:
- 
+
  a. if not requesting atout, and don't have matching suite,
     but partner is master then don't have to cut
 
------
+-----rarities though possibilities:
+- envoyeur is capot
+- what happens if two litige d'affiles? multiple possibilities:
+ - alternate:  team 1 litige then team 2 litige
+ - serial:  team 1 litige then team 1 litige again
 
+
+-----play strategies:
  start refactoring implementation of "random play" as a pluggable strategy
------
- then come up with a more intelligent strategy and try it out for an ai
------
+ perhaps introduce a second, more logical playing strategy that will naively play highest cards first if have them?
+
+----logging as cross-cutting concern:
+- perhaps should be a publish/subscribe model
+..where game engine publishes events that update a user interface
+
+-----fsm's
+ - look into fsm's in groovy
+ - build out fsm for game, partie?
+ - flesh out the development of a hand, and the play of a hand in turns
+ - flesh out the envoi selection process/phase:
+   first selection round, second, fact that game may end without any hands played if no one envoie's
+
+
+----ui:
+- in the other direction, calls into the engine move it from state to state
+  can be command line, remote, etc..
+
+button -> begin partie
+button -> start game
+button -> envoie/pass
+button:  play card x
+some buttons will be disabled.  e.g. player 2 cannot play card x if it's not their turn
+also player 2 can play only from valid cardset.
+
+-----wording:
+ make card placement log wording to be semantic:  "Eitan cuts with .."
+  or "Johnny follows suite with .."
+  or "Corinne montes with .."
+
+ likewise, should state at end of each game "stat" such as:
+  - team x wins after having committed to trefle
+  - team x dedans
+  - team y capot
+  - team x litige
+  - team x wins, gaining back xx points which were litige from the previous partie
+  - team x loses, forfeiting its xx points which were litige from the previous partie
+
+-----handle belotte rebelotte
+
+-----play strategies:
+ introduce a more intelligent strategy and try it out for an ai
  then setup three ai's and play with them to see how well this works out.
  or.. come up with an algorithm to teach behavior based on desired outcomes.
