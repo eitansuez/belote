@@ -22,6 +22,85 @@ class RoundSpec extends Specification
     players = [eitan, johnny, corinne, rony]
   }
 
+  def "can tell round size"()
+  {
+    when:
+    def cards = [
+        new Card(type: CardType.Ace, suite: Coeur),
+        new Card(type: CardType.Dix, suite: Coeur),
+        new Card(type: CardType.Sept, suite: Coeur),
+        new Card(type: CardType.Valet, suite: Coeur)
+    ]
+    def round = new Round(cards: cards, players: players, atout: Trefle)
+
+    then:
+    round.size() == 4
+  }
+
+  def "master card for a round is first card when round size is 1"()
+  {
+    when:
+    def cards = [
+        new Card(type: CardType.Ace, suite: Coeur)
+    ]
+    def round = new Round(cards: cards, players: [eitan], atout: Trefle)
+
+    then:
+    round.size() == 1
+
+    and:
+    round.masterCard() == cards.first()
+    round.master() == eitan
+  }
+
+  def "master card in a round should be strongest when of same suit"()
+  {
+    when:
+    def cards = [
+        new Card(type: CardType.Ace, suite: Coeur),
+        new Card(type: CardType.Dix, suite: Coeur),
+        new Card(type: CardType.Sept, suite: Coeur),
+        new Card(type: CardType.Valet, suite: Coeur)
+    ]
+    def round = new Round(cards: cards, players: players, atout: Trefle)
+
+    then:
+    round.masterCard() == cards.first()
+    round.master() == eitan
+  }
+
+  def "master card in a round should be strongest when of same suit, which happens to be atout"()
+  {
+    when:
+    def cards = [
+        new Card(type: CardType.Ace, suite: Coeur),
+        new Card(type: CardType.Dix, suite: Coeur),
+        new Card(type: CardType.Sept, suite: Coeur),
+        new Card(type: CardType.Valet, suite: Coeur)
+    ]
+    def round = new Round(cards: cards, players: players, atout: Coeur)
+
+    then:
+    round.masterCard() == cards.last()
+    round.master() == rony
+  }
+
+  def "master card in a round where cut is highest cutter"()
+  {
+    when:
+    def cards = [
+        new Card(type: CardType.Ace, suite: Coeur),
+        new Card(type: CardType.Dix, suite: Pique),
+        new Card(type: CardType.Sept, suite: Pique),
+        new Card(type: CardType.Valet, suite: Coeur)
+    ]
+    def round = new Round(cards: cards, players: players, atout: Pique)
+
+    then:
+    round.masterCard() == cards[1]
+    round.master() == johnny
+  }
+
   def "mono-suite round, largest card wins"() {
     given:
     def cards = [

@@ -16,12 +16,15 @@ import static eitan.belote.Suite.Trefle
 class PlayerSpec extends Specification
 {
   Deck deck
-  Player eitan
+  Player eitan, rony, johnny, corinne
 
   def setup()
   {
     deck = new Deck()
     eitan = new Player(name: "Eitan")
+    rony = new Player(name: "Rony")
+    johnny = new Player(name: "Johnny")
+    corinne = new Player(name: "Corinne")
   }
 
   def "player can be dealt a card"()
@@ -74,7 +77,7 @@ class PlayerSpec extends Specification
     eitan.playCard(new Card(suite: Pique, type: Huit))
 
     then:
-    thrown(NoSuchElementException)
+    thrown(AssertionError)
   }
 
   def "player 1 can play any card"()
@@ -83,7 +86,8 @@ class PlayerSpec extends Specification
     eitan.dealCards(deck.takeCards(8))
 
     when:
-    def set = eitan.validCards([], Trefle)
+    def round = new Round(cards: [], players: [], atout: Trefle)
+    def set = eitan.validCards(round)
 
     then:
     set == eitan.hand
@@ -101,7 +105,8 @@ class PlayerSpec extends Specification
     def placed = [new Card(type: Huit, suite: Coeur)]
 
     when:
-    def set = eitan.validCards(placed, Trefle)
+    def round = new Round(cards: placed, players: [corinne], atout: Trefle)
+    def set = eitan.validCards(round)
 
     then:
     set == [new Card(type: Dix, suite: Coeur), new Card(type: Dame, suite: Coeur)] as HashSet<Card>
@@ -120,7 +125,8 @@ class PlayerSpec extends Specification
     def placed = [new Card(type: Huit, suite: Pique)]
 
     when:
-    def set = eitan.validCards(placed, Trefle)
+    def round = new Round(cards: placed, players: [corinne], atout: Trefle)
+    def set = eitan.validCards(round)
 
     then:
     set == [new Card(type: Ace, suite: Trefle), new Card(type: Dame, suite: Trefle)] as HashSet<Card>
@@ -138,7 +144,8 @@ class PlayerSpec extends Specification
     def placed = [new Card(type: Huit, suite: Pique)]
 
     when:
-    def set = eitan.validCards(placed, Trefle)
+    def round = new Round(cards: placed, players: [corinne], atout: Trefle)
+    def set = eitan.validCards(round)
 
     then:
     set == eitan.hand
@@ -156,7 +163,8 @@ class PlayerSpec extends Specification
     def placed = [new Card(type: Huit, suite: Pique), new Card(type: Dame, suite: Trefle)]
 
     when:
-    def set = eitan.validCards(placed, Trefle)
+    def round = new Round(cards: placed, players: [rony, corinne], atout: Trefle)
+    def set = eitan.validCards(round)
 
     then:
     set == [new Card(type: Ace, suite: Trefle), new Card(type: Roi, suite: Trefle)] as HashSet<Card>
@@ -174,7 +182,8 @@ class PlayerSpec extends Specification
     def placed = [new Card(type: Huit, suite: Pique), new Card(type: Dame, suite: Trefle)]
 
     when:
-    def set = eitan.validCards(placed, Trefle)
+    def round = new Round(cards: placed, players: [rony, corinne], atout: Trefle)
+    def set = eitan.validCards(round)
 
     then:
     set == [new Card(type: Sept, suite: Trefle)] as HashSet<Card>
@@ -192,7 +201,8 @@ class PlayerSpec extends Specification
     def placed = [new Card(type: Huit, suite: Trefle), new Card(type: Dame, suite: Trefle)]
 
     when:
-    def set = eitan.validCards(placed, Trefle)
+    def round = new Round(cards: placed, players: [rony, corinne], atout: Trefle)
+    def set = eitan.validCards(round)
 
     then:
     set == [new Card(type: Roi, suite: Trefle), new Card(type: Ace, suite: Trefle)] as HashSet<Card>
@@ -210,7 +220,8 @@ class PlayerSpec extends Specification
     def placed = [new Card(type: Huit, suite: Trefle), new Card(type: Ace, suite: Trefle)]
 
     when:
-    def set = eitan.validCards(placed, Trefle)
+    def round = new Round(cards: placed, players: [rony, corinne], atout: Trefle)
+    def set = eitan.validCards(round)
 
     then:
     set == [new Card(type: Roi, suite: Trefle), new Card(type: Sept, suite: Trefle),
@@ -229,7 +240,8 @@ class PlayerSpec extends Specification
     def placed = [new Card(type: Huit, suite: Pique), new Card(type: Ace, suite: Pique)]
 
     when:
-    def set = eitan.validCards(placed, Pique)
+    def round = new Round(cards: placed, players: [rony, corinne], atout: Pique)
+    def set = eitan.validCards(round)
 
     then:
     set == eitan.hand

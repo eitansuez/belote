@@ -40,7 +40,7 @@ class Game
 
   private List<Player> showPlayerCards()
   {
-    withEachPlayer { Player player ->
+    withEachPlayer { Player player, players ->
       log.info("${player}'s hand:")
       player.hand.each { Card card ->
         log.info("\t${card}")
@@ -65,14 +65,14 @@ class Game
 
   List<Player> players()
   {
-    withEachPlayer { player -> }
+    withEachPlayer { player, players -> }
   }
 
   List<Player> withEachPlayer(Closure closure) {
     List<Player> players = []
     Player player = starter
     4.times {
-      closure.call(player)
+      closure.call(player, players)
       players << player
       player = partie.nextPlayer(player)
     }
@@ -182,28 +182,26 @@ class Game
     def cards = []
 
     log.info("Round #${rounds.size()+1}")
-    def players = withEachPlayer { player ->
-      Set<Card> validCards = player.validCards(cards, atout)
+    def players = withEachPlayer { player, players ->
+      def round = new Round(cards: cards, players: players, atout: atout)
+      Set<Card> validCards = player.validCards(round)
       def card = player.playCard(validCards.first())
       cards << card
       log.info("${player} plays ${card}")
     }
 
-    playRound(cards, players)
-  }
-
-  void playRound(List<Card> cards, List<Player> players)
-  {
     assert cards.size() == 4
     assert players.size() == 4
 
     def round = new Round(cards: cards, players: players, atout: atout)
+    playRound(round)
+  }
+
+  void playRound(Round round)
+  {
     round.resolve()
-
     rounds << round
-
     updateScore(round)
-
     if (!isLastRound())
     {
       starter = round.winner

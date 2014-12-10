@@ -5,6 +5,9 @@
  a. if not requesting atout, and don't have matching suite,
     but partner is master then don't have to cut
 
+
+----fix spelling:  suite -> suit
+
 -----rarities though possibilities:
 - envoyeur is capot
 - what happens if two litige d'affiles? multiple possibilities:
@@ -19,6 +22,8 @@
 ----logging as cross-cutting concern:
 - perhaps should be a publish/subscribe model
 ..where game engine publishes events that update a user interface
+
+-- research pubsub in groovy
 
 -----fsm's
  - look into fsm's in groovy

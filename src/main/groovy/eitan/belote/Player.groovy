@@ -25,30 +25,29 @@ class Player
 
   def playCard(Card card)
   {
+    assert hand.contains(card)
+
     if (hand.remove(card)) {
       return card
     }
-    throw new NoSuchElementException("Player doesn't have card ${card} to play!")
   }
 
-  Set<Card> validCards(List<Card> placed, Suite atout)
+  Set<Card> validCards(Round round)
   {
-    if (placed.empty)
+    if (round.empty)
     {
       return hand
     }
 
-    Suite requested = placed.first().suite
-
-    if (requested == atout)
+    if (round.requestedAtout())
     {
-      Set<Card> higherAtouts = findHigherAtouts(placed, atout)
+      Set<Card> higherAtouts = findHigherAtouts(round)
       if (higherAtouts) {
         return higherAtouts
       }
 
       Set<Card> allAtouts = hand.findAll { card ->
-        card.suite == atout
+        card.suite == round.atout
       }
       if (allAtouts) {
         return allAtouts
@@ -56,22 +55,23 @@ class Player
       return hand
     }
 
-    Set<Card> matchingSuite = hand.findAll { card -> card.suite == requested }
+    Set<Card> matchingSuite = hand.findAll { card -> card.suite == round.requestedSuite() }
     if (matchingSuite) {
       return matchingSuite
     }
 
-    if (haveAtout(atout))
+    if (haveAtout(round.atout))
     {
-      if (placed.find { card -> card.suite == atout }) {
-        Set<Card> higherAtouts = findHigherAtouts(placed, atout)
+      if (round.containsAtout())
+      {
+        Set<Card> higherAtouts = findHigherAtouts(round)
         if (higherAtouts) {
           return higherAtouts
         }
       }
 
       Set<Card> allAtouts = hand.findAll { card ->
-        card.suite == atout
+        card.suite == round.atout
       }
       if (allAtouts) {
         return allAtouts
@@ -82,9 +82,10 @@ class Player
     hand
   }
 
-  private Set<Card> findHigherAtouts(List<Card> placed, Suite atout)
+  private Set<Card> findHigherAtouts(Round round)
   {
-    Card highestAtout = placed.findAll { card -> card.suite == atout }.max { card -> card.points(atout) }
+    Suite atout = round.atout
+    Card highestAtout = round.highest(round.atouts())
     hand.findAll { card ->
       (card.suite == atout) && (card.points(atout) > highestAtout.points(atout))
     }

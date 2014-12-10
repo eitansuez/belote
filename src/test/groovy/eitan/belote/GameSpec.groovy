@@ -114,7 +114,7 @@ class GameSpec extends Specification
         new Card(type: Dame, suite: Coeur)
     ]
 
-    game.playRound(cards, players)
+    game.playRound(new Round(cards: cards, players: players, atout: game.atout))
 
     then:
     game.scores[game.team1] == 24
