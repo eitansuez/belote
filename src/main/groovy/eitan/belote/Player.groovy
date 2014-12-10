@@ -32,6 +32,11 @@ class Player
     }
   }
 
+  boolean isMyPartner(Player player)
+  {
+    player.team == team
+  }
+
   Set<Card> validCards(Round round)
   {
     if (round.empty)
@@ -60,7 +65,9 @@ class Player
       return matchingSuit
     }
 
-    if (haveAtout(round.atout))
+    boolean haveToCut = (! isMyPartner(round.master()) )
+
+    if (haveToCut && haveAtout(round.atout))
     {
       if (round.containsAtout())
       {

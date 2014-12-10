@@ -17,14 +17,19 @@ class PlayerSpec extends Specification
 {
   Deck deck
   Player eitan, rony, johnny, corinne
+  Team team1, team2
 
   def setup()
   {
     deck = new Deck()
+
     eitan = new Player(name: "Eitan")
     rony = new Player(name: "Rony")
     johnny = new Player(name: "Johnny")
     corinne = new Player(name: "Corinne")
+
+    team1 = new Team(first: eitan, second: rony)
+    team2 = new Team(first: johnny, second: corinne)
   }
 
   def "player can be dealt a card"()
@@ -245,5 +250,89 @@ class PlayerSpec extends Specification
 
     then:
     set == eitan.hand
+  }
+
+  def "player 4 doesn't have to cut because his partner is master, by virtue of having cut"()
+  {
+    given:
+    eitan.dealCard(new Card(type: Dame, suit: Trefle))
+    eitan.dealCard(new Card(type: Roi, suit: Trefle))
+    eitan.dealCard(new Card(type: Sept, suit: Pique))
+    eitan.dealCard(new Card(type: Huit, suit: Coeur))
+    eitan.dealCard(new Card(type: Dame, suit: Coeur))
+
+    def placed = [
+        new Card(type: Dame, suit: Carreau),
+        new Card(type: Huit, suit: Pique),
+        new Card(type: Ace, suit: Carreau)
+    ]
+
+    when:
+    def round = new Round(cards: placed, players: [johnny, rony, corinne], atout: Pique)
+    def set = eitan.validCards(round)
+
+    then:
+    set == eitan.hand
+  }
+
+
+  def "player 4 doesn't have to cut because his partner is master, period."()
+  {
+    given:
+    eitan.dealCard(new Card(type: Dame, suit: Trefle))
+    eitan.dealCard(new Card(type: Roi, suit: Trefle))
+    eitan.dealCard(new Card(type: Sept, suit: Pique))
+    eitan.dealCard(new Card(type: Huit, suit: Coeur))
+    eitan.dealCard(new Card(type: Dame, suit: Coeur))
+
+    def placed = [
+        new Card(type: Dame, suit: Carreau),
+        new Card(type: Ace, suit: Carreau),
+        new Card(type: Roi, suit: Carreau)
+    ]
+
+    when:
+    def round = new Round(cards: placed, players: [johnny, rony, corinne], atout: Pique)
+    def set = eitan.validCards(round)
+
+    then:
+    set == eitan.hand
+  }
+
+
+  def "player 4 has to cut because other team is master"()
+  {
+    given:
+    eitan.dealCard(new Card(type: Dame, suit: Trefle))
+    eitan.dealCard(new Card(type: Roi, suit: Trefle))
+    eitan.dealCard(new Card(type: Sept, suit: Pique))
+    eitan.dealCard(new Card(type: Huit, suit: Coeur))
+    eitan.dealCard(new Card(type: Dame, suit: Coeur))
+
+    def placed = [
+        new Card(type: Dame, suit: Carreau),
+        new Card(type: Ace, suit: Carreau),
+        new Card(type: Roi, suit: Pique)
+    ]
+
+    when:
+    def round = new Round(cards: placed, players: [johnny, rony, corinne], atout: Pique)
+    def set = eitan.validCards(round)
+
+    then:
+    set == [new Card(type: Sept, suit: Pique)] as HashSet<Card>
+  }
+
+  def "test partnership"()
+  {
+    expect:
+    eitan.isMyPartner(rony)
+    rony.isMyPartner(eitan)
+    corinne.isMyPartner(johnny)
+    johnny.isMyPartner(corinne)
+    ! eitan.isMyPartner(corinne)
+    ! eitan.isMyPartner(johnny)
+    ! rony.isMyPartner(corinne)
+    ! rony.isMyPartner(johnny)
   }
 }

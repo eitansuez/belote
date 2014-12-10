@@ -1,11 +1,4 @@
 
------bugs:
- rules for valid cards completely ignore the notion of master:
-
- a. if not requesting atout, and don't have matching suit,
-    but partner is master then don't have to cut
-
-
 -----rarities though possibilities:
 - envoyeur is capot
 - what happens if two litige d'affiles? multiple possibilities:
