@@ -7,17 +7,17 @@ import spock.lang.Unroll
 import static eitan.belote.CardType.Ace
 import static eitan.belote.CardType.Dix
 import static eitan.belote.CardType.Neuf
-import static eitan.belote.Suite.Carreau
-import static eitan.belote.Suite.Coeur
-import static eitan.belote.Suite.Trefle
+import static Suit.Carreau
+import static Suit.Coeur
+import static Suit.Trefle
 
 class CardSpec extends Specification
 {
-  @Shared Card aceDeCarreau  = new Card(type: Ace, suite: Carreau)
-  @Shared Card neufDeCoeur = new Card(type: Neuf, suite: Coeur)
+  @Shared Card aceDeCarreau  = new Card(type: Ace, suit: Carreau)
+  @Shared Card neufDeCoeur = new Card(type: Neuf, suit: Coeur)
 
   @Unroll
-  def "should have card title reflecting type and suite"(card, title, points)
+  def "should have card title reflecting type and suit"(card, title, points)
   {
     expect:
     card.toString() == title
@@ -37,15 +37,15 @@ class CardSpec extends Specification
 
     where:
     card1                                | card2
-    new Card(type: Dix, suite: Coeur)    | new Card(type: Neuf, suite: Coeur)
+    new Card(type: Dix, suit: Coeur)    | new Card(type: Neuf, suit: Coeur)
     aceDeCarreau | neufDeCoeur
-    new Card(type: Dix, suite: Coeur) | new Card(type: Dix, suite: Trefle)
+    new Card(type: Dix, suit: Coeur) | new Card(type: Dix, suit: Trefle)
   }
 
   def "equality.."()
   {
     expect:
-    new Card(type: Dix, suite: Trefle) == new Card(type: Dix, suite: Trefle)
+    new Card(type: Dix, suit: Trefle) == new Card(type: Dix, suit: Trefle)
   }
 
 }

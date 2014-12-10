@@ -1,14 +1,14 @@
 package eitan.belote
 
-enum Suite
+enum Suit
 {
   Coeur, Carreau, Pique, Trefle
 
   List<Card> cards = []
 
-  Suite() {
+  Suit() {
     CardType.values().each { cardType ->
-      cards << new Card(type: cardType, suite: this)
+      cards << new Card(type: cardType, suit: this)
     }
   }
 

@@ -8,7 +8,7 @@ class Game
   Partie partie
   Deck deck = new Deck()
   Team team1, team2
-  Suite atout
+  Suit atout
   def committedPlayer
   def scores = [:]
   List<Round> rounds = []
@@ -48,11 +48,11 @@ class Game
     }
   }
 
-  def envoi(Suite suite, Player player)
+  def envoi(Suit suit, Player player)
   {
     this.committedPlayer = player
-    this.atout = suite
-    log.info("Game starting with ${player} envoie a ${suite}")
+    this.atout = suit
+    log.info("Game starting with ${player} envoie a ${suit}")
     dealRemainingCards()
   }
 

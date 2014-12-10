@@ -2,7 +2,7 @@ package eitan.belote
 
 import spock.lang.Specification
 
-import static eitan.belote.Suite.Trefle
+import static Suit.Trefle
 
 class PartieSpec extends Specification
 {

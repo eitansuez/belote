@@ -2,11 +2,9 @@
 -----bugs:
  rules for valid cards completely ignore the notion of master:
 
- a. if not requesting atout, and don't have matching suite,
+ a. if not requesting atout, and don't have matching suit,
     but partner is master then don't have to cut
 
-
-----fix spelling:  suite -> suit
 
 -----rarities though possibilities:
 - envoyeur is capot
@@ -46,7 +44,7 @@ also player 2 can play only from valid cardset.
 
 -----logging wording:
  make card placement log wording to be semantic:  "Eitan cuts with .."
-  or "Johnny follows suite with .."
+  or "Johnny follows suit with .."
   or "Corinne montes with .."
 
  likewise, should state at end of each game "stat" such as:

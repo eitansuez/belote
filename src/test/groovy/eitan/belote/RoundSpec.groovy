@@ -2,10 +2,10 @@ package eitan.belote
 
 import spock.lang.Specification
 
-import static eitan.belote.Suite.Carreau
-import static eitan.belote.Suite.Coeur
-import static eitan.belote.Suite.Pique
-import static eitan.belote.Suite.Trefle
+import static Suit.Carreau
+import static Suit.Coeur
+import static Suit.Pique
+import static Suit.Trefle
 
 class RoundSpec extends Specification
 {
@@ -26,10 +26,10 @@ class RoundSpec extends Specification
   {
     when:
     def cards = [
-        new Card(type: CardType.Ace, suite: Coeur),
-        new Card(type: CardType.Dix, suite: Coeur),
-        new Card(type: CardType.Sept, suite: Coeur),
-        new Card(type: CardType.Valet, suite: Coeur)
+        new Card(type: CardType.Ace, suit: Coeur),
+        new Card(type: CardType.Dix, suit: Coeur),
+        new Card(type: CardType.Sept, suit: Coeur),
+        new Card(type: CardType.Valet, suit: Coeur)
     ]
     def round = new Round(cards: cards, players: players, atout: Trefle)
 
@@ -41,7 +41,7 @@ class RoundSpec extends Specification
   {
     when:
     def cards = [
-        new Card(type: CardType.Ace, suite: Coeur)
+        new Card(type: CardType.Ace, suit: Coeur)
     ]
     def round = new Round(cards: cards, players: [eitan], atout: Trefle)
 
@@ -57,10 +57,10 @@ class RoundSpec extends Specification
   {
     when:
     def cards = [
-        new Card(type: CardType.Ace, suite: Coeur),
-        new Card(type: CardType.Dix, suite: Coeur),
-        new Card(type: CardType.Sept, suite: Coeur),
-        new Card(type: CardType.Valet, suite: Coeur)
+        new Card(type: CardType.Ace, suit: Coeur),
+        new Card(type: CardType.Dix, suit: Coeur),
+        new Card(type: CardType.Sept, suit: Coeur),
+        new Card(type: CardType.Valet, suit: Coeur)
     ]
     def round = new Round(cards: cards, players: players, atout: Trefle)
 
@@ -73,10 +73,10 @@ class RoundSpec extends Specification
   {
     when:
     def cards = [
-        new Card(type: CardType.Ace, suite: Coeur),
-        new Card(type: CardType.Dix, suite: Coeur),
-        new Card(type: CardType.Sept, suite: Coeur),
-        new Card(type: CardType.Valet, suite: Coeur)
+        new Card(type: CardType.Ace, suit: Coeur),
+        new Card(type: CardType.Dix, suit: Coeur),
+        new Card(type: CardType.Sept, suit: Coeur),
+        new Card(type: CardType.Valet, suit: Coeur)
     ]
     def round = new Round(cards: cards, players: players, atout: Coeur)
 
@@ -89,10 +89,10 @@ class RoundSpec extends Specification
   {
     when:
     def cards = [
-        new Card(type: CardType.Ace, suite: Coeur),
-        new Card(type: CardType.Dix, suite: Pique),
-        new Card(type: CardType.Sept, suite: Pique),
-        new Card(type: CardType.Valet, suite: Coeur)
+        new Card(type: CardType.Ace, suit: Coeur),
+        new Card(type: CardType.Dix, suit: Pique),
+        new Card(type: CardType.Sept, suit: Pique),
+        new Card(type: CardType.Valet, suit: Coeur)
     ]
     def round = new Round(cards: cards, players: players, atout: Pique)
 
@@ -101,13 +101,13 @@ class RoundSpec extends Specification
     round.master() == johnny
   }
 
-  def "mono-suite round, largest card wins"() {
+  def "mono-suit round, largest card wins"() {
     given:
     def cards = [
-        new Card(type: CardType.Ace, suite: Coeur),
-        new Card(type: CardType.Dix, suite: Coeur),
-        new Card(type: CardType.Sept, suite: Coeur),
-        new Card(type: CardType.Valet, suite: Coeur)
+        new Card(type: CardType.Ace, suit: Coeur),
+        new Card(type: CardType.Dix, suit: Coeur),
+        new Card(type: CardType.Sept, suit: Coeur),
+        new Card(type: CardType.Valet, suit: Coeur)
     ]
     def round = new Round(cards: cards, players: players, atout: Trefle)
 
@@ -122,10 +122,10 @@ class RoundSpec extends Specification
   def "all atout round, largest card wins"() {
     given:
     def cards = [
-        new Card(type: CardType.Ace, suite: Coeur),
-        new Card(type: CardType.Dix, suite: Coeur),
-        new Card(type: CardType.Sept, suite: Coeur),
-        new Card(type: CardType.Valet, suite: Coeur)
+        new Card(type: CardType.Ace, suit: Coeur),
+        new Card(type: CardType.Dix, suit: Coeur),
+        new Card(type: CardType.Sept, suit: Coeur),
+        new Card(type: CardType.Valet, suit: Coeur)
     ]
     def round = new Round(cards: cards, players: players, atout: Coeur)
 
@@ -140,10 +140,10 @@ class RoundSpec extends Specification
   def "cut with large atout"() {
     given:
     def cards = [
-        new Card(type: CardType.Ace, suite: Coeur),
-        new Card(type: CardType.Dix, suite: Coeur),
-        new Card(type: CardType.Neuf, suite: Trefle),
-        new Card(type: CardType.Dame, suite: Coeur)
+        new Card(type: CardType.Ace, suit: Coeur),
+        new Card(type: CardType.Dix, suit: Coeur),
+        new Card(type: CardType.Neuf, suit: Trefle),
+        new Card(type: CardType.Dame, suit: Coeur)
     ]
     def round = new Round(cards: cards, players: players, atout: Trefle)
 
@@ -158,10 +158,10 @@ class RoundSpec extends Specification
   def "cut with small atout"() {
     given:
     def cards = [
-        new Card(type: CardType.Ace, suite: Coeur),
-        new Card(type: CardType.Dix, suite: Coeur),
-        new Card(type: CardType.Sept, suite: Trefle),
-        new Card(type: CardType.Dame, suite: Coeur)
+        new Card(type: CardType.Ace, suit: Coeur),
+        new Card(type: CardType.Dix, suit: Coeur),
+        new Card(type: CardType.Sept, suit: Trefle),
+        new Card(type: CardType.Dame, suit: Coeur)
     ]
     def round = new Round(cards: cards, players: players, atout: Trefle)
 
@@ -173,13 +173,13 @@ class RoundSpec extends Specification
     round.winner == corinne
   }
 
-  def "ask for a suite that no one has"() {
+  def "ask for a suit that no one has"() {
     given:
     def cards = [
-        new Card(type: CardType.Sept, suite: Coeur),
-        new Card(type: CardType.Dix, suite: Pique),
-        new Card(type: CardType.Roi, suite: Carreau),
-        new Card(type: CardType.Huit, suite: Carreau)
+        new Card(type: CardType.Sept, suit: Coeur),
+        new Card(type: CardType.Dix, suit: Pique),
+        new Card(type: CardType.Roi, suit: Carreau),
+        new Card(type: CardType.Huit, suit: Carreau)
     ]
     def round = new Round(cards: cards, players: players, atout: Trefle)
 

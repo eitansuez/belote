@@ -7,7 +7,7 @@ class Round
 {
   List<Card> cards
   List<Player> players
-  Suite atout
+  Suit atout
 
   Player winner
   int points
@@ -26,14 +26,14 @@ class Round
     players[cards.indexOf(winningCard)]
   }
 
-  private ArrayList<Card> matchingSuite(Suite requested)
+  private ArrayList<Card> matchingSuit(Suit requested)
   {
-    cards.findAll { card -> card.suite == requested }
+    cards.findAll { card -> card.suit == requested }
   }
 
   ArrayList<Card> atouts()
   {
-    cards.findAll { card -> card.suite == atout }
+    cards.findAll { card -> card.suit == atout }
   }
 
   Card highest(Collection<Card> cardSet)
@@ -43,11 +43,11 @@ class Round
 
   boolean containsAtout()
   {
-    cards.any { card -> card.suite == atout }
+    cards.any { card -> card.suit == atout }
   }
   boolean requestedAtout()
   {
-    requestedSuite() == atout
+    requestedSuit() == atout
   }
 
   private void calculateScore()
@@ -57,9 +57,9 @@ class Round
     }
   }
 
-  Suite requestedSuite()
+  Suit requestedSuit()
   {
-    cards.first().suite
+    cards.first().suit
   }
 
   int size() { cards.size() }
@@ -69,7 +69,7 @@ class Round
   {
     containsAtout() ?
         highest(atouts()) :
-        highest(matchingSuite(requestedSuite()))
+        highest(matchingSuit(requestedSuit()))
   }
 
   Player master()

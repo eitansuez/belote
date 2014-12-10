@@ -3,8 +3,8 @@ package eitan.belote
 import spock.lang.Specification
 
 import static eitan.belote.CardType.*
-import static eitan.belote.Suite.Coeur
-import static eitan.belote.Suite.Trefle
+import static Suit.Coeur
+import static Suit.Trefle
 
 class GameSpec extends Specification
 {
@@ -77,13 +77,13 @@ class GameSpec extends Specification
     game.envoi(Trefle, eitan)
 
     then:
-    game.points(new Card(type: Ace, suite: Trefle)) == 11
-    game.points(new Card(type: Neuf, suite: Trefle)) == 14
-    game.points(new Card(type: Valet, suite: Trefle)) == 20
+    game.points(new Card(type: Ace, suit: Trefle)) == 11
+    game.points(new Card(type: Neuf, suit: Trefle)) == 14
+    game.points(new Card(type: Valet, suit: Trefle)) == 20
 
-    game.points(new Card(type: Ace, suite: Coeur)) == 11
-    game.points(new Card(type: Neuf, suite: Coeur)) == 0
-    game.points(new Card(type: Valet, suite: Coeur)) == 2
+    game.points(new Card(type: Ace, suit: Coeur)) == 11
+    game.points(new Card(type: Neuf, suit: Coeur)) == 0
+    game.points(new Card(type: Valet, suit: Coeur)) == 2
   }
 
   def "envoi should trigger deal remaining cards"()
@@ -108,10 +108,10 @@ class GameSpec extends Specification
 
     when:
     def cards = [
-        new Card(type: Ace, suite: Coeur),
-        new Card(type: Dix, suite: Coeur),
-        new Card(type: Sept, suite: Trefle),
-        new Card(type: Dame, suite: Coeur)
+        new Card(type: Ace, suit: Coeur),
+        new Card(type: Dix, suit: Coeur),
+        new Card(type: Sept, suit: Trefle),
+        new Card(type: Dame, suit: Coeur)
     ]
 
     game.playRound(new Round(cards: cards, players: players, atout: game.atout))

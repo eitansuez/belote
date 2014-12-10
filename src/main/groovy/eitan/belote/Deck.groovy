@@ -5,8 +5,8 @@ class Deck
   List<Card> cards = []
 
   Deck() {
-    Suite.values().each { suite ->
-      suite.cards.each { card ->
+    Suit.values().each { suit ->
+      suit.cards.each { card ->
         cards << card
       }
     }

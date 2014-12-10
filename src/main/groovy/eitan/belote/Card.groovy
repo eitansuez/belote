@@ -5,7 +5,7 @@ import groovy.transform.EqualsAndHashCode
 @EqualsAndHashCode
 class Card
 {
-  Suite suite
+  Suit suit
   CardType type
 
   def points()
@@ -13,13 +13,13 @@ class Card
     return type.points
   }
 
-  def points(Suite atout)
+  def points(Suit atout)
   {
-    atout == suite ? type.pointsWhenAtout : type.points
+    atout == suit ? type.pointsWhenAtout : type.points
   }
 
   @Override
   String toString() {
-    "${type} de ${suite}"
+    "${type} de ${suit}"
   }
 }

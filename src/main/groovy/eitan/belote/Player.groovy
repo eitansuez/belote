@@ -47,7 +47,7 @@ class Player
       }
 
       Set<Card> allAtouts = hand.findAll { card ->
-        card.suite == round.atout
+        card.suit == round.atout
       }
       if (allAtouts) {
         return allAtouts
@@ -55,9 +55,9 @@ class Player
       return hand
     }
 
-    Set<Card> matchingSuite = hand.findAll { card -> card.suite == round.requestedSuite() }
-    if (matchingSuite) {
-      return matchingSuite
+    Set<Card> matchingSuit = hand.findAll { card -> card.suit == round.requestedSuit() }
+    if (matchingSuit) {
+      return matchingSuit
     }
 
     if (haveAtout(round.atout))
@@ -71,7 +71,7 @@ class Player
       }
 
       Set<Card> allAtouts = hand.findAll { card ->
-        card.suite == round.atout
+        card.suit == round.atout
       }
       if (allAtouts) {
         return allAtouts
@@ -84,15 +84,15 @@ class Player
 
   private Set<Card> findHigherAtouts(Round round)
   {
-    Suite atout = round.atout
+    Suit atout = round.atout
     Card highestAtout = round.highest(round.atouts())
     hand.findAll { card ->
-      (card.suite == atout) && (card.points(atout) > highestAtout.points(atout))
+      (card.suit == atout) && (card.points(atout) > highestAtout.points(atout))
     }
   }
 
-  private boolean haveAtout(Suite atout)
+  private boolean haveAtout(Suit atout)
   {
-    hand.find { card -> card.suite == atout }
+    hand.find { card -> card.suit == atout }
   }
 }

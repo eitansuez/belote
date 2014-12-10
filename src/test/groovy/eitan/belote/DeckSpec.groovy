@@ -32,7 +32,7 @@ class DeckSpec extends Specification
     deck.cards.size() == 31
   }
 
-  def "random card drawn has title matching pattern '[type] of [suite]'"()
+  def "random card drawn has title matching pattern '[type] of [suit]'"()
   {
     given:
     def card = deck.takeCard()
