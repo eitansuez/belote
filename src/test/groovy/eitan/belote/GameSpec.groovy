@@ -195,6 +195,26 @@ class GameSpec extends Specification
     game.losingTeam == game.team2
   }
 
+  def "winning team is capot should also amount to 252 points for winner"() {
+    given:
+    game.begin()
+    game.envoi(Trefle, eitan)
+    game.playRandomly()
+    game.scores[game.team1] = 0
+    game.scores[game.team2] = 152
+
+    when:
+    game.finalizeScore()
+
+    then:
+    game.dedans()
+    game.capot()
+    game.scores[game.team1] == 0
+    game.scores[game.team2] == 252
+    game.winningTeam == game.team2
+    game.losingTeam == game.team1
+  }
+
   def "score finalization handles dedans"() {
     given:
     game.begin()
