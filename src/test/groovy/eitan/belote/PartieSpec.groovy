@@ -131,13 +131,13 @@ class PartieSpec extends Specification
     partie.scores[partie.team2] == 80
   }
 
-  private Game playGameWithScoreBeforeFinalize(int score1, int score2)
+  private Game playGameWithScoreBeforeFinalize(int score1, int score2, Player envoyeur = eitan)
   {
-    playGameWith { game ->
+    playGameWith({ game ->
       game.scores[game.team1] = score1
       game.scores[game.team2] = score2
       game.rounds.last().winner = eitan
-    }
+    }, envoyeur)
   }
 
   private Game playGameRandomly()
@@ -145,13 +145,13 @@ class PartieSpec extends Specification
     playGameWith {}
   }
 
-  private Game playGameWith(Closure closure)
+  private Game playGameWith(Closure customizeScores, Player envoyeur = eitan)
   {
     def game = partie.nextGame()
     game.begin()
-    game.envoi(Trefle, eitan)
+    game.envoi(Trefle, envoyeur)
     game.playRandomly()
-    closure.call(game)
+    customizeScores.call(game)
     game.finalizeScore()
     game
   }
@@ -232,6 +232,42 @@ class PartieSpec extends Specification
     then:
     partie.scores[partie.team1] == 0
     partie.scores[partie.team2] == 320
+  }
+
+  def "multiple litiges in a row (de suite) for the same team accumulates points in abeyance, team eventually wins"()
+  {
+    given:
+    partie.begin()
+    playGameWithScoreBeforeFinalize(71, 81)
+    partie.gameDone()
+    playGameWithScoreBeforeFinalize(71, 81)
+    partie.gameDone()
+
+    when:
+    playGameWithScoreBeforeFinalize(130, 22)
+    partie.gameDone()
+
+    then:
+    partie.scores[partie.team1] == 300
+    partie.scores[partie.team2] == 180
+  }
+
+  def "multiple mixed/alternating litiges in a row"()
+  {
+    given:
+    partie.begin()
+    playGameWithScoreBeforeFinalize(71, 81, eitan)
+    partie.gameDone()
+    playGameWithScoreBeforeFinalize(71, 81, corinne)
+    partie.gameDone()
+
+    when:
+    playGameWithScoreBeforeFinalize(130, 22, eitan)
+    partie.gameDone()
+
+    then:
+    partie.scores[partie.team1] == 300
+    partie.scores[partie.team2] == 180
   }
 
 }

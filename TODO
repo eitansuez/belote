@@ -1,9 +1,4 @@
 
------rarities though possibilities:
-- what happens if two litige d'affiles? multiple possibilities:
- - alternate:  team 1 litige then team 2 litige
- - serial:  team 1 litige then team 1 litige again
-
 
 -----play strategies:
  start refactoring implementation of "random play" as a pluggable strategy
