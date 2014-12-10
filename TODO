@@ -1,8 +1,28 @@
 
 
 -----play strategies:
- start refactoring implementation of "random play" as a pluggable strategy
- perhaps introduce a second, more logical playing strategy that will naively play highest cards first if have them?
+ how to build a decent playing strategy?
+ should human players plug in as a strategy?
+ learn about mixins in groovy (is that the same as traits?):  should Strategy be mixed in to Player?
+
+------
+ it's clear that player.hand(), round, and validCards or any set of cards for that matter
+   should all be of the same type and have methods such as "highest"
+
+   TestStrategy should be able to do, instead of:
+       round.highest(validCards)
+   this:
+   validCards.highest()
+
+   and in Player.validCards implementation, instead of:
+
+   hand.findAll { card ->
+           card.suit == round.atout
+         }
+
+   should be able to say hand.cardsMatchingSuit(suit)
+   which already exists on Round.  so abstract these methods out of round as a trait that can apply to anything
+   that is (or perhaps has) a set of cards.  Round has cards.  Player has a hand. etc..
 
 ----logging as cross-cutting concern:
 - perhaps should be a publish/subscribe model

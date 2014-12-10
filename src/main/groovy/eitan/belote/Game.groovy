@@ -182,10 +182,10 @@ class Game
     def cards = []
 
     log.info("Round #${rounds.size()+1}")
-    def players = withEachPlayer { player, players ->
+    def players = withEachPlayer { Player player, players ->
       def round = new Round(cards: cards, players: players, atout: atout)
-      Set<Card> validCards = player.validCards(round)
-      def card = player.playCard(validCards.first())
+      Card selected = player.chooseCard(round)
+      def card = player.playCard(selected)
       cards << card
       log.info("${player} plays ${card}")
     }

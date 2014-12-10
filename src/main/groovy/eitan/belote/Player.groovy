@@ -5,6 +5,13 @@ class Player
   String name
   Set<Card> hand = [] as HashSet<Card>
   Team team
+  Strategy strategy = new RandomStrategy(player: this)
+
+  void setStrategy(Strategy s)
+  {
+    this.strategy = s
+    s.player = this
+  }
 
   def dealCard(Card card)
   {
@@ -21,6 +28,12 @@ class Player
   @Override
   String toString() {
     name
+  }
+
+  Card chooseCard(Round round)
+  {
+    // TODO:  strategy will likely also need to have access to past rounds
+    strategy.chooseCard(validCards(round), round)
   }
 
   def playCard(Card card)

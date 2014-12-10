@@ -335,4 +335,14 @@ class PlayerSpec extends Specification
     ! rony.isMyPartner(corinne)
     ! rony.isMyPartner(johnny)
   }
+
+  def "can plug in a different strategy"()
+  {
+    when:
+    Player joe = new Player(name: "Joe", strategy: new TestStrategy())
+
+    then:
+    joe.strategy.class == TestStrategy
+    joe.strategy.player == joe
+  }
 }
