@@ -5,7 +5,7 @@
   or "Johnny follows suite with .."
   or "Corinne montes with .."
 
- want test that plays a full partie to 1000 and displays winner
+ want a test that plays a full partie to 1000 and displays winner
 
  likewise should state at end of each game "stat" such as:
   - team x remporte after having committed to trefle
@@ -17,23 +17,31 @@
 rarities though possibilities:  envoyeur is capot
 what happens if two litige d'affiles?
 
-
+-----
  look into fsm's in groovy
  build out fsm for game, partie
 
- flesh out the development of a hand, and the play of a hand in turns,
+-----
+ flesh out the development of a hand, and the play of a hand in turns
 
+-----
  flesh out the envoi selection process/phase:
    first selection round, second, fact that game may end without any hands played if no one envoie's
 
+-----
  handle belotte rebelotte
 
- rules i encoded for cutting/raising are incorrect:
-   if partner cut, then you're not obligated to play an atout.
-   find out either way and update tests & fix implementation accordingly
+-----bugs:
+ rules for valid cards completely ignore the notion of master:
+ 
+ a. if not requesting atout, and don't have matching suite,
+    but partner is master then don't have to cut
+
+-----
 
  start refactoring implementation of "random play" as a pluggable strategy
+-----
  then come up with a more intelligent strategy and try it out for an ai
-
+-----
  then setup three ai's and play with them to see how well this works out.
  or.. come up with an algorithm to teach behavior based on desired outcomes.
