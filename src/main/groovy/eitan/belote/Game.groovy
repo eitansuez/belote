@@ -98,6 +98,14 @@ class Game
     }
     null // a tie implies no winning team
   }
+  def getLosingTeam()
+  {
+    assert done
+
+    (winningTeam == team1) ? team2 :
+        (winningTeam == team2) ? team1 :
+            null
+  }
 
   int points(Card card)
   {
@@ -106,23 +114,29 @@ class Game
 
   void finalizeScore()
   {
-    assert isLastRound()
-    done = true
-
-    Round lastRound = rounds.last()
-    if (capot()) {
-      addCapotCredit()
-      return
-    }
-    addDixDedere(lastRound.winner.team)
-
-    if (dedans())
+    try
     {
-      scores[committedTeam] = 0
-      scores[otherTeam] = 162
-    }
+      assert isLastRound()
+      done = true
 
-    showScore()
+      Round lastRound = rounds.last()
+      if (capot()) {
+        log.info("${losingTeam} are capot")
+        addCapotCredit()
+        return
+      }
+      addDixDedere(lastRound.winner.team)
+
+      if (dedans())
+      {
+        log.info("${committedTeam} are dedans")
+        scores[committedTeam] = 0
+        scores[otherTeam] = 162
+      }
+    }
+    finally {
+      showScore()
+    }
   }
 
   private void showScore()

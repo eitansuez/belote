@@ -173,6 +173,7 @@ class GameSpec extends Specification
     then:
     game.scores[game.team1] == 152
     game.winningTeam == game.team1
+    game.losingTeam == game.team2
   }
 
   def "score finalization handles capot"() {
@@ -191,6 +192,7 @@ class GameSpec extends Specification
     game.scores[game.team1] == 252
     game.scores[game.team2] == 0
     game.winningTeam == game.team1
+    game.losingTeam == game.team2
   }
 
   def "score finalization handles dedans"() {
@@ -210,6 +212,7 @@ class GameSpec extends Specification
     game.scores[game.team1] == 0
     game.scores[game.team2] == 162
     game.winningTeam == game.team2
+    game.losingTeam == game.team1
   }
 
   def "score finalization handles litige"() {
@@ -229,6 +232,7 @@ class GameSpec extends Specification
     game.scores[game.team2] == 81
     game.litige()
     game.winningTeam == null
+    game.losingTeam == null
   }
 
   def "players ordering from eitan"()

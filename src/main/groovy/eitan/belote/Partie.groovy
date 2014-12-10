@@ -48,11 +48,15 @@ class Partie
     if (game.litige()) {
       def otherTeam = game.otherTeam
       scores[otherTeam] += round(game.scores[otherTeam])
+      log.info("${game.committedTeam} is litige")
     }
     else
     {
-      scores[team1] += round(game.scores[team1])
-      scores[team2] += round(game.scores[team2])
+      int thisGameScoreTeam1 = round(game.scores[team1])
+      scores[team1] += thisGameScoreTeam1
+      int thisGameScoreTeam2 = round(game.scores[team2])
+      scores[team2] += thisGameScoreTeam2
+      log.info("Game score: ${team1}: ${thisGameScoreTeam1} / ${team2}: ${thisGameScoreTeam2}")
     }
 
     def previousGame = previousGame(game)
@@ -60,11 +64,14 @@ class Partie
     {
       if (game.winningTeam == previousGame.committedTeam) {
         scores[game.committedTeam] += round(previousGame.scores[game.committedTeam])
+        log.info("${game.committedTeam} recuperates its points from last game")
       } else {
         scores[game.otherTeam] += round(previousGame.scores[game.committedTeam])
+        log.info("${game.otherTeam} gains points from other team that were held litige in previous game")
       }
     }
 
+    log.info("Partie score:  ${team1}: ${scores[team1]} / ${team2}: ${scores[team2]}")
   }
 
   private Game previousGame(Game game)

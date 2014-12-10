@@ -131,15 +131,27 @@ class PartieSpec extends Specification
     partie.scores[partie.team2] == 80
   }
 
-  private playGameWithScoreBeforeFinalize(int score1, int score2)
+  private Game playGameWithScoreBeforeFinalize(int score1, int score2)
+  {
+    playGameWith { game ->
+      game.scores[game.team1] = score1
+      game.scores[game.team2] = score2
+      game.rounds.last().winner = eitan
+    }
+  }
+
+  private Game playGameRandomly()
+  {
+    playGameWith {}
+  }
+
+  private Game playGameWith(Closure closure)
   {
     def game = partie.nextGame()
     game.begin()
     game.envoi(Trefle, eitan)
     game.playRandomly()
-    game.scores[game.team1] = score1
-    game.scores[game.team2] = score2
-    game.rounds.last().winner = eitan
+    closure.call(game)
     game.finalizeScore()
     game
   }
@@ -158,6 +170,22 @@ class PartieSpec extends Specification
     then:
     partie.scores[partie.team1] == 200
     partie.scores[partie.team2] == 130
+  }
+
+  def "can play a whole partie"()
+  {
+    given:
+    partie.begin()
+
+    when:
+    while (!partie.done())
+    {
+      playGameRandomly()
+      partie.gameDone()
+    }
+
+    then:
+    partie.scores[partie.team1] >= 1000 || partie.scores[partie.team2] >= 1000
   }
 
   def "points withheld from envoyeur when litige"()

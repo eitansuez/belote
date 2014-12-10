@@ -1,6 +1,3 @@
- finish the logging:
- want a test that plays a full partie to 1000 and displays winner
- extend to partie:  show partie score as move along
 
 -----bugs:
  rules for valid cards completely ignore the notion of master:
@@ -42,18 +39,13 @@ button:  play card x
 some buttons will be disabled.  e.g. player 2 cannot play card x if it's not their turn
 also player 2 can play only from valid cardset.
 
------wording:
+-----logging wording:
  make card placement log wording to be semantic:  "Eitan cuts with .."
   or "Johnny follows suite with .."
   or "Corinne montes with .."
 
  likewise, should state at end of each game "stat" such as:
   - team x wins after having committed to trefle
-  - team x dedans
-  - team y capot
-  - team x litige
-  - team x wins, gaining back xx points which were litige from the previous partie
-  - team x loses, forfeiting its xx points which were litige from the previous partie
 
 -----handle belotte rebelotte
 
