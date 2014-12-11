@@ -38,9 +38,9 @@ class Game
     showPlayerCards()
   }
 
-  private List<Player> showPlayerCards()
+  private void showPlayerCards()
   {
-    withEachPlayer { Player player, players ->
+    withEachPlayer { Player player->
       log.info("${player}'s hand:")
       player.hand.each { Card card ->
         log.info("\t${card}")
@@ -65,18 +65,19 @@ class Game
 
   List<Player> players()
   {
-    withEachPlayer { player, players -> }
-  }
-
-  List<Player> withEachPlayer(Closure closure) {
-    List<Player> players = []
-    Player player = starter
-    4.times {
-      closure.call(player, players)
+    def players = []
+    withEachPlayer { player ->
       players << player
-      player = partie.nextPlayer(player)
     }
     players
+  }
+
+  void withEachPlayer(Closure closure) {
+    Player player = starter
+    4.times {
+      closure.call(player)
+      player = partie.nextPlayer(player)
+    }
   }
 
   def getCommittedTeam()
@@ -179,21 +180,18 @@ class Game
 
   void playRandomRound()
   {
-    def cards = []
-
     log.info("Round #${rounds.size()+1}")
-    def players = withEachPlayer { Player player, players ->
-      def round = new Round(cards: cards, players: players, atout: atout)
+
+    def round = new Round(cards: [], players: [], atout: atout)
+
+    withEachPlayer { Player player ->
       Card selected = player.chooseCard(round)
       def card = player.playCard(selected)
-      cards << card
       log.info("${player} plays ${card}")
+
+      round = Round.newRound(round, card, player)
     }
 
-    assert cards.size() == 4
-    assert players.size() == 4
-
-    def round = new Round(cards: cards, players: players, atout: atout)
     playRound(round)
   }
 

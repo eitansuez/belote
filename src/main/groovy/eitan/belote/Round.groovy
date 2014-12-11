@@ -12,6 +12,11 @@ class Round
   Player winner
   int points
 
+  static newRound(Round prev, Card card, Player player)
+  {
+    new Round(cards: prev.cards + card, players: prev.players + player, atout: prev.atout)
+  }
+
   // TODO: how to assert cards.size == players.size on construction?
 
   void resolve()
