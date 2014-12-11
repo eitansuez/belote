@@ -6,7 +6,7 @@ import groovy.util.logging.Slf4j
 class Player
 {
   String name
-  Set<Card> hand = [] as HashSet<Card>
+  List<Card> hand = []
   Team team
   Strategy strategy = new RandomStrategy(player: this)
 
@@ -36,7 +36,10 @@ class Player
   Card chooseCard(Round round)
   {
     // TODO:  strategy will likely also need to have access to past rounds
-    strategy.chooseCard(validCards(round), round)
+    def validCards = validCards(round)
+    def card = strategy.chooseCard(validCards, round)
+    assert validCards.contains(card)
+    card
   }
 
   def playCard(Card card)

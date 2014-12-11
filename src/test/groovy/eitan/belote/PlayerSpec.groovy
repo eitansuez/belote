@@ -95,7 +95,7 @@ class PlayerSpec extends Specification
     def set = eitan.validCards(round)
 
     then:
-    set == eitan.hand
+    set == eitan.hand as Set
   }
 
   def "player 2 must follow suit"()
@@ -153,7 +153,7 @@ class PlayerSpec extends Specification
     def set = eitan.validCards(round)
 
     then:
-    set == eitan.hand
+    set == eitan.hand as Set
   }
 
   def "player 3 must raise cut of previous player"()
@@ -249,7 +249,7 @@ class PlayerSpec extends Specification
     def set = eitan.validCards(round)
 
     then:
-    set == eitan.hand
+    set == eitan.hand as Set
   }
 
   def "player 4 doesn't have to cut because his partner is master, by virtue of having cut"()
@@ -272,7 +272,7 @@ class PlayerSpec extends Specification
     def set = eitan.validCards(round)
 
     then:
-    set == eitan.hand
+    set == eitan.hand as Set
   }
 
 
@@ -296,7 +296,7 @@ class PlayerSpec extends Specification
     def set = eitan.validCards(round)
 
     then:
-    set == eitan.hand
+    set == eitan.hand as Set
   }
 
 
