@@ -5,19 +5,17 @@ import groovy.util.logging.Log
 @Log
 class Round
 {
-  List<Card> cards
-  List<Player> players
+  List<Card> cards = []
+  List<Player> players = []
   Suit atout
 
   Player winner
   int points
 
-  static newRound(Round prev, Card card, Player player)
+  Round newRound(Card card, Player player)
   {
-    new Round(cards: prev.cards + card, players: prev.players + player, atout: prev.atout)
+    new Round(cards: this.cards + card, players: this.players + player, atout: this.atout)
   }
-
-  // TODO: how to assert cards.size == players.size on construction?
 
   void resolve()
   {
@@ -31,14 +29,14 @@ class Round
     players[cards.indexOf(winningCard)]
   }
 
-  private ArrayList<Card> matchingSuit(Suit requested)
+  ArrayList<Card> matchingSuit(Suit suit)
   {
-    cards.findAll { card -> card.suit == requested }
+    cards.findAll { card -> card.suit == suit }
   }
 
   ArrayList<Card> atouts()
   {
-    cards.findAll { card -> card.suit == atout }
+    matchingSuit(atout)
   }
 
   Card highest(Collection<Card> cardSet)

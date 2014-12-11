@@ -182,14 +182,14 @@ class Game
   {
     log.info("Round #${rounds.size()+1}")
 
-    def round = new Round(cards: [], players: [], atout: atout)
+    def round = new Round(atout: atout)
 
     withEachPlayer { Player player ->
       Card selected = player.chooseCard(round)
       def card = player.playCard(selected)
       log.info("${player} plays ${card}")
 
-      round = Round.newRound(round, card, player)
+      round = round.newRound(card, player)
     }
 
     playRound(round)

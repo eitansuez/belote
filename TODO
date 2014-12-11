@@ -1,11 +1,5 @@
 
 
------play strategies:
- how to build a decent playing strategy?
- should human players plug in as a strategy?
- learn about mixins in groovy (is that the same as traits?):  should Strategy be mixed in to Player?
-
-------
  it's clear that player.hand(), round, and validCards or any set of cards for that matter
    should all be of the same type and have methods such as "highest"
 
@@ -60,6 +54,10 @@ also player 2 can play only from valid cardset.
 -----handle belotte rebelotte
 
 -----play strategies:
+ how to build a decent playing strategy?
+ should human players plug in as a strategy?
+ learn about mixins in groovy (is that the same as traits?):  should Strategy be mixed in to Player?
+
  introduce a more intelligent strategy and try it out for an ai
  then setup three ai's and play with them to see how well this works out.
  or.. come up with an algorithm to teach behavior based on desired outcomes.
