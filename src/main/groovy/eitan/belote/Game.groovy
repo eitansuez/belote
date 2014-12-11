@@ -7,12 +7,17 @@ class Game
 {
   Partie partie
   Deck deck = new Deck()
+
   Team team1, team2
-  Suit atout
-  def committedPlayer
   def scores = [:]
-  List<Round> rounds = []
+
+  Suit atout
+  Player committedPlayer
+
   Player starter
+
+  List<Round> rounds = []
+
   boolean done  // do i need this field?
 
   def begin()
@@ -38,6 +43,13 @@ class Game
     showPlayerCards()
   }
 
+  private void dealRemainingCards()
+  {
+    log.info("Dealing remaining cards..")
+    deck.dealRemaining(players())
+    showPlayerCards()
+  }
+
   private void showPlayerCards()
   {
     withEachPlayer { Player player->
@@ -54,13 +66,6 @@ class Game
     this.atout = suit
     log.info("Game starting with ${player} envoie a ${suit}")
     dealRemainingCards()
-  }
-
-  private void dealRemainingCards()
-  {
-    log.info("Dealing remaining cards..")
-    deck.dealRemaining(players())
-    showPlayerCards()
   }
 
   List<Player> players()

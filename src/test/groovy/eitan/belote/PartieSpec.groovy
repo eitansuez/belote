@@ -133,7 +133,7 @@ class PartieSpec extends Specification
 
   private Game playGameWithScoreBeforeFinalize(int score1, int score2, Player envoyeur = eitan)
   {
-    playGameWith({ game ->
+    playGameWith({ Game game ->
       game.scores[game.team1] = score1
       game.scores[game.team2] = score2
       game.rounds.last().winner = eitan
