@@ -1,5 +1,6 @@
 
 apply plugin: 'groovy'
+apply plugin: 'application'
 
 repositories {
   mavenCentral()
@@ -7,7 +8,15 @@ repositories {
 
 dependencies {
   compile 'org.codehaus.groovy:groovy-all:2.3.7'
+  compile 'org.slf4j:slf4j-api:1.7.7'
+  runtime 'org.slf4j:slf4j-simple:1.7.7'
+
   testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
   testCompile 'cglib:cglib-nodep:3.1'
   testCompile 'org.objenesis:objenesis:2.1'
+}
+
+mainClassName = 'playbelote'
+run {
+  standardInput = System.in
 }

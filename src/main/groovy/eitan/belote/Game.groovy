@@ -1,8 +1,8 @@
 package eitan.belote
 
-import groovy.util.logging.Log
+import groovy.util.logging.Slf4j
 
-@Log
+@Slf4j
 class Game
 {
   Partie partie
@@ -53,10 +53,7 @@ class Game
   private void showPlayerCards()
   {
     withEachPlayer { Player player->
-      log.info("${player}'s hand:")
-      player.hand.each { Card card ->
-        log.info("\t${card}")
-      }
+      player.showHand()
     }
   }
 

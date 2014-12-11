@@ -1,5 +1,8 @@
 package eitan.belote
 
+import groovy.util.logging.Slf4j
+
+@Slf4j
 class Player
 {
   String name
@@ -42,6 +45,14 @@ class Player
 
     if (hand.remove(card)) {
       return card
+    }
+  }
+
+  void showHand() {
+    log.info("${this}'s hand:")
+    hand.eachWithIndex { Card card, index ->
+      def displayIndex = index + 1
+      log.info("\t[${displayIndex}] ${card}")
     }
   }
 

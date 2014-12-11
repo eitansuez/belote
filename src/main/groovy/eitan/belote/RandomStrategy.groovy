@@ -7,6 +7,6 @@ class RandomStrategy implements Strategy
   @Override
   Card chooseCard(Set<Card> validCards, Round round)
   {
-    return validCards.first()
+    validCards.first()
   }
 }

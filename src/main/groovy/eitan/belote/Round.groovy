@@ -1,8 +1,8 @@
 package eitan.belote
 
-import groovy.util.logging.Log
+import groovy.util.logging.Slf4j
 
-@Log
+@Slf4j
 class Round
 {
   List<Card> cards = []
