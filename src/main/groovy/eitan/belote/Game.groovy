@@ -227,12 +227,12 @@ class Game
       round = round.newRound(card, player)
     }
 
-    playRound(round)
+    // TODO:  round.resolve should notify game that it's done
+    roundDone(round)
   }
 
-  void playRound(Round round)
+  void roundDone(Round round)
   {
-    round.resolve()
     rounds << round
     updateScore(round)
     if (!isLastRound())

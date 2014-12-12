@@ -14,7 +14,16 @@ class Round
 
   Round newRound(Card card, Player player)
   {
-    new Round(cards: this.cards + card, players: this.players + player, atout: this.atout)
+    def round = new Round(cards: this.cards + card, players: this.players + player, atout: this.atout)
+    // TODO:  need an afterCreate
+    if (round.isComplete()) {
+      round.resolve()
+    }
+    round
+  }
+
+  boolean isComplete() {
+    size() == 4
   }
 
   void resolve()

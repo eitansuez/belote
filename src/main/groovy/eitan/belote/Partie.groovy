@@ -47,15 +47,15 @@ class Partie
   {
     if (game.litige()) {
       def otherTeam = game.otherTeam
-      scores[otherTeam] += round(game.scores[otherTeam])
+      scores[otherTeam] += roundScore(game.scores[otherTeam])
       log.info("${game.committedTeam} is litige")
       return
     }
     else
     {
-      int thisGameScoreTeam1 = round(game.scores[team1])
+      int thisGameScoreTeam1 = roundScore(game.scores[team1])
       scores[team1] += thisGameScoreTeam1
-      int thisGameScoreTeam2 = round(game.scores[team2])
+      int thisGameScoreTeam2 = roundScore(game.scores[team2])
       scores[team2] += thisGameScoreTeam2
       log.info("Game score: ${team1}: ${thisGameScoreTeam1} / ${team2}: ${thisGameScoreTeam2}")
 
@@ -63,10 +63,10 @@ class Partie
       while (prevGame?.litige())
       {
         if (game.winningTeam == prevGame.committedTeam) {
-          scores[game.committedTeam] += round(prevGame.scores[game.committedTeam])
+          scores[game.committedTeam] += roundScore(prevGame.scores[game.committedTeam])
           log.info("${game.committedTeam} recuperates its points from last game")
         } else {
-          scores[game.otherTeam] += round(prevGame.scores[game.committedTeam])
+          scores[game.otherTeam] += roundScore(prevGame.scores[game.committedTeam])
           log.info("${game.otherTeam} gains points from other team that were held litige in previous game")
         }
         prevGame = previousGame(prevGame)
@@ -86,7 +86,7 @@ class Partie
     null
   }
 
-  int round(int score) {
+  int roundScore(int score) {
     Math.round(score/10) * 10
   }
 
@@ -103,8 +103,7 @@ class Partie
   {
     def players = [team1.first, team2.first, team1.second, team2.second]
     def index = players.indexOf(from)
-    index += 1
-    index %= 4
+    index = (index + 1) % 4
     players[index]
   }
 }
