@@ -31,6 +31,28 @@ class Game
     dealCards()
   }
 
+  def selectionPhase1(Card candidate)
+  {
+    log.info("turning over candidate card ${candidate}")
+    log.info("envoi a ${candidate.suit}?")
+    def response = withEachPlayerUntilReturns { Player player ->
+      if (player.envoi(candidate)) {
+        log.info("${player} says yes for ${candidate.suit}")
+        envoi(candidate, player)
+        return [player, candidate]
+      } else {
+        log.info("${player} passes")
+        return null
+      }
+    }
+
+    if (!response) {
+      done = true
+    }
+
+    response
+  }
+
   private void initScores() {
     scores[team1] = 0
     scores[team2] = 0
@@ -43,26 +65,26 @@ class Game
     showPlayerCards()
   }
 
-  private void dealRemainingCards()
+  private void dealRemainingCards(Card chosenCard)
   {
     log.info("Dealing remaining cards..")
-    deck.dealRemaining(players())
+    deck.dealRemaining(players(), committedPlayer, chosenCard)
     showPlayerCards()
   }
 
   private void showPlayerCards()
   {
-    withEachPlayer { Player player->
+    withEachPlayer { Player player ->
       player.showHand()
     }
   }
 
-  def envoi(Suit suit, Player player)
+  def envoi(Card chosenCard, Player player)
   {
     this.committedPlayer = player
-    this.atout = suit
-    log.info("Game starting with ${player} envoie a ${suit}")
-    dealRemainingCards()
+    this.atout = chosenCard.suit
+    log.info("Game starting with ${player} envoie a ${chosenCard.suit}")
+    dealRemainingCards(chosenCard)
   }
 
   List<Player> players()
@@ -80,6 +102,17 @@ class Game
       closure.call(player)
       player = partie.nextPlayer(player)
     }
+  }
+  def withEachPlayerUntilReturns(Closure closure) {
+    Player player = starter
+    def response = null
+    def count = 1
+    while (!response && count <= 4) {
+      response = closure.call(player)
+      player = partie.nextPlayer(player)
+      count++
+    }
+    response
   }
 
   def getCommittedTeam()

@@ -13,11 +13,22 @@ import static Suit.Trefle
 
 class CardSpec extends Specification
 {
-  @Shared Card aceDeCarreau  = new Card(type: Ace, suit: Carreau)
+  @Shared Card aceDeCarreau = new Card(type: Ace, suit: Carreau)
   @Shared Card neufDeCoeur = new Card(type: Neuf, suit: Coeur)
 
+
   @Unroll
-  def "should have card title reflecting type and suit"(card, title, points)
+  def "expect card titles to match pattern <cardtype> de <suit>"(card)
+  {
+    expect:
+    card.toString() =~ /\w+ de \w+/
+
+    where:
+    card << [aceDeCarreau, neufDeCoeur]
+  }
+
+  @Unroll
+  def "should have card title reflecting type and suit, and points"(card, title, points)
   {
     expect:
     card.toString() == title
@@ -36,9 +47,9 @@ class CardSpec extends Specification
     card1 != card2
 
     where:
-    card1                                | card2
-    new Card(type: Dix, suit: Coeur)    | new Card(type: Neuf, suit: Coeur)
-    aceDeCarreau | neufDeCoeur
+    card1                            | card2
+    new Card(type: Dix, suit: Coeur) | new Card(type: Neuf, suit: Coeur)
+    aceDeCarreau                     | neufDeCoeur
     new Card(type: Dix, suit: Coeur) | new Card(type: Dix, suit: Trefle)
   }
 

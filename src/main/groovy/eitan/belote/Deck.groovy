@@ -42,12 +42,15 @@ class Deck
     }
   }
 
-  def dealRemaining(List<Player> players)
+  def dealRemaining(List<Player> players, Player committer, Card chosenCard)
   {
-    assert size() == 12
+    assert size() == 11
+
+    committer.dealCard(chosenCard)
 
     players.each { player ->
-      player.dealCards(takeCards(3))
+      int count = (player == committer) ? 2 : 3
+      player.dealCards(takeCards(count))
     }
   }
 

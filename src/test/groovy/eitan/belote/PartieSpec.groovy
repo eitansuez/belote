@@ -2,8 +2,6 @@ package eitan.belote
 
 import spock.lang.Specification
 
-import static Suit.Trefle
-
 class PartieSpec extends Specification
 {
   def Partie partie
@@ -149,7 +147,7 @@ class PartieSpec extends Specification
   {
     def game = partie.nextGame()
     game.begin()
-    game.envoi(Trefle, envoyeur)
+    game.envoi(game.deck.takeCard(), envoyeur)
     game.playRandomly()
     customizeScores.call(game)
     game.finalizeScore()

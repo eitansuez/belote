@@ -1,5 +1,4 @@
 import eitan.belote.*
-import static eitan.belote.Suit.Trefle
 
 def eitan = new Player(name: "Eitan", strategy: new CliStrategy())
 def johnny = new Player(name: "Johnny")
@@ -15,9 +14,14 @@ partie.begin()
 Game game = partie.nextGame()
 game.begin()
 
-game.envoi(Trefle, eitan)
+if (game.selectionPhase1(game.deck.takeCard())) {
+    game.playRandomly()
+    game.finalizeScore()
+}
+else {
+    println "no one envoi'd, quitting.."
+}
 
-game.playRandomly()
-game.finalizeScore()
+
 
 

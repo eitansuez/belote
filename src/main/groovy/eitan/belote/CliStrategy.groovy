@@ -5,11 +5,16 @@ class CliStrategy implements Strategy
   Player player
 
   @Override
+  boolean envoi(Card candidate)
+  {
+    def response = prompt("Would you like to go for ${candidate.suit} (y/n) ?")
+    response?.toLowerCase()?.startsWith("y")
+  }
+
+  @Override
   Card chooseCard(Set<Card> validCards, Round round)
   {
     player.showHand()
-
-    BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
 
     def card = null
 
@@ -18,13 +23,20 @@ class CliStrategy implements Strategy
       if (card != null) {
         println "${card} is not a valid card, try again.."
       }
-      println "${player}: play a card (enter a number): "
-      def input = br.readLine()
+
+      def input = prompt("Play a card (pick a number):")
       def cardIndex = input.toInteger() - 1
       card = player.hand[cardIndex]
     }
 
     println "${player} plays ${card}"
     card
+  }
+
+  // TODO: improve this implementation to use a closure;  figure out how to return response
+  private String prompt(String caption) {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
+    println "${player}: ${caption} "
+    br.readLine()
   }
 }

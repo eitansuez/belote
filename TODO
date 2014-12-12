@@ -1,14 +1,18 @@
 
+- selectionPhase method should be argument-less
+- introduce a dealer should clean up some of the code
+-
+
+ - flesh out the playing of a game as a script that uses a cli-based human
+ - flesh out the envoi selection process/phase:
+   x first selection round
+   second selection round
+   x fact that game may end without any hands played if no one envoie's
+   ? enhance strategy to return pass/envoi decision for each phase
 
 ----logging as cross-cutting concern:
 - perhaps should be a publish/subscribe model
 ..where game engine publishes events that update a user interface
-
------fsm's
- - build out fsm for game, partie?
- - flesh out the development of a hand, and the play of a hand in turns
- - flesh out the envoi selection process/phase:
-   first selection round, second, fact that game may end without any hands played if no one envoie's
 
 ----ui:
 - in the other direction, calls into the engine move it from state to state
@@ -29,7 +33,7 @@ also player 2 can play only from valid cardset.
  likewise, should state at end of each game "stat" such as:
   - team x wins after having committed to trefle
 
------handle belotte rebelotte
+-----handle belote rebelote
 
 -----play strategies:
  how to build a decent playing strategy?

@@ -23,6 +23,12 @@ class DeckSpec extends Specification
     deck.cards.size() == 32
   }
 
+  def "deck is initially full"()
+  {
+    expect:
+    deck.full()
+  }
+
   def "should be able to take a card from deck"()
   {
     when:
@@ -30,19 +36,6 @@ class DeckSpec extends Specification
 
     then:
     deck.cards.size() == 31
-  }
-
-  def "random card drawn has title matching pattern '[type] of [suit]'"()
-  {
-    given:
-    def card = deck.takeCard()
-
-    when:
-    String title = card.toString()
-    println title
-
-    then:
-    title =~ /\w+ de \w+/
   }
 
   def "should be able to take n cards"()
@@ -55,7 +48,7 @@ class DeckSpec extends Specification
     cards.size() == 3
   }
 
-  def "should deal a deck (first phase)"()
+  def "should deal 20 cards in first phase"()
   {
     when:
     deck.deal([eitan, rony, johnny, corinne])
@@ -64,22 +57,17 @@ class DeckSpec extends Specification
     deck.size() == 12
   }
 
-  def "should be able to deal remainder after selection phase"()
+  def "should deal remainder of cards after selection phase"()
   {
     given:
     deck.deal([eitan, rony, johnny, corinne])
+    Card chosen = deck.takeCard()
 
     when:
-    deck.dealRemaining([eitan, rony, johnny, corinne])
+    deck.dealRemaining([eitan, rony, johnny, corinne], eitan, chosen)
 
     then:
-    deck.cards.empty
-  }
-
-  def "deck is initially full"()
-  {
-    expect:
-    deck.full()
+    deck.empty()
   }
 
 }

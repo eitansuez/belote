@@ -42,6 +42,10 @@ class Player
     card
   }
 
+  boolean envoi(Card candidate) {
+    strategy.envoi(candidate)
+  }
+
   def playCard(Card card)
   {
     assert hand.contains(card)
