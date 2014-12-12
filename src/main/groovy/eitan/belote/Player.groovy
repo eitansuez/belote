@@ -16,15 +16,15 @@ class Player
     s.player = this
   }
 
-  def dealCard(Card card)
+  def receiveCard(Card card)
   {
     hand << card
   }
 
-  def dealCards(List<Card> cards)
+  def receiveCards(List<Card> cards)
   {
     cards.each { card ->
-      dealCard(card)
+      receiveCard(card)
     }
   }
 

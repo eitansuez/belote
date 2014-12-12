@@ -147,7 +147,7 @@ class PartieSpec extends Specification
   {
     def game = partie.nextGame()
     game.begin()
-    game.envoi(game.deck.takeCard(), envoyeur)
+    game.envoi(game.dealer.turnUpCandidateCard(), envoyeur)
     game.playRandomly()
     customizeScores.call(game)
     game.finalizeScore()

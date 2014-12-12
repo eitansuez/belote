@@ -35,7 +35,7 @@ class PlayerSpec extends Specification
   def "player can be dealt a card"()
   {
     when:
-    eitan.dealCard(deck.takeCard())
+    eitan.receiveCard(deck.takeCard())
 
     then:
     deck.size() == 31
@@ -45,7 +45,7 @@ class PlayerSpec extends Specification
   def "player can be dealt multiple cards"()
   {
     when:
-    eitan.dealCards(deck.takeCards(3))
+    eitan.receiveCards(deck.takeCards(3))
 
     then:
     deck.size() == 29
@@ -55,7 +55,7 @@ class PlayerSpec extends Specification
   def "player can play a card"()
   {
     given:
-    eitan.dealCards(deck.takeCards(8))
+    eitan.receiveCards(deck.takeCards(8))
     def firstCard = eitan.hand.first()
 
     when:
@@ -76,7 +76,7 @@ class PlayerSpec extends Specification
   def "attempt to play a card not in player's hand should throw an exception"()
   {
     given:
-    eitan.dealCard(new Card(suit: Pique, type: Sept))
+    eitan.receiveCard(new Card(suit: Pique, type: Sept))
 
     when:
     eitan.playCard(new Card(suit: Pique, type: Huit))
@@ -88,7 +88,7 @@ class PlayerSpec extends Specification
   def "player 1 can play any card"()
   {
     given:
-    eitan.dealCards(deck.takeCards(8))
+    eitan.receiveCards(deck.takeCards(8))
 
     when:
     def round = new Round(cards: [], players: [], atout: Trefle)
@@ -101,11 +101,11 @@ class PlayerSpec extends Specification
   def "player 2 must follow suit"()
   {
     given:
-    eitan.dealCard(new Card(type: Ace, suit: Trefle))
-    eitan.dealCard(new Card(type: Dix, suit: Coeur))
-    eitan.dealCard(new Card(type: Huit, suit: Carreau))
-    eitan.dealCard(new Card(type: Dame, suit: Pique))
-    eitan.dealCard(new Card(type: Dame, suit: Coeur))
+    eitan.receiveCard(new Card(type: Ace, suit: Trefle))
+    eitan.receiveCard(new Card(type: Dix, suit: Coeur))
+    eitan.receiveCard(new Card(type: Huit, suit: Carreau))
+    eitan.receiveCard(new Card(type: Dame, suit: Pique))
+    eitan.receiveCard(new Card(type: Dame, suit: Coeur))
 
     def placed = [new Card(type: Huit, suit: Coeur)]
 
@@ -121,11 +121,11 @@ class PlayerSpec extends Specification
   def "player 2 must cut"()
   {
     given:
-    eitan.dealCard(new Card(type: Ace, suit: Trefle))
-    eitan.dealCard(new Card(type: Dix, suit: Coeur))
-    eitan.dealCard(new Card(type: Huit, suit: Carreau))
-    eitan.dealCard(new Card(type: Dame, suit: Trefle))
-    eitan.dealCard(new Card(type: Dame, suit: Coeur))
+    eitan.receiveCard(new Card(type: Ace, suit: Trefle))
+    eitan.receiveCard(new Card(type: Dix, suit: Coeur))
+    eitan.receiveCard(new Card(type: Huit, suit: Carreau))
+    eitan.receiveCard(new Card(type: Dame, suit: Trefle))
+    eitan.receiveCard(new Card(type: Dame, suit: Coeur))
 
     def placed = [new Card(type: Huit, suit: Pique)]
 
@@ -140,11 +140,11 @@ class PlayerSpec extends Specification
   def "player 2 who cannot follow suit and cannot cut should play any card"()
   {
     given:
-    eitan.dealCard(new Card(type: Ace, suit: Coeur))
-    eitan.dealCard(new Card(type: Dix, suit: Coeur))
-    eitan.dealCard(new Card(type: Dame, suit: Coeur))
-    eitan.dealCard(new Card(type: Huit, suit: Carreau))
-    eitan.dealCard(new Card(type: Dame, suit: Carreau))
+    eitan.receiveCard(new Card(type: Ace, suit: Coeur))
+    eitan.receiveCard(new Card(type: Dix, suit: Coeur))
+    eitan.receiveCard(new Card(type: Dame, suit: Coeur))
+    eitan.receiveCard(new Card(type: Huit, suit: Carreau))
+    eitan.receiveCard(new Card(type: Dame, suit: Carreau))
 
     def placed = [new Card(type: Huit, suit: Pique)]
 
@@ -159,11 +159,11 @@ class PlayerSpec extends Specification
   def "player 3 must raise cut of previous player"()
   {
     given:
-    eitan.dealCard(new Card(type: Ace, suit: Trefle))
-    eitan.dealCard(new Card(type: Roi, suit: Trefle))
-    eitan.dealCard(new Card(type: Sept, suit: Trefle))
-    eitan.dealCard(new Card(type: Huit, suit: Carreau))
-    eitan.dealCard(new Card(type: Dame, suit: Coeur))
+    eitan.receiveCard(new Card(type: Ace, suit: Trefle))
+    eitan.receiveCard(new Card(type: Roi, suit: Trefle))
+    eitan.receiveCard(new Card(type: Sept, suit: Trefle))
+    eitan.receiveCard(new Card(type: Huit, suit: Carreau))
+    eitan.receiveCard(new Card(type: Dame, suit: Coeur))
 
     def placed = [new Card(type: Huit, suit: Pique), new Card(type: Dame, suit: Trefle)]
 
@@ -178,11 +178,11 @@ class PlayerSpec extends Specification
   def "player 3 cannot raise cut, but must play an atout nonetheless"()
   {
     given:
-    eitan.dealCard(new Card(type: Ace, suit: Coeur))
-    eitan.dealCard(new Card(type: Roi, suit: Coeur))
-    eitan.dealCard(new Card(type: Sept, suit: Trefle))
-    eitan.dealCard(new Card(type: Huit, suit: Carreau))
-    eitan.dealCard(new Card(type: Dame, suit: Coeur))
+    eitan.receiveCard(new Card(type: Ace, suit: Coeur))
+    eitan.receiveCard(new Card(type: Roi, suit: Coeur))
+    eitan.receiveCard(new Card(type: Sept, suit: Trefle))
+    eitan.receiveCard(new Card(type: Huit, suit: Carreau))
+    eitan.receiveCard(new Card(type: Dame, suit: Coeur))
 
     def placed = [new Card(type: Huit, suit: Pique), new Card(type: Dame, suit: Trefle)]
 
@@ -197,11 +197,11 @@ class PlayerSpec extends Specification
   def "a round of atout, player 3 must raise"()
   {
     given:
-    eitan.dealCard(new Card(type: Ace, suit: Trefle))
-    eitan.dealCard(new Card(type: Roi, suit: Trefle))
-    eitan.dealCard(new Card(type: Sept, suit: Trefle))
-    eitan.dealCard(new Card(type: Huit, suit: Carreau))
-    eitan.dealCard(new Card(type: Dame, suit: Coeur))
+    eitan.receiveCard(new Card(type: Ace, suit: Trefle))
+    eitan.receiveCard(new Card(type: Roi, suit: Trefle))
+    eitan.receiveCard(new Card(type: Sept, suit: Trefle))
+    eitan.receiveCard(new Card(type: Huit, suit: Carreau))
+    eitan.receiveCard(new Card(type: Dame, suit: Coeur))
 
     def placed = [new Card(type: Huit, suit: Trefle), new Card(type: Dame, suit: Trefle)]
 
@@ -216,11 +216,11 @@ class PlayerSpec extends Specification
   def "a round of atout, player 3 cannot raise"()
   {
     given:
-    eitan.dealCard(new Card(type: Dame, suit: Trefle))
-    eitan.dealCard(new Card(type: Roi, suit: Trefle))
-    eitan.dealCard(new Card(type: Sept, suit: Trefle))
-    eitan.dealCard(new Card(type: Huit, suit: Carreau))
-    eitan.dealCard(new Card(type: Dame, suit: Coeur))
+    eitan.receiveCard(new Card(type: Dame, suit: Trefle))
+    eitan.receiveCard(new Card(type: Roi, suit: Trefle))
+    eitan.receiveCard(new Card(type: Sept, suit: Trefle))
+    eitan.receiveCard(new Card(type: Huit, suit: Carreau))
+    eitan.receiveCard(new Card(type: Dame, suit: Coeur))
 
     def placed = [new Card(type: Huit, suit: Trefle), new Card(type: Ace, suit: Trefle)]
 
@@ -236,11 +236,11 @@ class PlayerSpec extends Specification
   def "a round of atout, player 3 doesn't have any"()
   {
     given:
-    eitan.dealCard(new Card(type: Dame, suit: Trefle))
-    eitan.dealCard(new Card(type: Roi, suit: Trefle))
-    eitan.dealCard(new Card(type: Sept, suit: Trefle))
-    eitan.dealCard(new Card(type: Huit, suit: Carreau))
-    eitan.dealCard(new Card(type: Dame, suit: Coeur))
+    eitan.receiveCard(new Card(type: Dame, suit: Trefle))
+    eitan.receiveCard(new Card(type: Roi, suit: Trefle))
+    eitan.receiveCard(new Card(type: Sept, suit: Trefle))
+    eitan.receiveCard(new Card(type: Huit, suit: Carreau))
+    eitan.receiveCard(new Card(type: Dame, suit: Coeur))
 
     def placed = [new Card(type: Huit, suit: Pique), new Card(type: Ace, suit: Pique)]
 
@@ -255,11 +255,11 @@ class PlayerSpec extends Specification
   def "player 4 doesn't have to cut because his partner is master, by virtue of having cut"()
   {
     given:
-    eitan.dealCard(new Card(type: Dame, suit: Trefle))
-    eitan.dealCard(new Card(type: Roi, suit: Trefle))
-    eitan.dealCard(new Card(type: Sept, suit: Pique))
-    eitan.dealCard(new Card(type: Huit, suit: Coeur))
-    eitan.dealCard(new Card(type: Dame, suit: Coeur))
+    eitan.receiveCard(new Card(type: Dame, suit: Trefle))
+    eitan.receiveCard(new Card(type: Roi, suit: Trefle))
+    eitan.receiveCard(new Card(type: Sept, suit: Pique))
+    eitan.receiveCard(new Card(type: Huit, suit: Coeur))
+    eitan.receiveCard(new Card(type: Dame, suit: Coeur))
 
     def placed = [
         new Card(type: Dame, suit: Carreau),
@@ -279,11 +279,11 @@ class PlayerSpec extends Specification
   def "player 4 doesn't have to cut because his partner is master, period."()
   {
     given:
-    eitan.dealCard(new Card(type: Dame, suit: Trefle))
-    eitan.dealCard(new Card(type: Roi, suit: Trefle))
-    eitan.dealCard(new Card(type: Sept, suit: Pique))
-    eitan.dealCard(new Card(type: Huit, suit: Coeur))
-    eitan.dealCard(new Card(type: Dame, suit: Coeur))
+    eitan.receiveCard(new Card(type: Dame, suit: Trefle))
+    eitan.receiveCard(new Card(type: Roi, suit: Trefle))
+    eitan.receiveCard(new Card(type: Sept, suit: Pique))
+    eitan.receiveCard(new Card(type: Huit, suit: Coeur))
+    eitan.receiveCard(new Card(type: Dame, suit: Coeur))
 
     def placed = [
         new Card(type: Dame, suit: Carreau),
@@ -303,11 +303,11 @@ class PlayerSpec extends Specification
   def "player 4 has to cut because other team is master"()
   {
     given:
-    eitan.dealCard(new Card(type: Dame, suit: Trefle))
-    eitan.dealCard(new Card(type: Roi, suit: Trefle))
-    eitan.dealCard(new Card(type: Sept, suit: Pique))
-    eitan.dealCard(new Card(type: Huit, suit: Coeur))
-    eitan.dealCard(new Card(type: Dame, suit: Coeur))
+    eitan.receiveCard(new Card(type: Dame, suit: Trefle))
+    eitan.receiveCard(new Card(type: Roi, suit: Trefle))
+    eitan.receiveCard(new Card(type: Sept, suit: Pique))
+    eitan.receiveCard(new Card(type: Huit, suit: Coeur))
+    eitan.receiveCard(new Card(type: Dame, suit: Coeur))
 
     def placed = [
         new Card(type: Dame, suit: Carreau),

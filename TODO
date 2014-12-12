@@ -1,14 +1,11 @@
 
-- selectionPhase method should be argument-less
-- introduce a dealer should clean up some of the code
--
-
- - flesh out the playing of a game as a script that uses a cli-based human
  - flesh out the envoi selection process/phase:
    x first selection round
    second selection round
    x fact that game may end without any hands played if no one envoie's
    ? enhance strategy to return pass/envoi decision for each phase
+
+ - flesh out the playing of a game as a script that uses a cli-based human
 
 ----logging as cross-cutting concern:
 - perhaps should be a publish/subscribe model

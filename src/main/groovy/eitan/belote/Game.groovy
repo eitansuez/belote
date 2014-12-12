@@ -6,7 +6,7 @@ import groovy.util.logging.Slf4j
 class Game
 {
   Partie partie
-  Deck deck = new Deck()
+  Dealer dealer = new Dealer()
 
   Team team1, team2
   def scores = [:]
@@ -61,14 +61,14 @@ class Game
   private void dealCards()
   {
     log.info("Dealing cards..")
-    deck.deal(players())
+    dealer.deal(players())
     showPlayerCards()
   }
 
-  private void dealRemainingCards(Card chosenCard)
+  private void dealRemainingCards()
   {
     log.info("Dealing remaining cards..")
-    deck.dealRemaining(players(), committedPlayer, chosenCard)
+    dealer.dealRemaining(players(), committedPlayer)
     showPlayerCards()
   }
 
@@ -84,7 +84,7 @@ class Game
     this.committedPlayer = player
     this.atout = chosenCard.suit
     log.info("Game starting with ${player} envoie a ${chosenCard.suit}")
-    dealRemainingCards(chosenCard)
+    dealRemainingCards()
   }
 
   List<Player> players()

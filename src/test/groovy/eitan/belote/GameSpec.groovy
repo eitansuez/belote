@@ -16,8 +16,6 @@ class GameSpec extends Specification
 
   def setup()
   {
-    deck = GroovySpy(Deck)
-
     eitan = GroovySpy(Player, constructorArgs: [[name: 'Eitan']]) {
       envoi(_) >> true
     }
@@ -36,7 +34,10 @@ class GameSpec extends Specification
     partie.begin()
 
     game = partie.nextGame()
-    game.deck = deck // so can spy
+
+    deck = GroovySpy(Deck)
+    game.dealer = GroovySpy(Dealer)
+    game.dealer.deck = deck // so can spy
   }
 
   def "should be able to construct a game with two teams and a card deck"()
@@ -45,7 +46,7 @@ class GameSpec extends Specification
     game.begin()
 
     then:
-    1 * deck.deal(_)
+    1 * game.dealer.deal(_)
     eitan.hand.size() == 5
     deck.size() == 12
     game.scores[game.team1] == 0
@@ -64,11 +65,11 @@ class GameSpec extends Specification
     game.begin()
 
     then:
-    5 * eitan.dealCard(_)
-    5 * johnny.dealCard(_)
+    5 * eitan.receiveCard(_)
+    5 * johnny.receiveCard(_)
 
     when:
-    Card card = deck.takeCard()
+    Card card = game.dealer.turnUpCandidateCard()
     game.envoi(card, eitan)
 
     then:
@@ -83,7 +84,7 @@ class GameSpec extends Specification
     game.begin()
 
     when:
-    game.envoi(deck.takeCard(), eitan)
+    game.envoi(game.dealer.turnUpCandidateCard(), eitan)
 
     then:
     game.points(new Card(type: Ace, suit: game.atout)) == 11
@@ -103,11 +104,10 @@ class GameSpec extends Specification
     game.begin()
 
     when:
-    Card card = deck.takeCard()
-    game.envoi(card, eitan)
+    game.envoi(game.dealer.turnUpCandidateCard(), eitan)
 
     then:
-    1 * deck.dealRemaining(_, _, _)
+    1 * game.dealer.dealRemaining(_, _)
     deck.empty()
     game.starter == eitan
   }
@@ -116,8 +116,7 @@ class GameSpec extends Specification
   {
     given:
     game.begin()
-    Card card = deck.takeCard()
-    game.envoi(card, eitan)
+    game.envoi(game.dealer.turnUpCandidateCard(), eitan)
     game.atout = Trefle
 
     when:
@@ -140,8 +139,7 @@ class GameSpec extends Specification
   {
     given:
     game.begin()
-    Card card = deck.takeCard()
-    game.envoi(card, eitan)
+    game.envoi(game.dealer.turnUpCandidateCard(), eitan)
 
     when:
     game.playRandomRound()
@@ -157,8 +155,7 @@ class GameSpec extends Specification
   {
     given:
     game.begin()
-    Card card = deck.takeCard()
-    game.envoi(card, eitan)
+    game.envoi(game.dealer.turnUpCandidateCard(), eitan)
 
     when:
     game.playRandomly()
@@ -177,7 +174,7 @@ class GameSpec extends Specification
   def "score finalization adds dix dedere"() {
     given:
     game.begin()
-    game.envoi(deck.takeCard(), eitan)
+    game.envoi(game.dealer.turnUpCandidateCard(), eitan)
     game.atout = Trefle  // override atout
 
     game.playRandomly()
@@ -197,7 +194,7 @@ class GameSpec extends Specification
   def "score finalization handles capot"() {
     given:
     game.begin()
-    game.envoi(deck.takeCard(), eitan)
+    game.envoi(game.dealer.turnUpCandidateCard(), eitan)
     game.atout = Trefle  // override atout
 
     game.playRandomly()
@@ -218,7 +215,7 @@ class GameSpec extends Specification
   def "winning team is capot should also amount to 252 points for winner"() {
     given:
     game.begin()
-    game.envoi(deck.takeCard(), eitan)
+    game.envoi(game.dealer.turnUpCandidateCard(), eitan)
     game.atout = Trefle  // override atout
     game.playRandomly()
     game.scores[game.team1] = 0
@@ -239,7 +236,7 @@ class GameSpec extends Specification
   def "score finalization handles dedans"() {
     given:
     game.begin()
-    game.envoi(deck.takeCard(), eitan)
+    game.envoi(game.dealer.turnUpCandidateCard(), eitan)
     game.atout = Trefle  // override atout
     game.playRandomly()
     game.scores[game.team1] = 80
@@ -260,7 +257,7 @@ class GameSpec extends Specification
   def "score finalization handles litige"() {
     given:
     game.begin()
-    game.envoi(deck.takeCard(), eitan)
+    game.envoi(game.dealer.turnUpCandidateCard(), eitan)
     game.atout = Trefle  // override atout
     game.playRandomly()
     game.scores[game.team1] = 81
@@ -363,8 +360,8 @@ class GameSpec extends Specification
     game.begin()
 
     then:
-    5 * eitan.dealCard(_)
-    5 * johnny.dealCard(_)
+    5 * eitan.receiveCard(_)
+    5 * johnny.receiveCard(_)
   }
 
 
@@ -372,14 +369,14 @@ class GameSpec extends Specification
   {
     when:
     game.begin()
-    game.selectionPhase1(deck.takeCard())
+    game.selectionPhase1(game.dealer.turnUpCandidateCard())
 
     then:
     game.committedPlayer == eitan
     game.committedTeam == game.team1
-    8 * eitan.dealCard(_)
-    8 * johnny.dealCard(_)
-    1 * deck.dealRemaining(players, eitan, _)
+    8 * eitan.receiveCard(_)
+    8 * johnny.receiveCard(_)
+    1 * game.dealer.dealRemaining(players, eitan)
   }
 
   def "everyone passes, game is done, and score is 0"()
@@ -389,7 +386,7 @@ class GameSpec extends Specification
     Player overrideStub = new Player(name: "Eitan") // override stub, everyone now passes
     game.team1.first = overrideStub
     game.starter = overrideStub
-    game.selectionPhase1(deck.takeCard())
+    game.selectionPhase1(game.dealer.turnUpCandidateCard())
 
     then:
     game.done
