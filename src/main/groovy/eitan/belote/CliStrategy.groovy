@@ -12,6 +12,16 @@ class CliStrategy implements Strategy
   }
 
   @Override
+  Suit envoi()
+  {
+    def response = prompt("Any other suit you'd like to go for? (h=heart,d=diamond,s=spade,c=clubs, or p for pass)")
+    if (response?.toLowerCase() == 'p') {
+      return null
+    }
+    Suit.interpretSuitFromAcronym(response)
+  }
+
+  @Override
   Card chooseCard(Set<Card> validCards, Round round)
   {
     player.showHand()

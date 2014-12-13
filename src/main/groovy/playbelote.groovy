@@ -14,7 +14,11 @@ partie.begin()
 Game game = partie.nextGame()
 game.begin()
 
-if (game.selectionPhase1(game.deck.takeCard())) {
+def took = game.selectionPhase1(game.dealer.turnUpCandidateCard())
+if (!took) {
+    took = game.selectionPhase2()
+}
+if (took) {
     game.playRandomly()
     game.finalizeScore()
 }

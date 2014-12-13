@@ -11,6 +11,12 @@ class RandomStrategy implements Strategy
   }
 
   @Override
+  Suit envoi()
+  {
+    null
+  }
+
+  @Override
   Card chooseCard(Set<Card> validCards, Round round)
   {
     validCards.first()

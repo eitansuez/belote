@@ -45,6 +45,9 @@ class Player
   boolean envoi(Card candidate) {
     strategy.envoi(candidate)
   }
+  Suit envoi() {
+    strategy.envoi()
+  }
 
   def playCard(Card card)
   {

@@ -33,15 +33,34 @@ class Game
 
   def selectionPhase1(Card candidate)
   {
-    log.info("turning over candidate card ${candidate}")
     log.info("envoi a ${candidate.suit}?")
+
     def response = withEachPlayerUntilReturns { Player player ->
       if (player.envoi(candidate)) {
         log.info("${player} says yes for ${candidate.suit}")
-        envoi(candidate, player)
+        envoi(candidate.suit, player)
         return [player, candidate]
       } else {
         log.info("${player} passes")
+        return null
+      }
+    }
+
+    response
+  }
+
+  def selectionPhase2()
+  {
+    log.info("second round of atout selection begins..")
+
+    def response = withEachPlayerUntilReturns { Player player ->
+      Suit suit = player.envoi()
+      if (suit) {
+        log.info("${player} says yes for ${suit}")
+        envoi(suit, player)
+        return [player, suit]
+      } else {
+        log.info("${player} passes again")
         return null
       }
     }
@@ -65,13 +84,6 @@ class Game
     showPlayerCards()
   }
 
-  private void dealRemainingCards()
-  {
-    log.info("Dealing remaining cards..")
-    dealer.dealRemaining(players(), committedPlayer)
-    showPlayerCards()
-  }
-
   private void showPlayerCards()
   {
     withEachPlayer { Player player ->
@@ -79,12 +91,14 @@ class Game
     }
   }
 
-  def envoi(Card chosenCard, Player player)
+  def envoi(Suit suit, Player player)
   {
     this.committedPlayer = player
-    this.atout = chosenCard.suit
-    log.info("Game starting with ${player} envoie a ${chosenCard.suit}")
-    dealRemainingCards()
+    this.atout = suit
+    log.info("Game starting with ${player} envoie a ${suit}")
+
+    dealer.dealRemaining(players(), committedPlayer)
+    showPlayerCards()
   }
 
   List<Player> players()

@@ -12,6 +12,13 @@ enum Suit
     }
   }
 
+  static Suit interpretSuitFromAcronym(String acronym)
+  {
+    def map = ['s' : Pique, 'c' : Trefle, 'h' : Coeur, 'd' : Carreau]
+    assert acronym != null && map.keySet().contains(acronym)
+    map[acronym]
+  }
+
   @Override
   String toString() {
     name()

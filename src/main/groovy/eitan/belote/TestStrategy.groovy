@@ -1,5 +1,7 @@
 package eitan.belote
 
+import static eitan.belote.Suit.Trefle
+
 class TestStrategy implements Strategy
 {
   Player player
@@ -7,7 +9,13 @@ class TestStrategy implements Strategy
   @Override
   boolean envoi(Card candidate)
   {
-    return false
+    false
+  }
+
+  @Override
+  Suit envoi()
+  {
+    null
   }
 
   @Override

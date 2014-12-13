@@ -70,7 +70,7 @@ class GameSpec extends Specification
 
     when:
     Card card = game.dealer.turnUpCandidateCard()
-    game.envoi(card, eitan)
+    game.envoi(card.suit, eitan)
 
     then:
     game.atout == card.suit
@@ -84,7 +84,7 @@ class GameSpec extends Specification
     game.begin()
 
     when:
-    game.envoi(game.dealer.turnUpCandidateCard(), eitan)
+    game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
 
     then:
     game.points(new Card(type: Ace, suit: game.atout)) == 11
@@ -104,7 +104,7 @@ class GameSpec extends Specification
     game.begin()
 
     when:
-    game.envoi(game.dealer.turnUpCandidateCard(), eitan)
+    game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
 
     then:
     1 * game.dealer.dealRemaining(_, _)
@@ -116,7 +116,7 @@ class GameSpec extends Specification
   {
     given:
     game.begin()
-    game.envoi(game.dealer.turnUpCandidateCard(), eitan)
+    game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
     game.atout = Trefle
 
     when:
@@ -141,7 +141,7 @@ class GameSpec extends Specification
   {
     given:
     game.begin()
-    game.envoi(game.dealer.turnUpCandidateCard(), eitan)
+    game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
 
     when:
     game.playRandomRound()
@@ -157,7 +157,7 @@ class GameSpec extends Specification
   {
     given:
     game.begin()
-    game.envoi(game.dealer.turnUpCandidateCard(), eitan)
+    game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
 
     when:
     game.playRandomly()
@@ -176,7 +176,7 @@ class GameSpec extends Specification
   def "score finalization adds dix dedere"() {
     given:
     game.begin()
-    game.envoi(game.dealer.turnUpCandidateCard(), eitan)
+    game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
     game.atout = Trefle  // override atout
 
     game.playRandomly()
@@ -196,7 +196,7 @@ class GameSpec extends Specification
   def "score finalization handles capot"() {
     given:
     game.begin()
-    game.envoi(game.dealer.turnUpCandidateCard(), eitan)
+    game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
     game.atout = Trefle  // override atout
 
     game.playRandomly()
@@ -217,7 +217,7 @@ class GameSpec extends Specification
   def "winning team is capot should also amount to 252 points for winner"() {
     given:
     game.begin()
-    game.envoi(game.dealer.turnUpCandidateCard(), eitan)
+    game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
     game.atout = Trefle  // override atout
     game.playRandomly()
     game.scores[game.team1] = 0
@@ -238,7 +238,7 @@ class GameSpec extends Specification
   def "score finalization handles dedans"() {
     given:
     game.begin()
-    game.envoi(game.dealer.turnUpCandidateCard(), eitan)
+    game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
     game.atout = Trefle  // override atout
     game.playRandomly()
     game.scores[game.team1] = 80
@@ -259,7 +259,7 @@ class GameSpec extends Specification
   def "score finalization handles litige"() {
     given:
     game.begin()
-    game.envoi(game.dealer.turnUpCandidateCard(), eitan)
+    game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
     game.atout = Trefle  // override atout
     game.playRandomly()
     game.scores[game.team1] = 81
@@ -381,20 +381,39 @@ class GameSpec extends Specification
     1 * game.dealer.dealRemaining(players, eitan)
   }
 
+  def "everyone passes first round, game is not done, and score is 0"()
+  {
+    when:
+    game.begin()
+    setupPlayerToPass()
+    def commit = game.selectionPhase1(game.dealer.turnUpCandidateCard())
+
+    then:
+    !commit
+    !game.done
+    game.atout == null
+  }
+
   def "everyone passes, game is done, and score is 0"()
   {
     when:
     game.begin()
-    Player overrideStub = new Player(name: "Eitan") // override stub, everyone now passes
-    game.team1.first = overrideStub
-    game.starter = overrideStub
+    setupPlayerToPass()
     game.selectionPhase1(game.dealer.turnUpCandidateCard())
+    game.selectionPhase2()
 
     then:
-    game.done
     game.scores[game.team1] == 0
     game.scores[game.team2] == 0
+    game.done
     game.atout == null
+  }
+
+  private void setupPlayerToPass()
+  {
+    Player player = new Player(name: "Eitan")
+    game.team1.first = player
+    game.starter = player
   }
 
 }
