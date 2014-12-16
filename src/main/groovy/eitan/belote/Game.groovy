@@ -218,7 +218,11 @@ class Game
   }
 
   boolean dedans() {
-    scores[committedTeam] < scores[otherTeam]
+    boolean isDedans = scores[committedTeam] < scores[otherTeam]
+    if (isDedans) {
+      log.info("dedans with score: ${scores[committedTeam]}/${scores[otherTeam]}")
+    }
+    isDedans
   }
 
   boolean litige() {
