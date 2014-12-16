@@ -119,10 +119,10 @@ class PartieSpec extends Specification
   {
     given:
     partie.begin()
-    playGameWithScoreBeforeFinalize(75, 77)
+    def game = playGameWithScoreBeforeFinalize(75, 77)
 
     when:
-    partie.gameDone()
+    partie.gameDone(game)
 
     then:
     partie.scores[partie.team1] == 90
@@ -158,12 +158,12 @@ class PartieSpec extends Specification
   {
     given:
     partie.begin()
-    playGameWithScoreBeforeFinalize(75, 77)
-    partie.gameDone()
-    playGameWithScoreBeforeFinalize(100, 52)
+    def game = playGameWithScoreBeforeFinalize(75, 77)
+    partie.gameDone(game)
+    game = playGameWithScoreBeforeFinalize(100, 52)
 
     when:
-    partie.gameDone()
+    partie.gameDone(game)
 
     then:
     partie.scores[partie.team1] == 200
@@ -178,8 +178,8 @@ class PartieSpec extends Specification
     when:
     while (!partie.done())
     {
-      playGameRandomly()
-      partie.gameDone()
+      def game = playGameRandomly()
+      partie.gameDone(game)
     }
 
     then:
@@ -190,10 +190,10 @@ class PartieSpec extends Specification
   {
     given:
     partie.begin()
-    playGameWithScoreBeforeFinalize(71, 81)
+    def game = playGameWithScoreBeforeFinalize(71, 81)
 
     when:
-    partie.gameDone()
+    partie.gameDone(game)
 
     then:
     partie.scores[partie.team1] == 0
@@ -204,12 +204,12 @@ class PartieSpec extends Specification
   {
     given:
     partie.begin()
-    playGameWithScoreBeforeFinalize(71, 81)
-    partie.gameDone()
+    def game = playGameWithScoreBeforeFinalize(71, 81)
+    partie.gameDone(game)
 
     when:
-    playGameWithScoreBeforeFinalize(130, 22)
-    partie.gameDone()
+    game = playGameWithScoreBeforeFinalize(130, 22)
+    partie.gameDone(game)
 
     then:
     partie.scores[partie.team1] == 220
@@ -220,12 +220,12 @@ class PartieSpec extends Specification
   {
     given:
     partie.begin()
-    playGameWithScoreBeforeFinalize(71, 81)
-    partie.gameDone()
+    def game = playGameWithScoreBeforeFinalize(71, 81)
+    partie.gameDone(game)
 
     when:
-    playGameWithScoreBeforeFinalize(40, 112)
-    partie.gameDone()
+    game = playGameWithScoreBeforeFinalize(40, 112)
+    partie.gameDone(game)
 
     then:
     partie.scores[partie.team1] == 0
@@ -236,14 +236,14 @@ class PartieSpec extends Specification
   {
     given:
     partie.begin()
-    playGameWithScoreBeforeFinalize(71, 81)
-    partie.gameDone()
-    playGameWithScoreBeforeFinalize(71, 81)
-    partie.gameDone()
+    def game = playGameWithScoreBeforeFinalize(71, 81)
+    partie.gameDone(game)
+    game = playGameWithScoreBeforeFinalize(71, 81)
+    partie.gameDone(game)
 
     when:
-    playGameWithScoreBeforeFinalize(130, 22)
-    partie.gameDone()
+    game = playGameWithScoreBeforeFinalize(130, 22)
+    partie.gameDone(game)
 
     then:
     partie.scores[partie.team1] == 300
@@ -254,18 +254,56 @@ class PartieSpec extends Specification
   {
     given:
     partie.begin()
-    playGameWithScoreBeforeFinalize(71, 81, eitan)
-    partie.gameDone()
-    playGameWithScoreBeforeFinalize(71, 81, corinne)
-    partie.gameDone()
+    def game = playGameWithScoreBeforeFinalize(71, 81, eitan)
+    partie.gameDone(game)
+    game = playGameWithScoreBeforeFinalize(71, 81, corinne)
+    partie.gameDone(game)
 
     when:
-    playGameWithScoreBeforeFinalize(130, 22, eitan)
-    partie.gameDone()
+    game = playGameWithScoreBeforeFinalize(130, 22, eitan)
+    partie.gameDone(game)
 
     then:
     partie.scores[partie.team1] == 300
     partie.scores[partie.team2] == 180
+  }
+
+  def "previous game should be previous played"()
+  {
+    given:
+    partie.begin()
+
+    when:
+    def firstGame = playGameWithScoreBeforeFinalize(71, 81, eitan)
+    partie.gameDone(firstGame)
+    def secondGame = playGameWithScoreBeforeFinalize(71, 81, corinne)
+    partie.gameDone(secondGame)
+
+    then:
+    partie.previousGame(secondGame) == firstGame
+    partie.previousGame(firstGame) == null
+  }
+
+  def "previous game excludes games that were forfeited (must have been played)"()
+  {
+    given:
+    partie.begin()
+
+    when:
+    def firstGame = partie.nextGame()
+    firstGame.begin()
+    firstGame.selectionPhase1(firstGame.dealer.turnUpCandidateCard())
+    firstGame.selectionPhase2()
+
+    then:
+    firstGame.forfeited()
+
+    when:
+    def secondGame = playGameWithScoreBeforeFinalize(71, 81, corinne)
+    partie.gameDone(secondGame)
+
+    then:
+    partie.previousGame(secondGame) == null
   }
 
 }

@@ -9,22 +9,14 @@ Partie partie = new Partie(
     team1: new Team(first: eitan, second: rony),
     team2: new Team(first: johnny, second: corinne)
 )
+
 partie.begin()
+while (!partie.done())
+{
+  partie.nextGame().play()
+}
 
-Game game = partie.nextGame()
-game.begin()
-
-def took = game.selectionPhase1(game.dealer.turnUpCandidateCard())
-if (!took) {
-    took = game.selectionPhase2()
-}
-if (took) {
-    game.playRandomly()
-    game.finalizeScore()
-}
-else {
-    println "no one envoi'd, quitting.."
-}
+println "Partie is over."
 
 
 

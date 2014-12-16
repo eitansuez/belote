@@ -10,6 +10,12 @@ class Player
   Team team
   Strategy strategy = new RandomStrategy(player: this)
 
+
+  void gameDone()
+  {
+    hand.clear()
+  }
+
   void setStrategy(Strategy s)
   {
     this.strategy = s

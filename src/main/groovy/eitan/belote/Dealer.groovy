@@ -23,8 +23,8 @@ class Dealer
   Card candidate
 
   Card turnUpCandidateCard() {
-    log.info("turning over candidate card ${candidate}")
     candidate = deck.takeCard()
+    log.info("turning over candidate card ${candidate}")
     candidate
   }
 

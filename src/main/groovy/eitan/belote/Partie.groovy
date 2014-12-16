@@ -35,16 +35,14 @@ class Partie
     game
   }
 
-  def gameDone()
+  def gameDone(Game game)
   {
-    def game = games.last()
-    assert game.done
-
     transferScores(game)
   }
 
   private void transferScores(Game game)
   {
+    assert game.done
     if (game.litige()) {
       def otherTeam = game.otherTeam
       scores[otherTeam] += roundScore(game.scores[otherTeam])
@@ -76,12 +74,15 @@ class Partie
     log.info("Partie score:  ${team1}: ${scores[team1]} / ${team2}: ${scores[team2]}")
   }
 
-  private Game previousGame(Game game)
+  Game previousGame(Game game)
   {
     int index = games.indexOf(game) - 1
-    if (index >= 0)
+    while (index >= 0)
     {
-      return games[index]
+      if (!games[index].forfeited()) {
+        return games[index]
+      }
+      index -= 1
     }
     null
   }

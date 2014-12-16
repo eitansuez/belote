@@ -9,7 +9,7 @@ class Game
   Dealer dealer = new Dealer()
 
   Team team1, team2
-  def scores = [:]
+  Map<Team, Integer> scores = [:]
 
   Suit atout
   Player committedPlayer
@@ -66,6 +66,13 @@ class Game
     }
 
     if (!response) {
+
+      log.info "no one envoi'd, game done"
+
+      players().each { p ->
+        p.gameDone()
+      }
+
       done = true
     }
 
@@ -211,15 +218,19 @@ class Game
   }
 
   boolean dedans() {
-    scores[committedTeam] < 81
+    scores[committedTeam] < scores[otherTeam]
   }
 
   boolean litige() {
-    scores[committedTeam] == 81
+    scores[committedTeam] == scores[otherTeam]
   }
 
   boolean isLastRound() {
     rounds.size() == 8
+  }
+
+  boolean forfeited() {
+    done && !committedPlayer
   }
 
   void playRandomly()
@@ -260,5 +271,17 @@ class Game
     scores[round.winner.team] += round.points
   }
 
+
+  def play()
+  {
+    begin()
+
+    if (selectionPhase1(dealer.turnUpCandidateCard()) || selectionPhase2())
+    {
+      playRandomly()
+      finalizeScore()
+      partie.gameDone(this)
+    }
+  }
 
 }

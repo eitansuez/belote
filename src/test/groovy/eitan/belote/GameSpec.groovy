@@ -416,4 +416,34 @@ class GameSpec extends Specification
     game.starter = player
   }
 
+  private void setupPlayerToEnvoiA(Suit suit) {
+    Player player = GroovySpy(Player, constructorArgs: [[name: 'Eitan']]) {
+      envoi() >> suit
+    }
+    game.team1.first = player
+    game.starter = player
+  }
+
+  def "envoi occurs during second round of selection phase"()
+  {
+    given:
+    game.begin()
+
+    setupPlayerToPass()
+    Card turnedUp = game.dealer.turnUpCandidateCard()
+    game.selectionPhase1(turnedUp)
+
+    Suit other = Suit.values().find { Suit suit -> suit != game.atout }
+    setupPlayerToEnvoiA(other)
+
+    when:
+    game.selectionPhase2()
+
+    then:
+    game.committedPlayer == game.team1.first
+    game.atout == other
+    ! game.done
+    1 * game.dealer.dealRemaining(_, _)
+  }
+
 }
