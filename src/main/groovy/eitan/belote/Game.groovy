@@ -69,8 +69,8 @@ class Game
 
       log.info "no one envoi'd, game done"
 
-      players().each { p ->
-        p.gameDone()
+      players().each { player ->
+        player.gameDone()
       }
 
       done = true
