@@ -12,10 +12,15 @@ enum Suit
     }
   }
 
+  static def map = ['s' : Pique, 'c' : Trefle, 'h' : Coeur, 'd' : Carreau]
+
+  static boolean isValidAcronym(String acronym)
+  {
+    acronym != null && map.keySet().contains(acronym)
+  }
   static Suit interpretSuitFromAcronym(String acronym)
   {
-    def map = ['s' : Pique, 'c' : Trefle, 'h' : Coeur, 'd' : Carreau]
-    assert acronym != null && map.keySet().contains(acronym)
+    assert isValidAcronym(acronym)
     map[acronym]
   }
 
