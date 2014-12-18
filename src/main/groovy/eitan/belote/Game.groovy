@@ -3,7 +3,7 @@ package eitan.belote
 import groovy.util.logging.Slf4j
 
 @Slf4j
-class Game
+class Game implements Emitter
 {
   Partie partie
   Dealer dealer = new Dealer()
@@ -273,6 +273,7 @@ class Game
   private void updateScore(Round round)
   {
     scores[round.winner.team] += round.points
+    emit("gameUpdate", [team1, scores[team1], team2, scores[team2]])
   }
 
 

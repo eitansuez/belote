@@ -3,7 +3,7 @@ package eitan.belote
 import groovy.util.logging.Slf4j
 
 @Slf4j
-class Dealer
+class Dealer implements Emitter
 {
   Deck deck = new Deck()
 
@@ -24,7 +24,7 @@ class Dealer
 
   Card turnUpCandidateCard() {
     candidate = deck.takeCard()
-    log.info("turning over candidate card ${candidate}")
+    emit("turnUpCard", [candidate])
     candidate
   }
 

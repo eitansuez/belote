@@ -3,7 +3,7 @@ package eitan.belote
 import groovy.util.logging.Slf4j
 
 @Slf4j
-class Player
+class Player implements Emitter
 {
   String name
   List<Card> hand = []
@@ -14,6 +14,7 @@ class Player
   void gameDone()
   {
     hand.clear()
+    emit("clearHand", [this])
   }
 
   void setStrategy(Strategy s)
@@ -25,6 +26,7 @@ class Player
   def receiveCard(Card card)
   {
     hand << card
+    emit("receiveCard", [this, card])
   }
 
   def receiveCards(List<Card> cards)
@@ -60,6 +62,7 @@ class Player
     assert hand.contains(card)
 
     if (hand.remove(card)) {
+      emit("playCard", [this, card])
       return card
     }
   }

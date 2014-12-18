@@ -3,7 +3,7 @@ package eitan.belote
 import groovy.util.logging.Slf4j
 
 @Slf4j
-class Partie
+class Partie implements Emitter
 {
   Team team1, team2
   Map<Team, Integer> scores = [:]
@@ -47,7 +47,6 @@ class Partie
       def otherTeam = game.otherTeam
       scores[otherTeam] += roundScore(game.scores[otherTeam])
       log.info("${game.committedTeam} is litige")
-      return
     }
     else
     {

@@ -3,7 +3,7 @@ package eitan.belote
 import groovy.util.logging.Slf4j
 
 @Slf4j
-class Round
+class Round implements Emitter
 {
   List<Card> cards = []
   List<Player> players = []
@@ -30,7 +30,7 @@ class Round
   {
     calculateScore()
     winner = master()
-    log.info(">>${winner} wins hand (${points} points)\n")
+    emit("roundEnds", [winner, points])
   }
 
   private Player playerOf(Card winningCard)
