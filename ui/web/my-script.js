@@ -40,8 +40,6 @@ $(function() {
         cards['9_spades']
     ], groups, 0);
 
-    //chooseCard([cards['7_clubs'], cards['jack_clubs']]);
-
     placeCards([
         cards['10_clubs'],
         cards['10_hearts'],
@@ -66,7 +64,12 @@ $(function() {
         cards['king_spades']
     ], groups, 3);
 
+    //chooseCard([cards['7_clubs'], cards['jack_clubs']]);
+
     turnUpCard(cards['queen_hearts']);
+    cards['queen_hearts'].on('click', function() {
+        placeCards([cards['queen_hearts']], groups, 1);
+    });
 
 });
 
@@ -95,9 +98,9 @@ function setupAreas(c, b) {
     {
         var group = new Group(path);
         group.style = {
-            strokeColor: 'black',
+            strokeColor: '#000',
             dashArray: [4, 10],
-            strokeWidth: 4,
+            strokeWidth: 1,
             strokeCap: 'round'
         };
         groups.push(group);
@@ -130,22 +133,23 @@ function scaleCards(scale) {
 
 function placeCards(hand, groups, index) {
     var card = hand[0];
-    placeCard(card, groups[0].bounds.leftCenter + [card.bounds.width/2, 0]);
-    groups[index].addChild(card);
+    var group = groups[index];
+    placeCard(card, groups[0].bounds.leftCenter + [card.bounds.width/2, 0], group);
 
     for (var i=1; i<hand.length; i++) {
-        placeCard(hand[i], hand[i-1].position + cardSeparation);
-        groups[index].addChild(hand[i]);
+        placeCard(hand[i], hand[i-1].position + cardSeparation, group);
     }
 
-    groups[index].rotate(-90*index, table.bounds.center);
+    group.rotate(-90*index, table.bounds.center);
 }
 
 function turnUpCard(card) {
     placeCard(card, table.bounds.center);
 }
 
-function placeCard(card, position) {
+function placeCard(card, position, group) {
+    group.addChild(card);
+
     card.position = position;
     card.visible = true;
     card.bringToFront();
