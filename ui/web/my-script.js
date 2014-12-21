@@ -1,6 +1,7 @@
 var cards = {};
 var cardSeparation;
 var handAspectRatio = 3;
+var selectDelta;
 var table;
 
 function onResize(event) {
@@ -30,7 +31,9 @@ $(function() {
 
     var scale = c / cards['7_clubs'].height;
     scaleCards(scale);
-    cardSeparation = new Size(cards['7_clubs'].bounds.width / 2, 0);
+    var card = randomCard();
+    cardSeparation = [card.bounds.width / 2, 0];
+    selectDelta = [0, card.bounds.height / 5];
 
     placeCards([
         cards['7_clubs'],
@@ -48,6 +51,7 @@ $(function() {
         cards['10_spades'],
         cards['jack_hearts']
     ], groups, 1);
+    chooseCard([cards['10_clubs'], cards['10_spades']]);
 
     placeCards([
         cards['ace_hearts'],
@@ -56,6 +60,7 @@ $(function() {
         cards['queen_clubs'],
         cards['jack_spades']
     ], groups, 2);
+    chooseCard([cards['8_diamonds'], cards['queen_clubs']]);
 
     placeCards([
         cards['ace_clubs'],
@@ -64,6 +69,7 @@ $(function() {
         cards['jack_diamonds'],
         cards['king_spades']
     ], groups, 3);
+    chooseCard([cards['king_spades'], cards['7_spades']]);
 
     turnUpCard(cards['queen_hearts']);
     var counter = 0;
@@ -75,14 +81,49 @@ $(function() {
 
 function randomCard() {
     var index = parseInt(Math.random()*32);
-    cards[index];
+    var key = Object.keys(cards)[index];
+    return cards[key];
 }
 
 function chooseCard(validCards) {
     $.each(validCards, function(index, card) {
         card.selected = true;
-        card.position -= [0, card.bounds.height / 5];
+        card.position -= selectDelta;
+        armCard(card);
     });
+}
+
+function armCard(card) {
+    card.on('click', function() {
+        playCard(card);
+        deselect([card]);
+        deselect(chosenCards(card.parent), true);
+    });
+}
+
+function chosenCards(group) {
+    return group.getItems({className: 'Raster', selected: true});
+}
+
+function deselect(cards, reposition) {
+    $.each(cards, function(index, card) {
+        card.off('click');
+        card.selected = false;
+        if (reposition) {
+            card.position += selectDelta;
+        }
+    });
+}
+
+function playCard(card) {
+    var group = card.parent;
+    var index = group.data.index;
+    group.rotate(90*index, table.bounds.center);
+
+    var position = group.position + [0, -(card.bounds.height+5)];
+    placeCard(card, position);
+
+    group.rotate(-90*index, table.bounds.center);
 }
 
 function setupAreas(c, b) {
@@ -103,6 +144,7 @@ function setupAreas(c, b) {
             strokeWidth: 1,
             strokeCap: 'round'
         };
+        group.data.index = i;
         group.transformContent = false;
         groups.push(group);
         path = path.clone();
