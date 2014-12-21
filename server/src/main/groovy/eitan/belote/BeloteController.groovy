@@ -1,29 +1,31 @@
-package eitan.belote;
+package eitan.belote
 
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.stereotype.Controller;
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.messaging.handler.annotation.MessageMapping
+import org.springframework.stereotype.Controller
 
 @Controller
 public class BeloteController {
 
+    @Autowired
+    StompUI stompUI
+
     @MessageMapping("/newGame")
-    @SendTo("/topic/belote")
     void newGame() throws Exception {
 
-        def eitan = new Player(name: "Eitan", strategy: new CliStrategy())
-        def johnny = new Player(name: "Johnny")
-        def corinne = new Player(name: "Corinne")
-        def rony = new Player(name: "Rony")
+        def eitan = new Player(name: "Eitan", strategy: new CliStrategy(), ui: stompUI)
+        def johnny = new Player(name: "Johnny", ui: stompUI)
+        def corinne = new Player(name: "Corinne", ui: stompUI)
+        def rony = new Player(name: "Rony", ui: stompUI)
 
         def partie = new Partie(
             team1: new Team(first: eitan, second: rony),
             team2: new Team(first: johnny, second: corinne),
-            ui: new StompUI()
+            ui: stompUI
         )
 
         partie.begin()
         def game = partie.nextGame()
-        game.begin()
+        game.play()
     }
 }

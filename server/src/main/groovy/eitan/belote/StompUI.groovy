@@ -2,21 +2,26 @@ package eitan.belote
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.simp.SimpMessagingTemplate
+import org.springframework.stereotype.Component
 
+@Component
 class StompUI implements UI
 {
   @Autowired
-  private SimpMessagingTemplate template;
+  private final SimpMessagingTemplate template;
 
   @Override
   void turnUpCard(Card card)
   {
+    template.convertAndSend('/topic/belote', [cmd: 'turnUpCard',
+                                              args: [card.toString()]])
   }
 
   @Override
   void receiveCard(Player player, Card card)
   {
-    // card -> name
+    template.convertAndSend("/topic/belote", [cmd: 'receiveCard',
+                                              args: [player.name, card.toString()]])
   }
 
   @Override
