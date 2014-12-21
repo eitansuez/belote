@@ -66,6 +66,11 @@ $(function() {
     ], groups, 3);
 
     turnUpCard(cards['queen_hearts']);
+    var counter = 0;
+    cards['queen_hearts'].on('click', function() {
+        placeCard(cards['queen_hearts'], 0, groups[counter]);
+        counter = (counter + 1) % 4;
+    });
 });
 
 function randomCard() {
@@ -129,12 +134,11 @@ function scaleCards(scale) {
 ////
 
 function placeCards(hand, groups, index) {
-    var card = hand[0];
-    var group = groups[index];
-    placeCard(card, groups[index].bounds.leftCenter + [card.bounds.width/2, 0], group);
 
-    for (var i=1; i<hand.length; i++) {
-        placeCard(hand[i], hand[i-1].position + cardSeparation, group);
+    var group = groups[index];
+
+    for (var i=0; i<hand.length; i++) {
+        placeCard(hand[i], null, group);
     }
 
     group.rotate(-90*index, table.bounds.center);
@@ -146,16 +150,26 @@ function turnUpCard(card) {
 
 function placeCard(card, position, group) {
     if (group) {
-        // if has children,
-        //   use position of last child + separation
-        // else
-        //   give it position of group
+        if (hasCards(group))
+        {
+            card.position = group.lastChild.position + cardSeparation;
+        }
+        else
+        {
+            card.position = group.position - [group.bounds.width/2, 0] + [card.bounds.width/2, 0];
+        }
         group.addChild(card);
+    } else {
+        card.position = position;
     }
 
-    card.position = position;
     card.visible = true;
     card.bringToFront();
     return card;
+}
+
+function hasCards(group) {
+    var items = group.getItems({className: 'Raster'});
+    return items && items.length > 0;
 }
 
