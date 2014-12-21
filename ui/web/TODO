@@ -2,8 +2,5 @@
 
 1. introduce underscore.js
 2. find a nice tablecloth to draw at bottom layer
+3. onResize handler
 
-3. want to be able to think of each player's geometry as the same, just in a different coordinate system.  how?
-
-- pivot instead of doing this all the time:
-  -group.bounds.width/2 + card.bounds.width/2 + 50

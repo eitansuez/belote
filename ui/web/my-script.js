@@ -115,15 +115,19 @@ function deselect(cards, reposition) {
     });
 }
 
-function playCard(card) {
+function doInGroupCoordinates(card, what) {
     var group = card.parent;
     var index = group.data.index;
     group.rotate(90*index, table.bounds.center);
-
-    var position = group.position + [0, -(card.bounds.height+5)];
-    placeCard(card, position);
-
+    what.call(null, group);
     group.rotate(-90*index, table.bounds.center);
+}
+
+function playCard(card) {
+    doInGroupCoordinates(card, function(group) {
+        var position = group.position + [0, -(card.bounds.height+5)];
+        placeCard(card, position);
+    });
 }
 
 function setupAreas(c, b) {
