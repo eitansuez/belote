@@ -1,8 +1,9 @@
 
 
 1. introduce underscore.js
-2. figure out how to give a player an additional card given that he already has 4 cards in his hand
+2. figure out how to give a player an additional card given that he already has n cards in his hand
 3. test:  when deal turned up card to a player, it should move
 4. want to be able to think of each player's geometry as the same, just in a different coordinate system.  how?
   perhaps setup a test for this
 5. find a nice tablecloth to draw at bottom layer
+

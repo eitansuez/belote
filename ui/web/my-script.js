@@ -39,6 +39,7 @@ $(function() {
         cards['jack_clubs'],
         cards['9_spades']
     ], groups, 0);
+    chooseCard([cards['7_clubs'], cards['jack_clubs']]);
 
     placeCards([
         cards['10_clubs'],
@@ -64,13 +65,7 @@ $(function() {
         cards['king_spades']
     ], groups, 3);
 
-    //chooseCard([cards['7_clubs'], cards['jack_clubs']]);
-
     turnUpCard(cards['queen_hearts']);
-    cards['queen_hearts'].on('click', function() {
-        placeCards([cards['queen_hearts']], groups, 1);
-    });
-
 });
 
 function randomCard() {
@@ -80,7 +75,7 @@ function randomCard() {
 
 function chooseCard(validCards) {
     $.each(validCards, function(index, card) {
-        //card.selected = true;
+        card.selected = true;
         card.position -= [0, card.bounds.height / 5];
     });
 }
@@ -103,6 +98,7 @@ function setupAreas(c, b) {
             strokeWidth: 1,
             strokeCap: 'round'
         };
+        group.transformContent = false;
         groups.push(group);
         path = path.clone();
     }
@@ -119,6 +115,7 @@ function loadCards() {
         var id = img.attr("id");
         var card = new Raster(id);
         card.visible = false;
+        card.name = id;
         cards[id] = card;
     });
 }
@@ -134,7 +131,7 @@ function scaleCards(scale) {
 function placeCards(hand, groups, index) {
     var card = hand[0];
     var group = groups[index];
-    placeCard(card, groups[0].bounds.leftCenter + [card.bounds.width/2, 0], group);
+    placeCard(card, groups[index].bounds.leftCenter + [card.bounds.width/2, 0], group);
 
     for (var i=1; i<hand.length; i++) {
         placeCard(hand[i], hand[i-1].position + cardSeparation, group);
@@ -148,7 +145,13 @@ function turnUpCard(card) {
 }
 
 function placeCard(card, position, group) {
-    group.addChild(card);
+    if (group) {
+        // if has children,
+        //   use position of last child + separation
+        // else
+        //   give it position of group
+        group.addChild(card);
+    }
 
     card.position = position;
     card.visible = true;
