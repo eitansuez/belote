@@ -5,53 +5,50 @@ var table, groups;
 
 /*
  placeCards([
- cards['7_clubs'],
- cards['king_hearts'],
- cards['ace_diamonds'],
- cards['jack_clubs'],
- cards['9_spades']
+ cards['Sept_de_Trefle'],
+ cards['Roi_de_Couer'],
+ cards['Ace_de_Carreau'],
+ cards['Valet_de_Trefle'],
+ cards['Neuf_de_Pique']
  ], groups, 0);
- chooseCard([cards['7_clubs'], cards['jack_clubs']]);
+ chooseCard([cards['Sept_de_Trefle'], cards['Valet_de_Trefle']]);
 
  placeCards([
- cards['10_clubs'],
- cards['10_hearts'],
- cards['10_diamonds'],
- cards['10_spades'],
- cards['jack_hearts']
+ cards['Dix_de_Trefle'],
+ cards['Dix_de_Coeur'],
+ cards['Dix_de_Carreau'],
+ cards['Dix_de_Pique'],
+ cards['Valet_de_Coeur']
  ], groups, 1);
  chooseCard([cards['10_clubs'], cards['10_spades']]);
 
  placeCards([
- cards['ace_hearts'],
- cards['8_diamonds'],
- cards['9_clubs'],
- cards['queen_clubs'],
- cards['jack_spades']
+ cards['Ace_de_Coeur'],
+ cards['Huit_de_Carreau'],
+ cards['Neuf_de_Trefle'],
+ cards['Dame_de_Trefle'],
+ cards['Valet_de_Pique']
  ], groups, 2);
- chooseCard([cards['8_diamonds'], cards['queen_clubs']]);
+ chooseCard([cards['Huit_de_Carreau'], cards['Dame_de_Trefle']]);
 
  placeCards([
- cards['ace_clubs'],
- cards['8_hearts'],
- cards['7_spades'],
- cards['jack_diamonds'],
- cards['king_spades']
+ cards['Ace_de_Trefle'],
+ cards['Huit_de_Coeur'],
+ cards['Sept_de_Pique'],
+ cards['Valet_de_Carreau'],
+ cards['Roi_de_Pique']
  ], groups, 3);
- chooseCard([cards['king_spades'], cards['7_spades']]);
+ chooseCard([cards['Roi_de_Pique'], cards['Sept_de_Pique']]);
 
- turnUpCard(cards['queen_hearts']);
+ turnUpCard(cards['Dame_de_Coeur']);
  */
 function connectToServer() {
-    /*
-    var url = "ws://localhost:61614/stomp";
-    var ws = new SockJS(url);
+    var ws = new SockJS('/newGame');
     var client = Stomp.over(ws);
-    var login = '', passcode = '';
-    client.connect(login, passcode, function() {
+    client.connect({}, function() {
         console.log('connected');
 
-        client.subscribe("/queue/belote", function(message) {
+        client.subscribe("/topic/belote", function(message) {
             console.log('received message: '+message);
         });
 
@@ -64,8 +61,6 @@ function connectToServer() {
     }, function(error) {
         console.log('error: '+error.headers.message);
     });
-    */
-
 }
 
 $(function() {
