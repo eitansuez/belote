@@ -86,7 +86,7 @@ function randomCard() {
 }
 
 function chooseCard(validCards) {
-    $.each(validCards, function(index, card) {
+    _.each(validCards, function(card) {
         card.selected = true;
         card.position -= selectDelta;
         armCard(card);
@@ -106,7 +106,7 @@ function chosenCards(group) {
 }
 
 function deselect(cards, reposition) {
-    $.each(cards, function(index, card) {
+    _.each(cards, function(card) {
         card.off('click');
         card.selected = false;
         if (reposition) {
@@ -115,8 +115,7 @@ function deselect(cards, reposition) {
     });
 }
 
-function doInGroupCoordinates(card, what) {
-    var group = card.parent;
+function doInGroupCoordinates(group, what) {
     var index = group.data.index;
     group.rotate(90*index, table.bounds.center);
     what.call(null, group);
@@ -124,7 +123,8 @@ function doInGroupCoordinates(card, what) {
 }
 
 function playCard(card) {
-    doInGroupCoordinates(card, function(group) {
+    var group = card.parent;
+    doInGroupCoordinates(group, function(group) {
         var position = group.position + [0, -(card.bounds.height+5)];
         placeCard(card, position);
     });
@@ -152,6 +152,7 @@ function setupAreas(c, b) {
         group.transformContent = false;
         groups.push(group);
         path = path.clone();
+        group.rotate(-90*i, table.bounds.center);
     }
 
     return groups;
@@ -177,17 +178,15 @@ function scaleCards(scale) {
     }
 }
 
-////
-
 function placeCards(hand, groups, index) {
 
     var group = groups[index];
+    doInGroupCoordinates(group, function() {
+        _.each(hand, function(card) {
+            placeCard(card, null, group);
+        });
+    });
 
-    for (var i=0; i<hand.length; i++) {
-        placeCard(hand[i], null, group);
-    }
-
-    group.rotate(-90*index, table.bounds.center);
 }
 
 function turnUpCard(card) {
