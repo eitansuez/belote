@@ -4,9 +4,6 @@ var handAspectRatio = 3;
 var selectDelta;
 var table;
 
-function onResize(event) {
-}
-
 $(function() {
 
     loadCards();
@@ -18,10 +15,11 @@ $(function() {
     });
     table.fillColor = {
         gradient: {
-            stops: ['#8af28a', '#038406']
+            stops: ['#038406', '#038406', '#8af28a'],
+            radial: true
         },
-        origin: table.bounds.topCenter,
-        destination: table.bounds.bottomCenter
+        origin: table.bounds.center,
+        destination: table.bounds.rightcenter
     };
 
     var c = a / (2 + handAspectRatio);
