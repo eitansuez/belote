@@ -22,6 +22,8 @@ class Game implements Emitter
 
   def begin()
   {
+    dealer.setUi(this.ui)
+
     team1 = partie.team1
     team2 = partie.team2
     starter = partie.starter
@@ -246,7 +248,7 @@ class Game implements Emitter
   {
     log.info("Round #${rounds.size()+1}")
 
-    def round = new Round(atout: atout)
+    def round = new Round(atout: atout, ui: this.ui)
 
     withEachPlayer { Player player ->
       Card selected = player.chooseCard(round)

@@ -1,7 +1,5 @@
 package eitan.belote
 
-import static eitan.belote.Suit.Trefle
-
 class TestStrategy implements Strategy
 {
   Player player

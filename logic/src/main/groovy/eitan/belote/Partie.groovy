@@ -28,7 +28,7 @@ class Partie implements Emitter
 
   def nextGame()
   {
-    def game = new Game(partie: this)
+    def game = new Game(partie: this, ui: this.ui)
     starter = nextStarter()
     games << game
     log.info("Game #${games.size()} about to begin..")
