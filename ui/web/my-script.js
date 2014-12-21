@@ -162,7 +162,7 @@ function loadCards() {
     var cardsLayer = new Layer();
     cardsLayer.name = 'cards';
 
-    $("#images_section img").each(function() {
+    $("#images_section").find("img").each(function() {
         var img = $(this);
         var id = img.attr("id");
         var card = new Raster(id);
