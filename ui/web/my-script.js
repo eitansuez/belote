@@ -1,10 +1,76 @@
 var cards = {};
-var cardSeparation;
+var cardSeparation, selectDelta;
 var handAspectRatio = 3;
-var selectDelta;
-var table;
+var table, groups;
+
+/*
+ placeCards([
+ cards['7_clubs'],
+ cards['king_hearts'],
+ cards['ace_diamonds'],
+ cards['jack_clubs'],
+ cards['9_spades']
+ ], groups, 0);
+ chooseCard([cards['7_clubs'], cards['jack_clubs']]);
+
+ placeCards([
+ cards['10_clubs'],
+ cards['10_hearts'],
+ cards['10_diamonds'],
+ cards['10_spades'],
+ cards['jack_hearts']
+ ], groups, 1);
+ chooseCard([cards['10_clubs'], cards['10_spades']]);
+
+ placeCards([
+ cards['ace_hearts'],
+ cards['8_diamonds'],
+ cards['9_clubs'],
+ cards['queen_clubs'],
+ cards['jack_spades']
+ ], groups, 2);
+ chooseCard([cards['8_diamonds'], cards['queen_clubs']]);
+
+ placeCards([
+ cards['ace_clubs'],
+ cards['8_hearts'],
+ cards['7_spades'],
+ cards['jack_diamonds'],
+ cards['king_spades']
+ ], groups, 3);
+ chooseCard([cards['king_spades'], cards['7_spades']]);
+
+ turnUpCard(cards['queen_hearts']);
+ */
+function connectToServer() {
+    /*
+    var url = "ws://localhost:61614/stomp";
+    var ws = new SockJS(url);
+    var client = Stomp.over(ws);
+    var login = '', passcode = '';
+    client.connect(login, passcode, function() {
+        console.log('connected');
+
+        client.subscribe("/queue/belote", function(message) {
+            console.log('received message: '+message);
+        });
+
+        $("#disconnect-btn").on('click', function() {
+            client.disconnect(function() {
+                console.log("disconnected");
+            });
+        });
+
+    }, function(error) {
+        console.log('error: '+error.headers.message);
+    });
+    */
+
+}
 
 $(function() {
+
+    connectToServer();
 
     loadCards();
 
@@ -25,56 +91,13 @@ $(function() {
     var c = a / (2 + handAspectRatio);
     var b = handAspectRatio * c;
 
-    var groups = setupAreas(c, b);
+    groups = setupAreas(c, b);
 
     var scale = c / cards['7_clubs'].height;
     scaleCards(scale);
     var card = randomCard();
     cardSeparation = [card.bounds.width / 2, 0];
     selectDelta = [0, card.bounds.height / 5];
-
-    placeCards([
-        cards['7_clubs'],
-        cards['king_hearts'],
-        cards['ace_diamonds'],
-        cards['jack_clubs'],
-        cards['9_spades']
-    ], groups, 0);
-    chooseCard([cards['7_clubs'], cards['jack_clubs']]);
-
-    placeCards([
-        cards['10_clubs'],
-        cards['10_hearts'],
-        cards['10_diamonds'],
-        cards['10_spades'],
-        cards['jack_hearts']
-    ], groups, 1);
-    chooseCard([cards['10_clubs'], cards['10_spades']]);
-
-    placeCards([
-        cards['ace_hearts'],
-        cards['8_diamonds'],
-        cards['9_clubs'],
-        cards['queen_clubs'],
-        cards['jack_spades']
-    ], groups, 2);
-    chooseCard([cards['8_diamonds'], cards['queen_clubs']]);
-
-    placeCards([
-        cards['ace_clubs'],
-        cards['8_hearts'],
-        cards['7_spades'],
-        cards['jack_diamonds'],
-        cards['king_spades']
-    ], groups, 3);
-    chooseCard([cards['king_spades'], cards['7_spades']]);
-
-    turnUpCard(cards['queen_hearts']);
-    var counter = 0;
-    cards['queen_hearts'].on('click', function() {
-        placeCard(cards['queen_hearts'], 0, groups[counter]);
-        counter = (counter + 1) % 4;
-    });
 });
 
 function randomCard() {
