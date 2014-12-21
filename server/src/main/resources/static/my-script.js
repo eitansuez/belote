@@ -43,23 +43,27 @@ var table, groups;
  turnUpCard(cards['Dame_de_Coeur']);
  */
 
+function cardFor(serverSideCardName) {
+    var card_name = serverSideCardName.replace(/ /g, '_');
+    return cards[card_name];
+}
+
 function connectToServer() {
     var ws = new SockJS('/newGame');
     var client = Stomp.over(ws);
 
     // for now hard-code
-    var players = ['Eitan', 'Johnny', 'Rony', 'Corrine'];
+    var players = {'Eitan': 0, 'Johnny': 1, 'Rony': 2, 'Corinne': 3};
 
     client.connect({}, function() {
         console.log('connected');
 
         client.subscribe("/topic/belote", function(message) {
-            console.log('received message: '+message);
-            if (message[0] == 'receiveCard') {
-                var args = message[1];
-                var player_name = args[0];
-                var card_name = args[1];
-                placeCards(cards[card_name], groups, players.indexOf(player_name));
+            var body = JSON.parse(message.body);
+            if (body.cmd == 'receiveCard') {
+                placeCards([cardFor(body.args[1])], groups, players[body.args[0]]);
+            } else if (body.cmd == 'turnUpCard') {
+                turnUpCard(cardFor(body.args[0]));
             }
         });
 
@@ -69,14 +73,16 @@ function connectToServer() {
             });
         });
 
+        $("#newGame-btn").on('click', function() {
+            client.send('/app/newGame');
+        });
+
     }, function(error) {
         console.log('error: '+error.headers.message);
     });
 }
 
 $(function() {
-
-    connectToServer();
 
     loadCards();
 
@@ -99,11 +105,13 @@ $(function() {
 
     groups = setupAreas(c, b);
 
-    var scale = c / cards['7_clubs'].height;
+    var scale = c / cards['Sept_de_Trefle'].height;
     scaleCards(scale);
     var card = randomCard();
     cardSeparation = [card.bounds.width / 2, 0];
     selectDelta = [0, card.bounds.height / 5];
+
+    connectToServer();
 });
 
 function randomCard() {
@@ -206,7 +214,6 @@ function scaleCards(scale) {
 }
 
 function placeCards(hand, groups, index) {
-
     var group = groups[index];
     doInGroupCoordinates(group, function() {
         _.each(hand, function(card) {
