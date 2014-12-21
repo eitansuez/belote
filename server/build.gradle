@@ -1,0 +1,23 @@
+buildscript {
+  repositories {
+    maven { url "http://repo.spring.io/libs-release" }
+    mavenCentral()
+  }
+  dependencies {
+    classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.0.RELEASE")
+  }
+}
+
+apply plugin: 'spring-boot'
+
+repositories {
+  maven { url "http://repo.spring.io/libs-release" }
+  mavenCentral()
+}
+
+dependencies {
+  compile project(':logic')
+  compile("org.springframework.boot:spring-boot-starter-websocket")
+  compile("org.springframework:spring-messaging")
+}
+

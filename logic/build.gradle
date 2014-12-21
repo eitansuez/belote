@@ -1,5 +1,4 @@
 
-apply plugin: 'groovy'
 apply plugin: 'application'
 
 repositories {
@@ -7,7 +6,6 @@ repositories {
 }
 
 dependencies {
-  compile 'org.codehaus.groovy:groovy-all:2.3.7'
   compile 'org.slf4j:slf4j-api:1.7.7'
   runtime 'org.slf4j:slf4j-simple:1.7.7'
 
