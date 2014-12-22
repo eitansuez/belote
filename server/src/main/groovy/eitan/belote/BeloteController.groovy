@@ -13,7 +13,7 @@ public class BeloteController {
     @MessageMapping("/newGame")
     void newGame() throws Exception {
 
-        def eitan = new Player(name: "Eitan", strategy: new CliStrategy(), ui: stompUI)
+        def eitan = new Player(name: "Eitan", ui: stompUI)
         def johnny = new Player(name: "Johnny", ui: stompUI)
         def corinne = new Player(name: "Corinne", ui: stompUI)
         def rony = new Player(name: "Rony", ui: stompUI)
