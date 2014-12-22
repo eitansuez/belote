@@ -38,7 +38,7 @@ function connectToServer() {
 
 $(function() {
     // for now hard-code
-    players = {'Eitan': 0, 'Johnny': 1, 'Rony': 2, 'Corinne': 3};
+    players = {Eitan: 0, Johnny: 1, Rony: 2, Corinne: 3};
 
     cmds = {
         receiveCard : function(playerName, cardName) {
@@ -63,18 +63,8 @@ $(function() {
     loadCards();
 
     var a = Math.min(view.bounds.width, view.bounds.height);
-    table = new Path.Rectangle({
-        topLeft: new Point(0, 0),
-        size: new Size(a, a)
-    });
-    table.fillColor = {
-        gradient: {
-            stops: ['#038406', '#038406', '#8af28a'],
-            radial: true
-        },
-        origin: table.bounds.center,
-        destination: table.bounds.rightcenter
-    };
+    setupTable(a);
+    $("#button-area").css('left', (a + 10)+"px");
 
     var c = a / (2 + handAspectRatio);
     var b = handAspectRatio * c;
@@ -89,6 +79,21 @@ $(function() {
 
     connectToServer();
 });
+
+function setupTable(a) {
+    table = new Path.Rectangle({
+        topLeft: new Point(0, 0),
+        size: new Size(a, a)
+    });
+    table.fillColor = {
+        gradient: {
+            stops: ['#038406', '#038406', '#8af28a'],
+            radial: true
+        },
+        origin: table.bounds.center,
+        destination: table.bounds.rightCenter
+    };
+}
 
 function randomCard() {
     var index = parseInt(Math.random()*32);
@@ -203,7 +208,6 @@ function placeCards(hand, groups, index) {
             placeCard(card, null, group);
         });
     });
-
 }
 
 function turnUpCard(card) {

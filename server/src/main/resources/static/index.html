@@ -4,6 +4,15 @@
 <style>
 	body {
 		margin: 0;
+		overflow: hidden;
+	}
+	#button-area {
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+	#button-area button {
+		display: block;
 	}
 </style>
 <script type="text/javascript" src="js/paper-full.js"></script>
@@ -14,11 +23,13 @@
 <script type="text/paperscript" src="my-script.js" canvas="myCanvas"></script>
 </head>
 <body>
-  <canvas id="myCanvas" resize></canvas>
+  <canvas id="myCanvas" resize="true"></canvas>
 
   <!--temporary.. replace with nice ui at some point: -->
-  <button id="newGame-btn">New Game</button>
-  <button id="disconnect-btn">Disconnect</button>
+  <div id="button-area">
+	  <button id="newGame-btn">New Game</button>
+	  <button id="disconnect-btn">Disconnect</button>
+  </div>
 
   <div style="display: none" id="images_section">
 	  <img src="img/Sept_de_Trefle.png" id="Sept_de_Trefle" />
