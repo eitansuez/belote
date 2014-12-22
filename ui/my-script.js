@@ -43,40 +43,8 @@ var table, groups;
  turnUpCard(cards['Dame_de_Coeur']);
  */
 
-function connectToServer() {
-    var ws = new SockJS('/newGame');
-    var client = Stomp.over(ws);
-
-    // for now hard-code
-    var players = ['Eitan', 'Johnny', 'Rony', 'Corrine'];
-
-    client.connect({}, function() {
-        console.log('connected');
-
-        client.subscribe("/topic/belote", function(message) {
-            console.log('received message: '+message);
-            if (message[0] == 'receiveCard') {
-                var args = message[1];
-                var player_name = args[0];
-                var card_name = args[1];
-                placeCards(cards[card_name], groups, players.indexOf(player_name));
-            }
-        });
-
-        $("#disconnect-btn").on('click', function() {
-            client.disconnect(function() {
-                console.log("disconnected");
-            });
-        });
-
-    }, function(error) {
-        console.log('error: '+error.headers.message);
-    });
-}
 
 $(function() {
-
-    connectToServer();
 
     loadCards();
 
