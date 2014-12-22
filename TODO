@@ -1,6 +1,4 @@
 
-- flesh out 'pass/envoi' events to client
-
 - need to figure out how to async notify server of events
   then perhaps introduce a delay in dealing cards, etc..
 
@@ -8,13 +6,8 @@
   how does logic wait for input?  don't want to block.  rather would like a state machine
   with incoming messages triggering transitions whenever they come in
 
-- logic should have complete set of emit for all events that need to be communicated to ui
-
 - show player names
 - show score
 - handle a full game
 - handle a full partie
-
-- logic:  partie.winner -- what if both have, say, 1010 -- one will have 1013 and the other 1009.
-  write test for this scenario
 

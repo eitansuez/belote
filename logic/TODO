@@ -1,4 +1,8 @@
 
+- logic:  partie.winner -- what if both have, say, 1010 -- one will have 1013 and the other 1009.
+  write test for this scenario
+
+
 ----logging as cross-cutting concern:
 - perhaps should be a publish/subscribe model
 ..where game engine publishes events that update a user interface
