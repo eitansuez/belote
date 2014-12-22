@@ -41,13 +41,13 @@ $(function() {
     players = {'Eitan': 0, 'Johnny': 1, 'Rony': 2, 'Corinne': 3};
 
     cmds = {
-        'receiveCard' : function(playerName, cardName) {
+        receiveCard : function(playerName, cardName) {
             placeCards([cardFor(cardName)], groups, players[playerName]);
         },
-        'turnUpCard' : function(cardName) {
+        turnUpCard : function(cardName) {
             turnUpCard(cardFor(cardName));
         },
-        'playerDecision' : function(playerName, envoi, suitName) {
+        playerDecision : function(playerName, envoi, suitName) {
             var passesText = (suitName ? " passes at " : " passes again.");
             var text = playerName + (envoi ? " goes for " : passesText);
             if (suitName) {
@@ -55,7 +55,7 @@ $(function() {
             }
             playerSays(text);
         },
-        'gameForfeit' : function() {
+        gameForfeit : function() {
             resetDeck();
         }
     };
