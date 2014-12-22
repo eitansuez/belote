@@ -7,5 +7,7 @@ trait Emitter
   // todo: should be async
   void emit(String event, args) {
     ui.invokeMethod(event, args ?: null)
+    // perhaps this:
+    // actorRef.sendMessage(new Event/Cmd/Msg(name, args))
   }
 }
