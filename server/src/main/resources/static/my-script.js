@@ -43,6 +43,8 @@ function connectToServer() {
                     text += body.args[2];
                 }
                 playerSays(text);
+            } else if (body.cmd == 'gameForfeit') {
+                resetDeck();
             }
         });
 
@@ -180,10 +182,17 @@ function loadCards() {
         var img = $(this);
         var id = img.attr("id");
         var card = new Raster(id);
-        card.visible = false;
         card.name = id;
         cards[id] = card;
     });
+
+    resetDeck();
+}
+
+function resetDeck() {
+    for (var card in cards) {
+        cards[card].visible = false;
+    }
 }
 
 function scaleCards(scale) {

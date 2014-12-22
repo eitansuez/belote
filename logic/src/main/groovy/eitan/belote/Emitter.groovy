@@ -6,6 +6,6 @@ trait Emitter
 
   // todo: should be async
   void emit(String event, args) {
-    ui.invokeMethod(event, args)
+    ui.invokeMethod(event, args ?: null)
   }
 }

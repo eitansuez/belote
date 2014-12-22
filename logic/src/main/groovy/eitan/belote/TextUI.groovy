@@ -18,15 +18,15 @@ class TextUI implements UI
   }
 
   @Override
-  void playCard(Player player, Card card)
+  void gameForfeit()
   {
-    log.info("${player} plays ${card}")
+    log.info "no one envoi'd, game done"
   }
 
   @Override
-  void clearHand(Player player)
+  void playCard(Player player, Card card)
   {
-    log.info("${player} hand is cleared")
+    log.info("${player} plays ${card}")
   }
 
   @Override

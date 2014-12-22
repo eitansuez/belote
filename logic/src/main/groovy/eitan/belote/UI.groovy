@@ -8,7 +8,7 @@ interface UI
   void playerDecision(Player player, boolean envoi, Suit suit)
 
   void playCard(Player player, Card card)
-  void clearHand(Player player)
+  void gameForfeit()
 
   void roundEnds(Player winner, int points)
   void gameUpdate(Team team1, int score1, Team team2, int score2)

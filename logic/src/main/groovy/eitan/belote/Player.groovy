@@ -14,7 +14,6 @@ class Player implements Emitter
   void gameDone()
   {
     hand.clear()
-    emit("clearHand", [this])
   }
 
   void setStrategy(Strategy s)

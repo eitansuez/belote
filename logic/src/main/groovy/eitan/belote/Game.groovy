@@ -56,18 +56,16 @@ class Game implements Emitter
     def response = withEachPlayerUntilReturns { Player player ->
       Suit suit = player.envoi()
       if (suit) {
-        log.info("${player} says yes for ${suit}")
         envoi(suit, player)
         return [player, suit]
       } else {
-        log.info("${player} passes again")
         return null
       }
     }
 
     if (!response) {
 
-      log.info "no one envoi'd, game done"
+      emit("gameForfeit", []);
 
       players().each { player ->
         player.gameDone()

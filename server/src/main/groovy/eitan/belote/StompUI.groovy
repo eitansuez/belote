@@ -55,9 +55,9 @@ class StompUI implements UI
   }
 
   @Override
-  void clearHand(Player player)
+  void gameForfeit()
   {
-
+    sendCmd("gameForfeit", [])
   }
 
   @Override
