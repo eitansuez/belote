@@ -64,6 +64,10 @@ function connectToServer() {
                 placeCards([cardFor(body.args[1])], groups, players[body.args[0]]);
             } else if (body.cmd == 'turnUpCard') {
                 turnUpCard(cardFor(body.args[0]));
+            } else if (body.cmd == 'playerDecision') {
+                var player = players[body.args[0]];
+                var text = player + (body.args[1] ? " goes for " : " passes on ") + body.args[2];
+                playerSays(text);
             }
         });
 
@@ -252,3 +256,6 @@ function hasCards(group) {
     return items && items.length > 0;
 }
 
+function playerSays(text) {
+    console.log(text);
+}

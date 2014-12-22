@@ -51,8 +51,13 @@ class Player implements Emitter
   }
 
   boolean envoi(Card candidate) {
-    strategy.envoi(candidate)
+    boolean response = strategy.envoi(candidate)
+
+    emit("playerDecision", [this, response, candidate.suit])
+
+    response
   }
+
   Suit envoi() {
     strategy.envoi()
   }

@@ -10,18 +10,42 @@ class StompUI implements UI
   @Autowired
   private final SimpMessagingTemplate template;
 
+  private void sendCmd(cmd, args) {
+    template.convertAndSend('/topic/belote', [cmd: cmd, args: args.collect { arg -> marshal(arg) }])
+  }
+
+  private static marshal(arg) {
+    if (arg instanceof Player)
+    {
+      ((Player) arg).name
+    }
+    else if (arg instanceof Card) {
+      ((Card) arg).toString()
+    }
+    else if (arg instanceof Enum) {
+      ((Enum) arg).name()
+    }
+    else {
+      arg
+    }
+  }
+
   @Override
   void turnUpCard(Card card)
   {
-    template.convertAndSend('/topic/belote', [cmd: 'turnUpCard',
-                                              args: [card.toString()]])
+    sendCmd('turnUpCard', [card])
   }
 
   @Override
   void receiveCard(Player player, Card card)
   {
-    template.convertAndSend("/topic/belote", [cmd: 'receiveCard',
-                                              args: [player.name, card.toString()]])
+    sendCmd('receiveCard', [player, card])
+  }
+
+  @Override
+  void playerDecision(Player player, boolean envoi, Suit suit)
+  {
+    sendCmd('playerDecision', [player, envoi, suit])
   }
 
   @Override
@@ -31,27 +55,9 @@ class StompUI implements UI
   }
 
   @Override
-  Card chooseCard(Player player, Set<Card> validCards)
-  {
-    return null
-  }
-
-  @Override
   void clearHand(Player player)
   {
 
-  }
-
-  @Override
-  boolean envoi(Player player, Suit candidateSuit)
-  {
-    return false
-  }
-
-  @Override
-  Suit envoi(Player player)
-  {
-    return null
   }
 
   @Override

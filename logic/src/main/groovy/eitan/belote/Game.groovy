@@ -39,11 +39,9 @@ class Game implements Emitter
 
     def response = withEachPlayerUntilReturns { Player player ->
       if (player.envoi(candidate)) {
-        log.info("${player} says yes for ${candidate.suit}")
         envoi(candidate.suit, player)
         return [player, candidate]
       } else {
-        log.info("${player} passes")
         return null
       }
     }

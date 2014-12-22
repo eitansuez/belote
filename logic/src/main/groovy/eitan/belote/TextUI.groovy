@@ -24,33 +24,21 @@ class TextUI implements UI
   }
 
   @Override
-  Card chooseCard(Player player, Set<Card> validCards)
-  {
-    return null
-  }
-
-  @Override
   void clearHand(Player player)
   {
     log.info("${player} hand is cleared")
   }
 
   @Override
-  boolean envoi(Player player, Suit candidateSuit)
-  {
-    return false
-  }
-
-  @Override
-  Suit envoi(Player player)
-  {
-    return null
-  }
-
-  @Override
   void roundEnds(Player winner, int points)
   {
     log.info(">>${winner} wins hand (${points} points)\n")
+  }
+
+  @Override
+  void playerDecision(Player player, boolean envoi, Suit suit)
+  {
+    log.info("${player} makes a decision on suit ${suit} : " + (envoi ? "go!" : "pass"))
   }
 
   @Override
