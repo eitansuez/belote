@@ -2,17 +2,7 @@ var cards = {};
 var cardSeparation, selectDelta;
 var handAspectRatio = 3;
 var table, groups;
-
-/*
- placeCards([
- cards['Sept_de_Trefle'],
- cards['Roi_de_Couer'],
- cards['Ace_de_Carreau'],
- cards['Valet_de_Trefle'],
- cards['Neuf_de_Pique']
- ], groups, 0);
- chooseCard([cards['Sept_de_Trefle'], cards['Valet_de_Trefle']]);
- */
+var cmds, players;
 
 function cardFor(serverSideCardName) {
     var card_name = serverSideCardName.replace(/ /g, '_');
@@ -23,29 +13,12 @@ function connectToServer() {
     var ws = new SockJS('/newGame');
     var client = Stomp.over(ws);
 
-    // for now hard-code
-    var players = {'Eitan': 0, 'Johnny': 1, 'Rony': 2, 'Corinne': 3};
-
     client.connect({}, function() {
         console.log('connected');
 
         client.subscribe("/topic/belote", function(message) {
             var body = JSON.parse(message.body);
-            if (body.cmd == 'receiveCard') {
-                placeCards([cardFor(body.args[1])], groups, players[body.args[0]]);
-            } else if (body.cmd == 'turnUpCard') {
-                turnUpCard(cardFor(body.args[0]));
-            } else if (body.cmd == 'playerDecision') {
-
-                var passesText = (body.args[2] ? " passes at " : " passes again.");
-                var text = body.args[0] + (body.args[1] ? " goes for " : passesText);
-                if (body.args[2]) {
-                    text += body.args[2];
-                }
-                playerSays(text);
-            } else if (body.cmd == 'gameForfeit') {
-                resetDeck();
-            }
+            cmds[body.cmd].apply(null, body.args);
         });
 
         $("#disconnect-btn").on('click', function() {
@@ -64,6 +37,28 @@ function connectToServer() {
 }
 
 $(function() {
+    // for now hard-code
+    players = {'Eitan': 0, 'Johnny': 1, 'Rony': 2, 'Corinne': 3};
+
+    cmds = {
+        'receiveCard' : function(playerName, cardName) {
+            placeCards([cardFor(cardName)], groups, players[playerName]);
+        },
+        'turnUpCard' : function(cardName) {
+            turnUpCard(cardFor(cardName));
+        },
+        'playerDecision' : function(playerName, envoi, suitName) {
+            var passesText = (suitName ? " passes at " : " passes again.");
+            var text = playerName + (envoi ? " goes for " : passesText);
+            if (suitName) {
+                text += suitName;
+            }
+            playerSays(text);
+        },
+        'gameForfeit' : function() {
+            resetDeck();
+        }
+    };
 
     loadCards();
 
@@ -241,5 +236,5 @@ function hasCards(group) {
 }
 
 function playerSays(text) {
-    console.log(text);
+    console.log(text);  // todo:  bubble support
 }
