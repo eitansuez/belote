@@ -59,7 +59,11 @@ class Player implements Emitter
   }
 
   Suit envoi() {
-    strategy.envoi()
+    def suit = strategy.envoi()
+
+    emit("playerDecision", [this, (suit != null), suit])
+
+    suit
   }
 
   def playCard(Card card)

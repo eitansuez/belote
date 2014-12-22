@@ -12,35 +12,6 @@ var table, groups;
  cards['Neuf_de_Pique']
  ], groups, 0);
  chooseCard([cards['Sept_de_Trefle'], cards['Valet_de_Trefle']]);
-
- placeCards([
- cards['Dix_de_Trefle'],
- cards['Dix_de_Coeur'],
- cards['Dix_de_Carreau'],
- cards['Dix_de_Pique'],
- cards['Valet_de_Coeur']
- ], groups, 1);
- chooseCard([cards['10_clubs'], cards['10_spades']]);
-
- placeCards([
- cards['Ace_de_Coeur'],
- cards['Huit_de_Carreau'],
- cards['Neuf_de_Trefle'],
- cards['Dame_de_Trefle'],
- cards['Valet_de_Pique']
- ], groups, 2);
- chooseCard([cards['Huit_de_Carreau'], cards['Dame_de_Trefle']]);
-
- placeCards([
- cards['Ace_de_Trefle'],
- cards['Huit_de_Coeur'],
- cards['Sept_de_Pique'],
- cards['Valet_de_Carreau'],
- cards['Roi_de_Pique']
- ], groups, 3);
- chooseCard([cards['Roi_de_Pique'], cards['Sept_de_Pique']]);
-
- turnUpCard(cards['Dame_de_Coeur']);
  */
 
 function cardFor(serverSideCardName) {
@@ -65,8 +36,12 @@ function connectToServer() {
             } else if (body.cmd == 'turnUpCard') {
                 turnUpCard(cardFor(body.args[0]));
             } else if (body.cmd == 'playerDecision') {
-                var player = players[body.args[0]];
-                var text = player + (body.args[1] ? " goes for " : " passes on ") + body.args[2];
+
+                var passesText = (body.args[2] ? " passes at " : " passes again.");
+                var text = body.args[0] + (body.args[1] ? " goes for " : passesText);
+                if (body.args[2]) {
+                    text += body.args[2];
+                }
                 playerSays(text);
             }
         });
