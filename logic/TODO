@@ -1,22 +1,7 @@
 
+
 - logic:  partie.winner -- what if both have, say, 1010 -- one will have 1013 and the other 1009.
   write test for this scenario
-
-
-----logging as cross-cutting concern:
-- perhaps should be a publish/subscribe model
-..where game engine publishes events that update a user interface
-
-----ui:
-- in the other direction, calls into the engine move it from state to state
-  can be command line, remote, etc..
-
-button -> begin partie
-button -> start game
-button -> envoie/pass
-button:  play card x
-some buttons will be disabled.  e.g. player 2 cannot play card x if it's not their turn
-also player 2 can play only from valid cardset.
 
 -----logging wording:
  make card placement log wording to be semantic:  "Eitan cuts with .."
