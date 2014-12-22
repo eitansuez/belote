@@ -15,8 +15,6 @@ some buttons will be disabled.  e.g. player 2 cannot play card x if it's not the
 also player 2 can play only from valid cardset.
 
 
-- ui feature:  bubbles for players speaking
-
 - js has to be more object-oriented:  rather than create a whole list of functions, add functions to the group
  that represents a player area.
 

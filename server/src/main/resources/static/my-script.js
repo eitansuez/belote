@@ -1,8 +1,120 @@
 var cards = {};
 var cardSeparation, selectDelta;
 var handAspectRatio = 3;
-var table, groups;
+var table, groups, bubbles;
 var cmds, players;
+
+var Bubble = CompoundPath.extend({
+    _class: 'Bubble',
+    _text: 'Change me',
+    _orientation: 0,
+
+    _serializeFields: {
+        text: null,
+        orientation: null
+    },
+    getText: function() {
+        return this._text;
+    },
+    setText: function(text) {
+        this._text = '' + text;
+        this._pointText.content = this._splitText();
+    },
+    getOrientation: function() {
+        return this._orientation;
+    },
+    setOrientation: function(value) {
+        this._orientation = value;
+    },
+
+    _pointText: new PointText({visible: false}),
+    _body: null,
+    _bubble: null,
+
+    initialize: function Bubble() {
+        CompoundPath.apply(this, arguments);
+
+        var point = new Point(10, 30);
+        var size = new Size(200, 55);
+
+        var rect = new Rectangle(point, size);
+        this._body = new Path.Rectangle(rect, 5);
+        this._body.visible = false;
+
+        var chupchik  = new Path.RegularPolygon(point, 3, 10);
+        var chupchikOffset = 8;
+        chupchik.scale(1, -1.5);
+        chupchik.shear(-0.6, 0);
+
+        chupchik.rotate(-90*this._orientation, this._body.bottomLeft);
+        if (this._orientation == 0)
+        {
+            chupchik.translate(0.25*size.width, size.height + chupchikOffset+2);
+        }
+        else if (this._orientation == 1)
+        {
+            chupchik.translate(size.width+chupchikOffset-3, 0.5*size.height);
+        }
+        else if (this._orientation == 2)
+        {
+            chupchik.translate(0.75 * size.width, -chupchikOffset);
+        }
+        else if (this._orientation == 3)
+        {
+            chupchik.translate(-chupchikOffset-5, 0.5*size.height);
+        }
+
+        chupchik.visible = false;
+
+        this._bubble = this._body.unite(chupchik);
+        this.style = {
+            fillColor: '#fff4a3',
+            strokeColor: 'black',
+            strokeWidth: 1,
+            shadowColor: '#aaa',
+            shadowBlur: 12,
+            shadowOffset: new Point(10, 10)
+        };
+        this.pivot = chupchik.position;
+
+        this.addChild(this._bubble);
+
+        this._pointText = new PointText(this.bounds.topLeft + [10, 40]);
+        this._pointText.content = this._splitText();
+        this._pointText.fillColor = 'black';
+        this._pointText.bringToFront();
+    },
+
+    _splitText: function() {
+        var lineSizeInChars = 35;
+        var lines = [];
+        for (var i = 0; i <= (this._text.length / lineSizeInChars); i++) {
+            lines[i] = this._text.substr( lineSizeInChars * i, Math.min(this._text.length - (i * lineSizeInChars), lineSizeInChars) );
+        }
+        return lines.join('\n');
+    },
+
+    _changed: function() {
+        if (this._pointText) {
+            var topLeft = this.bounds.topLeft + [10, 15] + [this._pointText.bounds.width/2, 0];
+            if (this._orientation == 2) {
+                // scootch down on account of chupchik
+                topLeft += [0, 20];
+            } else if (this._orientation == 3) {
+                // scootch right on account of chupchik
+                topLeft += [20, 0];
+            }
+            this._pointText.position = topLeft;
+        }
+    },
+
+    say: function(text) {
+        this.setText(text);
+        this.bringToFront();
+        this._pointText.bringToFront();
+    }
+
+});
 
 function cardFor(serverSideCardName) {
     var card_name = serverSideCardName.replace(/ /g, '_');
@@ -53,10 +165,11 @@ $(function() {
             if (suitName) {
                 text += suitName;
             }
-            playerSays(text);
+
+            bubbles[players[playerName]].say(text);
         },
         gameForfeit : function() {
-            resetDeck();
+            //resetDeck();
         }
     };
 
@@ -70,6 +183,7 @@ $(function() {
     var b = handAspectRatio * c;
 
     groups = setupAreas(c, b);
+    bubbles = setupBubbles();
 
     var scale = c / cards['Sept_de_Trefle'].height;
     scaleCards(scale);
@@ -173,6 +287,14 @@ function setupAreas(c, b) {
 
     return groups;
 }
+function setupBubbles() {
+    var bubbles = [];
+    for (var i=0; i<4; i++) {
+        bubbles[i] = new Bubble({ orientation: i, text: '...' });
+        bubbles[i].position = groups[i].position;
+    }
+    return bubbles;
+}
 
 function loadCards() {
     var cardsLayer = new Layer();
@@ -239,6 +361,3 @@ function hasCards(group) {
     return items && items.length > 0;
 }
 
-function playerSays(text) {
-    console.log(text);  // todo:  bubble support
-}
