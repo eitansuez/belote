@@ -1,9 +1,6 @@
 
 ----ui:
 
-- perhaps should be a publish/subscribe model
-..where game engine publishes events that update a user interface
-
 - in the other direction, calls into the engine move it from state to state
   can be command line, remote, etc..
 

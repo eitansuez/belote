@@ -22,7 +22,7 @@ class Game implements Emitter
 
   def begin()
   {
-    dealer.setUi(this.ui)
+    dealer.setActorRef(this.actorRef)
 
     team1 = partie.team1
     team2 = partie.team2
@@ -65,7 +65,7 @@ class Game implements Emitter
 
     if (!response) {
 
-      emit("gameForfeit", []);
+      emit("gameForfeit", [])
 
       players().each { player ->
         player.gameDone()
@@ -244,7 +244,7 @@ class Game implements Emitter
   {
     log.info("Round #${rounds.size()+1}")
 
-    def round = new Round(atout: atout, ui: this.ui)
+    def round = new Round(atout: atout, actorRef: this.actorRef)
 
     withEachPlayer { Player player ->
       Card selected = player.chooseCard(round)

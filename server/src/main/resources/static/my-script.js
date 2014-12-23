@@ -71,7 +71,7 @@ var Bubble = CompoundPath.extend({
             fillColor: '#fff4a3',
             strokeColor: 'black',
             strokeWidth: 1,
-            shadowColor: '#aaa',
+            shadowColor: new Color(0, 0, 0, 0.3),
             shadowBlur: 12,
             shadowOffset: new Point(10, 10)
         };

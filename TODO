@@ -1,6 +1,5 @@
 
-- need to figure out how to async notify server of events
-  then perhaps introduce a delay in dealing cards, etc..
+- introduce a delay in dealing cards, etc..
 
 - how do messages go in the other direction?
   how does logic wait for input?  don't want to block.  rather would like a state machine

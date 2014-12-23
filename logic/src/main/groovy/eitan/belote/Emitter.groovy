@@ -1,13 +1,12 @@
 package eitan.belote
 
+import akka.actor.ActorRef
+
 trait Emitter
 {
-  UI ui = new TextUI()
+  ActorRef actorRef
 
-  // todo: should be async
   void emit(String event, args) {
-    ui.invokeMethod(event, args ?: null)
-    // perhaps this:
-    // actorRef.sendMessage(new Event/Cmd/Msg(name, args))
+    actorRef?.tell(new BeloteEvent(name: event, args: args), null)
   }
 }

@@ -17,7 +17,7 @@ class Round implements Emitter
     def round = new Round(cards: this.cards + card,
         players: this.players + player,
         atout: this.atout,
-        ui: this.ui)
+        actorRef: this.actorRef)
 
     // TODO:  need an afterCreate
     if (round.isComplete()) {

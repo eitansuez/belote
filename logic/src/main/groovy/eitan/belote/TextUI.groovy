@@ -1,10 +1,22 @@
 package eitan.belote
 
+import akka.actor.UntypedActor
 import groovy.util.logging.Slf4j
 
+
 @Slf4j
-class TextUI implements UI
+class TextUI extends UntypedActor implements UI
 {
+  @Override
+  void onReceive(Object message) throws Exception
+  {
+    if (message instanceof BeloteEvent)
+    {
+      BeloteEvent event = (BeloteEvent) message
+      this.invokeMethod(event.name, event.args ?: null)
+    }
+  }
+
   @Override
   void turnUpCard(Card card)
   {
@@ -52,4 +64,5 @@ class TextUI implements UI
   {
     log.info("")
   }
+
 }
