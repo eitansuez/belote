@@ -13,11 +13,15 @@ public class BeloteController {
     @Autowired
     ActorSystem system
 
+    ActorRef stompActor
+
     @MessageMapping("/newGame")
     void newGame() throws Exception {
 
-        ActorRef stompActor = system.actorOf(
-            SpringExtProvider.get(system).props("StompActor"), "stompActor")
+        if (stompActor == null) {
+            stompActor = system.actorOf(
+                SpringExtProvider.get(system).props("StompActor"), "stompActor")
+        }
 
         def eitan = new Player(name: "Eitan", actorRef: stompActor)
         def johnny = new Player(name: "Johnny", actorRef: stompActor)

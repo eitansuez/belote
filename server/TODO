@@ -15,3 +15,4 @@ also player 2 can play only from valid cardset.
 - js has to be more object-oriented:  rather than create a whole list of functions, add functions to the group
  that represents a player area.
 
+- bubble -- does not treat both the bubble and the text as a single object.
