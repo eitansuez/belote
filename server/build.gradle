@@ -1,7 +1,6 @@
 buildscript {
   repositories {
-    maven { url 'http://repo.spring.io/libs-release' }
-    mavenCentral()
+    jcenter()
   }
   dependencies {
     classpath('org.springframework.boot:spring-boot-gradle-plugin:1.2.0.RELEASE')
@@ -9,11 +8,6 @@ buildscript {
 }
 
 apply plugin: 'spring-boot'
-
-repositories {
-  maven { url 'http://repo.spring.io/libs-release' }
-  mavenCentral()
-}
 
 dependencies {
   compile project(':logic')

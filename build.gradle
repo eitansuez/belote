@@ -1,11 +1,15 @@
 
 subprojects {
+  repositories {
+    jcenter()
+  }
+
   apply plugin: 'groovy'
 
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
 
   dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.3.7'
+    compile 'org.codehaus.groovy:groovy-all:2.3.9'
   }
 }
