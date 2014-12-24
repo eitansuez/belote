@@ -133,7 +133,9 @@ class GameSpec extends Specification
 
     then:
     game.scores[game.team1] == 24
+    game.scoreAdjustment(game.team1) == -4
     game.scores[game.team2] == 0
+    game.scoreAdjustment(game.team2) == 0
     game.starter == rony
   }
 

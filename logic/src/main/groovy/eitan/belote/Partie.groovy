@@ -26,6 +26,27 @@ class Partie implements Emitter
     scores[team1] >= 1000 || scores[team2] >= 1000
   }
 
+  Team getWinner()
+  {
+    assert done()
+    if (scores[team1] > scores[team2]) {
+      return team1
+    }
+    if (scores[team2] > scores[team1]) {
+      return team2
+    }
+
+    def lastGame = games.last()
+    def scoreAdjustment1 = lastGame.scoreAdjustment(team1)
+    def scoreAdjustment2 = lastGame.scoreAdjustment(team2)
+    if (scoreAdjustment1 < scoreAdjustment2) {
+      return team1
+    } else if (scoreAdjustment2 < scoreAdjustment1) {
+      return team2
+    }
+    return null // signifies a tie
+  }
+
   def nextGame()
   {
     def game = new Game(partie: this, actorRef: this.actorRef)
@@ -86,7 +107,7 @@ class Partie implements Emitter
     null
   }
 
-  int roundScore(int score) {
+  static int roundScore(int score) {
     Math.round(score/10) * 10
   }
 

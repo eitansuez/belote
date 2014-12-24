@@ -1,20 +1,14 @@
 
 
-- logic:  partie.winner -- what if both have, say, 1010 -- one will have 1013 and the other 1009.
-  write test for this scenario
+-----handle belote rebelote
 
 -----logging wording:
- make card placement log wording to be semantic:  "Eitan cuts with .."
+ make card placement log wording semantic:  "Eitan cuts with .."
   or "Johnny follows suit with .."
-  or "Corinne montes with .."
+  or "Corinne monte with .."
 
  likewise, should state at end of each game "stat" such as:
   - team x wins after having committed to trefle
-
------handle belote rebelote
-
-
-
 
 -----play strategies:
  how to build a decent playing strategy?

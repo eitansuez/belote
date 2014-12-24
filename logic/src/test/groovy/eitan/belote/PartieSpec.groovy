@@ -16,7 +16,8 @@ class PartieSpec extends Specification
 
     partie = new Partie(
         team1: new Team(first: eitan, second: rony),
-        team2: new Team(first: johnny, second: corinne))
+        team2: new Team(first: johnny, second: corinne)
+    )
 
   }
 
@@ -168,6 +169,88 @@ class PartieSpec extends Specification
     then:
     partie.scores[partie.team1] == 200
     partie.scores[partie.team2] == 130
+  }
+
+
+
+  def "can tell winner"()
+  {
+    given:
+    partie.begin()
+    partie.scores[partie.team1] = 900
+    partie.scores[partie.team2] = 300
+
+    when:
+    def game = playGameWithScoreBeforeFinalize(120, 32)
+    partie.gameDone(game)
+
+    then:
+    partie.done()
+    partie.scores[partie.team1] == 1030
+    partie.scores[partie.team2] == 330
+
+    and:
+    partie.winner == partie.team1
+  }
+
+  def "can tell winner when both teams cross 1000"()
+  {
+    given:
+    partie.begin()
+    partie.scores[partie.team1] = 900
+    partie.scores[partie.team2] = 980
+
+    when:
+    def game = playGameWithScoreBeforeFinalize(100, 52)
+    partie.gameDone(game)
+
+    then:
+    partie.done()
+    partie.scores[partie.team1] == 1010
+    partie.scores[partie.team2] == 1030
+
+    and:
+    partie.winner == partie.team2
+  }
+
+  def "can tell winner even when both teams cross 1000 with same rounded score"()
+  {
+    given:
+    partie.begin()
+    partie.scores[partie.team1] = 900
+    partie.scores[partie.team2] = 980
+
+    when:
+    def game = playGameWithScoreBeforeFinalize(110, 42)
+    partie.gameDone(game)
+
+    then:
+    partie.done()
+    partie.scores[partie.team1] == 1020
+    partie.scores[partie.team2] == 1020
+
+    and:
+    partie.winner == partie.team2
+  }
+
+  def "the rare partie tie"()
+  {
+    given:
+    partie.begin()
+    partie.scores[partie.team1] = 900
+    partie.scores[partie.team2] = 980
+
+    when:
+    def game = playGameWithScoreBeforeFinalize(111, 41)
+    partie.gameDone(game)
+
+    then:
+    partie.done()
+    partie.scores[partie.team1] == 1020
+    partie.scores[partie.team2] == 1020
+
+    and:
+    partie.winner == null
   }
 
   def "can play a whole partie"()

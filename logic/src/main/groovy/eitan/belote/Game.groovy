@@ -274,6 +274,12 @@ class Game implements Emitter
     emit("gameUpdate", [team1, scores[team1], team2, scores[team2]])
   }
 
+  int scoreAdjustment(Team team)
+  {
+    def score = scores[team]
+    def roundedScore = Partie.roundScore(score)
+    roundedScore - score
+  }
 
   def play()
   {
