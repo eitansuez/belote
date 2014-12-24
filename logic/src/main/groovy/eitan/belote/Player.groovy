@@ -2,6 +2,9 @@ package eitan.belote
 
 import groovy.util.logging.Slf4j
 
+import static eitan.belote.CardType.Dame
+import static eitan.belote.CardType.Roi
+
 @Slf4j
 class Player implements Emitter
 {
@@ -152,5 +155,11 @@ class Player implements Emitter
   private boolean haveAtout(Suit atout)
   {
     hand.find { card -> card.suit == atout }
+  }
+
+  boolean hasBeloteRebelote(Suit atout)
+  {
+    hand.contains(new Card(type: Roi, suit: atout)) &&
+        hand.contains(new Card(type: Dame, suit: atout))
   }
 }

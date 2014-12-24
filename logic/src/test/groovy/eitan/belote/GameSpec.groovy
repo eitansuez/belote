@@ -5,6 +5,7 @@ import spock.lang.Specification
 import static eitan.belote.CardType.*
 import static Suit.Coeur
 import static Suit.Trefle
+import static eitan.belote.Suit.Pique
 
 class GameSpec extends Specification
 {
@@ -271,6 +272,7 @@ class GameSpec extends Specification
     when:
     game.finalizeScore()
 
+    // TODO:  this test could fail if by chance a team member has belote-rebelote
     then:
     game.scores[game.team1] == 81
     game.scores[game.team2] == 81
@@ -448,4 +450,56 @@ class GameSpec extends Specification
     1 * game.dealer.dealRemaining(_, _)
   }
 
+
+  def "detect player with belote rebelote"()
+  {
+    given:
+    game.team1 = partie.team1
+    game.team2 = partie.team2
+    game.starter = partie.starter
+
+    eitan.receiveCards([
+        deck.takeSpecificCard(new Card(type: Dame, suit: Trefle)),
+        deck.takeSpecificCard(new Card(type: Dix, suit: Coeur)),
+        deck.takeSpecificCard(new Card(type: Sept, suit: Pique)),
+        deck.takeSpecificCard(new Card(type: Huit, suit: Pique)),
+        deck.takeSpecificCard(new Card(type: Roi, suit: Trefle))
+    ])
+    [rony, corinne, johnny].each { player ->
+      game.dealer.dealToPlayer(player, deck.takeCards(5))
+    }
+
+    when:
+    game.dealer.turnUpCandidateCard()
+    game.envoi(Trefle, eitan)
+
+    then:
+    game.beloteRebelote() == eitan
+  }
+
+  def "this game has no belote rebelote"()
+  {
+    given:
+    game.team1 = partie.team1
+    game.team2 = partie.team2
+    game.starter = partie.starter
+
+    eitan.receiveCards([
+        deck.takeSpecificCard(new Card(type: Dame, suit: Trefle)),
+        deck.takeSpecificCard(new Card(type: Dix, suit: Coeur)),
+        deck.takeSpecificCard(new Card(type: Sept, suit: Pique)),
+        deck.takeSpecificCard(new Card(type: Huit, suit: Pique)),
+        deck.takeSpecificCard(new Card(type: Ace, suit: Trefle))
+    ])
+    [rony, corinne, johnny].each { player ->
+      game.dealer.dealToPlayer(player, deck.takeCards(5))
+    }
+
+    when:
+    game.dealer.turnUpCandidateCard()
+    game.envoi(Trefle, eitan)
+
+    then:
+    game.beloteRebelote() == null
+  }
 }

@@ -41,4 +41,18 @@ class Deck
   {
     size() == 0
   }
+
+  def takeSpecificCard(Card card)
+  {
+    def foundCard = cards.find { it == card }
+    if (foundCard && cards.remove(foundCard)) {
+      return foundCard
+    }
+    throw new NoSuchElementException("Deck does nto contain card "+card)
+  }
+
+  boolean hasCard(Card card)
+  {
+    cards.contains(card)
+  }
 }

@@ -293,4 +293,10 @@ class Game implements Emitter
     }
   }
 
+  Player beloteRebelote()
+  {
+    assert atout != null
+    players().find { player -> player.hasBeloteRebelote(atout) }
+  }
+
 }

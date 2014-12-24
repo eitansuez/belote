@@ -2,6 +2,9 @@ package eitan.belote
 
 import spock.lang.Specification
 
+import static eitan.belote.CardType.Dame
+import static eitan.belote.Suit.Trefle
+
 class DeckSpec extends Specification
 {
   Deck deck
@@ -40,6 +43,19 @@ class DeckSpec extends Specification
     then:
     deck.size() == 29
     cards.size() == 3
+  }
+
+  def "take a specific card from the deck"()
+  {
+    when:
+    def card = new Card(type: Dame, suit: Trefle)
+    deck.takeSpecificCard(card)
+
+    then:
+    deck.size() == 31
+
+    and:
+    !deck.hasCard(card)
   }
 
 }

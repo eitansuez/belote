@@ -345,4 +345,20 @@ class PlayerSpec extends Specification
     joe.strategy.class == TestStrategy
     joe.strategy.player == joe
   }
+
+  def "player has belote rebelote"()
+  {
+    when:
+    eitan.receiveCards([
+        new Card(type: Dame, suit: Trefle),
+        new Card(type: Dix, suit: Coeur),
+        new Card(type: Sept, suit: Pique),
+        new Card(type: Huit, suit: Pique),
+        new Card(type: Roi, suit: Trefle),
+    ])
+
+    then:
+    eitan.hasBeloteRebelote(Trefle)
+    !eitan.hasBeloteRebelote(Coeur)
+  }
 }
