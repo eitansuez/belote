@@ -146,7 +146,12 @@ class PartieSpec extends Specification
 
   private Game playGameWith(Closure customizeScores, Player envoyeur = eitan)
   {
-    def game = partie.nextGame()
+    // override game with a spy constructed the same way
+    def gameSpy = GroovySpy(Game, constructorArgs: [[partie: partie, actorRef: partie.actorRef]]) {
+      addBeloteRebelote() >> { }
+    }
+    def game = partie.nextGame(gameSpy)
+
     game.begin()
     game.envoi(game.dealer.turnUpCandidateCard().suit, envoyeur)
     game.playRandomly()

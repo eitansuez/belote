@@ -47,9 +47,9 @@ class Partie implements Emitter
     return null // signifies a tie
   }
 
-  def nextGame()
+  // method setup like this to allow tests to inject a spy
+  def nextGame(game = new Game(partie: this, actorRef: this.actorRef))
   {
-    def game = new Game(partie: this, actorRef: this.actorRef)
     starter = nextStarter()
     games << game
     log.info("Game #${games.size()} about to begin..")

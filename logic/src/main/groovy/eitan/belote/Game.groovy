@@ -19,6 +19,7 @@ class Game implements Emitter
   List<Round> rounds = []
 
   boolean done  // do i need this field?
+  Team teamWithBeloteRebelote = null
 
   def begin()
   {
@@ -27,6 +28,8 @@ class Game implements Emitter
     team1 = partie.team1
     team2 = partie.team2
     starter = partie.starter
+
+    teamWithBeloteRebelote = null
 
     done = false
     initScores()
@@ -103,6 +106,12 @@ class Game implements Emitter
     log.info("Game starting with ${player} envoie a ${suit}")
 
     dealer.dealRemaining(players(), committedPlayer)
+
+    Player playerWithBeloteRebelote = beloteRebelote()
+    if (playerWithBeloteRebelote) {
+      teamWithBeloteRebelote = playerWithBeloteRebelote.team
+    }
+
     showPlayerCards()
   }
 
@@ -182,6 +191,8 @@ class Game implements Emitter
       }
       addDixDedere(lastRound.winner.team)
 
+      addBeloteRebelote()
+
       if (dedans())
       {
         log.info("${committedTeam} are dedans")
@@ -202,6 +213,14 @@ class Game implements Emitter
   private void addDixDedere(Team team)
   {
     scores[team] += 10
+  }
+
+  // should be private but can't mock private methods (spock limitation)
+  void addBeloteRebelote()
+  {
+    if (teamWithBeloteRebelote) {
+      scores[teamWithBeloteRebelote] += 20
+    }
   }
 
   private void addCapotCredit()

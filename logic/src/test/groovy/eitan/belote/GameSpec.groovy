@@ -34,7 +34,9 @@ class GameSpec extends Specification
 
     partie.begin()
 
-    game = partie.nextGame()
+    // override game with a spy constructed the same way
+    def gameSpy = GroovySpy(Game, constructorArgs: [[partie: partie, actorRef: partie.actorRef]])
+    game = partie.nextGame(gameSpy)
 
     deck = GroovySpy(Deck)
     game.dealer = GroovySpy(Dealer)
@@ -164,6 +166,7 @@ class GameSpec extends Specification
 
     when:
     game.playRandomly()
+    game.addBeloteRebelote() >> { }  // mock method to ensure get no interference from possible dealing of belote rebelote
     game.finalizeScore()
 
     then:
@@ -186,6 +189,8 @@ class GameSpec extends Specification
     game.scores[game.team1] = 142
     game.scores[game.team2] = 10
     game.rounds.last().winner = eitan
+
+    game.addBeloteRebelote() >> { }  // mock method to ensure get no interference from possible dealing of belote rebelote
 
     when:
     game.finalizeScore()
@@ -248,6 +253,8 @@ class GameSpec extends Specification
     game.scores[game.team2] = 72
     game.rounds.last().winner = corinne
 
+    game.addBeloteRebelote() >> { }  // mock method to ensure get no interference from possible dealing of belote rebelote
+
     when:
     game.finalizeScore()
 
@@ -269,10 +276,11 @@ class GameSpec extends Specification
     game.scores[game.team2] = 71
     game.rounds.last().winner = corinne
 
+    game.addBeloteRebelote() >> { }  // mock method to ensure get no interference from possible dealing of belote rebelote
+
     when:
     game.finalizeScore()
 
-    // TODO:  this test could fail if by chance a team member has belote-rebelote
     then:
     game.scores[game.team1] == 81
     game.scores[game.team2] == 81
@@ -501,5 +509,75 @@ class GameSpec extends Specification
 
     then:
     game.beloteRebelote() == null
+  }
+
+  def "score accounts for belote rebelote for team of player bearing the cards"()
+  {
+    given:
+    game.team1 = partie.team1
+    game.team2 = partie.team2
+    game.starter = partie.starter
+    game.initScores()
+
+    eitan.receiveCards([
+        deck.takeSpecificCard(new Card(type: Dame, suit: Trefle)),
+        deck.takeSpecificCard(new Card(type: Dix, suit: Coeur)),
+        deck.takeSpecificCard(new Card(type: Sept, suit: Pique)),
+        deck.takeSpecificCard(new Card(type: Huit, suit: Pique)),
+        deck.takeSpecificCard(new Card(type: Roi, suit: Trefle))
+    ])
+    [rony, corinne, johnny].each { player ->
+      game.dealer.dealToPlayer(player, deck.takeCards(5))
+    }
+
+    game.dealer.turnUpCandidateCard()
+    game.envoi(Trefle, eitan)
+
+    game.playRandomly()
+    game.scores[game.team1] = 100
+    game.scores[game.team2] = 52
+    game.rounds.last().winner = eitan
+
+    when:
+    game.finalizeScore()
+
+    then:
+    game.scores[game.team1] == 130
+    game.scores[game.team2] == 52
+  }
+
+  def "score accounts for belote rebelote when other team bears it"()
+  {
+    given:
+    game.team1 = partie.team1
+    game.team2 = partie.team2
+    game.starter = partie.starter
+    game.initScores()
+
+    corinne.receiveCards([
+        deck.takeSpecificCard(new Card(type: Dame, suit: Trefle)),
+        deck.takeSpecificCard(new Card(type: Dix, suit: Coeur)),
+        deck.takeSpecificCard(new Card(type: Sept, suit: Pique)),
+        deck.takeSpecificCard(new Card(type: Huit, suit: Pique)),
+        deck.takeSpecificCard(new Card(type: Roi, suit: Trefle))
+    ])
+    [eitan, rony, johnny].each { player ->
+      game.dealer.dealToPlayer(player, deck.takeCards(5))
+    }
+
+    game.dealer.turnUpCandidateCard()
+    game.envoi(Trefle, eitan)
+
+    game.playRandomly()
+    game.scores[game.team1] = 100
+    game.scores[game.team2] = 52
+    game.rounds.last().winner = eitan
+
+    when:
+    game.finalizeScore()
+
+    then:
+    game.scores[game.team1] == 110
+    game.scores[game.team2] == 72
   }
 }
