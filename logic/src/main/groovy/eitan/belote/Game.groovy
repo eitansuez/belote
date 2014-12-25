@@ -270,7 +270,7 @@ class Game implements Emitter
       def card = player.playCard(selected)
       log.info("${player} plays ${card}")
 
-      round = round.newRound(card, player)
+      round = round.nextRound(card, player)
     }
 
     // TODO:  round.resolve should notify game that it's done

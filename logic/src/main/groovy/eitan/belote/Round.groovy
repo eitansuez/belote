@@ -12,14 +12,13 @@ class Round implements Emitter
   Player winner
   int points
 
-  Round newRound(Card card, Player player)
+  Round nextRound(Card card, Player player)
   {
     def round = new Round(cards: this.cards + card,
         players: this.players + player,
         atout: this.atout,
         actorRef: this.actorRef)
 
-    // TODO:  need an afterCreate
     if (round.isComplete()) {
       round.resolve()
     }
@@ -37,19 +36,14 @@ class Round implements Emitter
     emit("roundEnds", [winner, points])
   }
 
-  private Player playerOf(Card winningCard)
-  {
-    players[cards.indexOf(winningCard)]
-  }
-
-  ArrayList<Card> matchingSuit(Suit suit)
-  {
-    cards.findAll { card -> card.suit == suit }
-  }
-
   ArrayList<Card> atouts()
   {
     matchingSuit(atout)
+  }
+
+  private ArrayList<Card> matchingSuit(Suit suit)
+  {
+    cards.findAll { card -> card.suit == suit }
   }
 
   Card highest(Collection<Card> cardSet)
@@ -92,4 +86,10 @@ class Round implements Emitter
   {
     playerOf(masterCard())
   }
+
+  private Player playerOf(Card winningCard)
+  {
+    players[cards.indexOf(winningCard)]
+  }
+
 }
