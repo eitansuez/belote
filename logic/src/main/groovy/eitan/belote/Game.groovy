@@ -270,7 +270,7 @@ class Game implements Emitter
       def card = player.playCard(selected)
       log.info("${player} plays ${card}")
 
-      round = round.nextRound(card, player)
+      round = round.nextPlay(card, player)
     }
   }
 

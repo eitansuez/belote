@@ -12,7 +12,7 @@ class Round implements Emitter
   Player winner
   int points
 
-  Round nextRound(Card card, Player player)
+  Round nextPlay(Card card, Player player)
   {
     def round = new Round(cards: this.cards + card,
         players: this.players + player,
