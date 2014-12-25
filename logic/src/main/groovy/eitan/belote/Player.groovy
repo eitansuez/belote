@@ -1,10 +1,12 @@
 package eitan.belote
 
+import groovy.transform.EqualsAndHashCode
 import groovy.util.logging.Slf4j
 
 import static eitan.belote.CardType.Dame
 import static eitan.belote.CardType.Roi
 
+@EqualsAndHashCode(includes="name")
 @Slf4j
 class Player implements Emitter
 {
@@ -12,12 +14,6 @@ class Player implements Emitter
   List<Card> hand = []
   Team team
   Strategy strategy = new RandomStrategy(player: this)
-
-
-  void gameDone()
-  {
-    hand.clear()
-  }
 
   void setStrategy(Strategy s)
   {
@@ -36,11 +32,6 @@ class Player implements Emitter
     cards.each { card ->
       receiveCard(card)
     }
-  }
-
-  @Override
-  String toString() {
-    name
   }
 
   Card chooseCard(Round round)
@@ -162,4 +153,17 @@ class Player implements Emitter
     hand.contains(new Card(type: Roi, suit: atout)) &&
         hand.contains(new Card(type: Dame, suit: atout))
   }
+
+  // events
+  void gameDone()
+  {
+    hand.clear()
+  }
+
+  @Override
+  String toString() {
+    name
+  }
+
+
 }

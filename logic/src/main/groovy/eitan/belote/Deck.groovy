@@ -51,8 +51,4 @@ class Deck
     throw new NoSuchElementException("Deck does nto contain card "+card)
   }
 
-  boolean hasCard(Card card)
-  {
-    cards.contains(card)
-  }
 }

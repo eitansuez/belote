@@ -55,7 +55,7 @@ class DeckSpec extends Specification
     deck.size() == 31
 
     and:
-    !deck.hasCard(card)
+    !deck.cards.contains(card)
   }
 
 }
