@@ -31,7 +31,7 @@ class Round implements Emitter
 
   void resolve()
   {
-    calculateScore()
+    points = calculateScore()
     winner = master()
     game.roundDone(this)
     emit("roundEnds", [winner, points])
@@ -61,9 +61,9 @@ class Round implements Emitter
     requestedSuit() == game.atout
   }
 
-  private void calculateScore()
+  private int calculateScore()
   {
-    points = cards.inject(0) { int acc, Card card ->
+    cards.inject(0) { int acc, Card card ->
       acc + card.points(game.atout)
     }
   }
