@@ -48,7 +48,7 @@ class Partie implements Emitter
   }
 
   // method setup like this to allow tests to inject a spy
-  def nextGame(game = new Game(partie: this, actorRef: this.actorRef))
+  Game nextGame(game = new Game(partie: this, actorRef: this.actorRef))
   {
     starter = nextStarter()
     games << game
