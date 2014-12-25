@@ -36,7 +36,6 @@ class Player implements Emitter
 
   Card chooseCard(Round round)
   {
-    // TODO:  strategy will likely also need to have access to past rounds
     def validCards = validCards(round)
     def card = strategy.chooseCard(validCards, round)
     assert validCards.contains(card)

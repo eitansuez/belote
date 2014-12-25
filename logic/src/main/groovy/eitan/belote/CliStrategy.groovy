@@ -46,7 +46,6 @@ class CliStrategy implements Strategy
     card
   }
 
-  // TODO: improve this implementation to use a closure;  figure out how to return response
   private String prompt(String caption) {
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
     println "${player}: ${caption} "
