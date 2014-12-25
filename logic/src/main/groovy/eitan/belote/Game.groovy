@@ -14,7 +14,8 @@ class Game implements Emitter
   Suit atout
   Player committedPlayer
 
-  Player starter
+  Player starter, currentPlayer
+
 
   List<Round> rounds = []
 
@@ -40,7 +41,7 @@ class Game implements Emitter
   {
     log.info("envoi a ${candidate.suit}?")
 
-    def response = withEachPlayerUntilReturns { Player player ->
+    withEachPlayerUntilReturns { Player player ->
       if (player.envoi(candidate)) {
         envoi(candidate.suit, player)
         return [player, candidate]
@@ -48,8 +49,6 @@ class Game implements Emitter
         return null
       }
     }
-
-    response
   }
 
   def selectionPhase2()
@@ -118,6 +117,7 @@ class Game implements Emitter
   List<Player> players()
   {
     def players = []
+    currentPlayer = null
     withEachPlayer { player ->
       players << player
     }
@@ -125,22 +125,37 @@ class Game implements Emitter
   }
 
   void withEachPlayer(Closure closure) {
-    Player player = starter
-    4.times {
+    currentPlayer = null
+    Player player = nextPlayer()
+    while (player != null)
+    {
       closure.call(player)
-      player = partie.nextPlayer(player)
+      player = nextPlayer()
     }
   }
   def withEachPlayerUntilReturns(Closure closure) {
-    Player player = starter
+    currentPlayer = null
+    Player player = nextPlayer()
     def response = null
-    def count = 1
-    while (!response && count <= 4) {
+    while (player != null && !response)
+    {
       response = closure.call(player)
-      player = partie.nextPlayer(player)
-      count++
+      player = nextPlayer()
     }
     response
+  }
+
+  private Player nextPlayer()
+  {
+    if (currentPlayer == null)
+    {
+      currentPlayer = starter
+      return starter
+    }
+
+    def nextOne = partie.nextPlayer(currentPlayer)
+    currentPlayer = (nextOne == starter ? null : nextOne)
+    currentPlayer
   }
 
   def getCommittedTeam()
@@ -263,6 +278,8 @@ class Game implements Emitter
   {
     log.info("Round #${rounds.size()+1}")
 
+    starter = nextStarter()
+
     def round = new Round(game: this, actorRef: this.actorRef)
 
     withEachPlayer { Player player ->
@@ -274,14 +291,19 @@ class Game implements Emitter
     }
   }
 
+  Player nextStarter()
+  {
+    if (rounds.empty) {
+      starter
+    } else {
+      rounds.last().winner
+    }
+  }
+
   void roundDone(Round round)
   {
     rounds << round
     updateScore(round)
-    if (!isLastRound())
-    {
-      starter = round.winner
-    }
   }
 
   private void updateScore(Round round)

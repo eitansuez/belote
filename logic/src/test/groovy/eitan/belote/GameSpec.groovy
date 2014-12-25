@@ -138,7 +138,7 @@ class GameSpec extends Specification
     game.scoreAdjustment(game.team1) == -4
     game.scores[game.team2] == 0
     game.scoreAdjustment(game.team2) == 0
-    game.starter == rony
+    game.nextStarter() == rony
   }
 
   def "cards drawn from players"()
@@ -356,6 +356,7 @@ class GameSpec extends Specification
   def "should iterate through players at most 4 times"()
   {
     when:
+    game.begin()
     int count = 0
     game.withEachPlayerUntilReturns { player ->
       count += 1
