@@ -22,6 +22,13 @@ class RoundSpec extends Specification
     players = [eitan, johnny, corinne, rony]
   }
 
+  Game gameWithAtout(Suit atout)
+  {
+    def game = new Game(atout: atout)
+    game.initScores()
+    game
+  }
+
   def "can tell round size"()
   {
     when:
@@ -31,7 +38,7 @@ class RoundSpec extends Specification
         new Card(type: CardType.Sept, suit: Coeur),
         new Card(type: CardType.Valet, suit: Coeur)
     ]
-    def round = new Round(cards: cards, players: players, atout: Trefle)
+    def round = new Round(cards: cards, players: players, game: gameWithAtout(Trefle))
 
     then:
     round.size() == 4
@@ -43,7 +50,7 @@ class RoundSpec extends Specification
     def cards = [
         new Card(type: CardType.Ace, suit: Coeur)
     ]
-    def round = new Round(cards: cards, players: [eitan], atout: Trefle)
+    def round = new Round(cards: cards, players: [eitan], game: gameWithAtout(Trefle))
 
     then:
     round.size() == 1
@@ -62,7 +69,7 @@ class RoundSpec extends Specification
         new Card(type: CardType.Sept, suit: Coeur),
         new Card(type: CardType.Valet, suit: Coeur)
     ]
-    def round = new Round(cards: cards, players: players, atout: Trefle)
+    def round = new Round(cards: cards, players: players, game: gameWithAtout(Trefle))
 
     then:
     round.masterCard() == cards.first()
@@ -78,7 +85,7 @@ class RoundSpec extends Specification
         new Card(type: CardType.Sept, suit: Coeur),
         new Card(type: CardType.Valet, suit: Coeur)
     ]
-    def round = new Round(cards: cards, players: players, atout: Coeur)
+    def round = new Round(cards: cards, players: players, game: gameWithAtout(Coeur))
 
     then:
     round.masterCard() == cards.last()
@@ -94,7 +101,7 @@ class RoundSpec extends Specification
         new Card(type: CardType.Sept, suit: Pique),
         new Card(type: CardType.Valet, suit: Coeur)
     ]
-    def round = new Round(cards: cards, players: players, atout: Pique)
+    def round = new Round(cards: cards, players: players, game: gameWithAtout(Pique))
 
     then:
     round.masterCard() == cards[1]
@@ -109,7 +116,7 @@ class RoundSpec extends Specification
         new Card(type: CardType.Sept, suit: Coeur),
         new Card(type: CardType.Valet, suit: Coeur)
     ]
-    def round = new Round(cards: cards, players: players, atout: Trefle)
+    def round = new Round(cards: cards, players: players, game: gameWithAtout(Trefle))
 
     when:
     round.resolve()
@@ -127,7 +134,7 @@ class RoundSpec extends Specification
         new Card(type: CardType.Sept, suit: Coeur),
         new Card(type: CardType.Valet, suit: Coeur)
     ]
-    def round = new Round(cards: cards, players: players, atout: Coeur)
+    def round = new Round(cards: cards, players: players, game: gameWithAtout(Coeur))
 
     when:
     round.resolve()
@@ -145,7 +152,7 @@ class RoundSpec extends Specification
         new Card(type: CardType.Neuf, suit: Trefle),
         new Card(type: CardType.Dame, suit: Coeur)
     ]
-    def round = new Round(cards: cards, players: players, atout: Trefle)
+    def round = new Round(cards: cards, players: players, game: gameWithAtout(Trefle))
 
     when:
     round.resolve()
@@ -163,7 +170,7 @@ class RoundSpec extends Specification
         new Card(type: CardType.Sept, suit: Trefle),
         new Card(type: CardType.Dame, suit: Coeur)
     ]
-    def round = new Round(cards: cards, players: players, atout: Trefle)
+    def round = new Round(cards: cards, players: players, game: gameWithAtout(Trefle))
 
     when:
     round.resolve()
@@ -181,7 +188,7 @@ class RoundSpec extends Specification
         new Card(type: CardType.Roi, suit: Carreau),
         new Card(type: CardType.Huit, suit: Carreau)
     ]
-    def round = new Round(cards: cards, players: players, atout: Trefle)
+    def round = new Round(cards: cards, players: players, game: gameWithAtout(Trefle))
 
     when:
     round.resolve()

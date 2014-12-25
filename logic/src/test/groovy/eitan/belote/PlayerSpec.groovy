@@ -85,13 +85,20 @@ class PlayerSpec extends Specification
     thrown(AssertionError)
   }
 
+  private Game gameWithAtout(Suit atout)
+  {
+    def game = new Game(atout: atout)
+    game
+  }
+
+
   def "player 1 can play any card"()
   {
     given:
     eitan.receiveCards(deck.takeCards(8))
 
     when:
-    def round = new Round(cards: [], players: [], atout: Trefle)
+    def round = new Round(cards: [], players: [], game: gameWithAtout(Trefle))
     def set = eitan.validCards(round)
 
     then:
@@ -110,7 +117,7 @@ class PlayerSpec extends Specification
     def placed = [new Card(type: Huit, suit: Coeur)]
 
     when:
-    def round = new Round(cards: placed, players: [corinne], atout: Trefle)
+    def round = new Round(cards: placed, players: [corinne], game: gameWithAtout(Trefle))
     def set = eitan.validCards(round)
 
     then:
@@ -130,7 +137,7 @@ class PlayerSpec extends Specification
     def placed = [new Card(type: Huit, suit: Pique)]
 
     when:
-    def round = new Round(cards: placed, players: [corinne], atout: Trefle)
+    def round = new Round(cards: placed, players: [corinne], game: gameWithAtout(Trefle))
     def set = eitan.validCards(round)
 
     then:
@@ -149,7 +156,7 @@ class PlayerSpec extends Specification
     def placed = [new Card(type: Huit, suit: Pique)]
 
     when:
-    def round = new Round(cards: placed, players: [corinne], atout: Trefle)
+    def round = new Round(cards: placed, players: [corinne], game: gameWithAtout(Trefle))
     def set = eitan.validCards(round)
 
     then:
@@ -168,7 +175,7 @@ class PlayerSpec extends Specification
     def placed = [new Card(type: Huit, suit: Pique), new Card(type: Dame, suit: Trefle)]
 
     when:
-    def round = new Round(cards: placed, players: [rony, corinne], atout: Trefle)
+    def round = new Round(cards: placed, players: [rony, corinne], game: gameWithAtout(Trefle))
     def set = eitan.validCards(round)
 
     then:
@@ -187,7 +194,7 @@ class PlayerSpec extends Specification
     def placed = [new Card(type: Huit, suit: Pique), new Card(type: Dame, suit: Trefle)]
 
     when:
-    def round = new Round(cards: placed, players: [rony, corinne], atout: Trefle)
+    def round = new Round(cards: placed, players: [rony, corinne], game: gameWithAtout(Trefle))
     def set = eitan.validCards(round)
 
     then:
@@ -206,7 +213,7 @@ class PlayerSpec extends Specification
     def placed = [new Card(type: Huit, suit: Trefle), new Card(type: Dame, suit: Trefle)]
 
     when:
-    def round = new Round(cards: placed, players: [rony, corinne], atout: Trefle)
+    def round = new Round(cards: placed, players: [rony, corinne], game: gameWithAtout(Trefle))
     def set = eitan.validCards(round)
 
     then:
@@ -225,7 +232,7 @@ class PlayerSpec extends Specification
     def placed = [new Card(type: Huit, suit: Trefle), new Card(type: Ace, suit: Trefle)]
 
     when:
-    def round = new Round(cards: placed, players: [rony, corinne], atout: Trefle)
+    def round = new Round(cards: placed, players: [rony, corinne], game: gameWithAtout(Trefle))
     def set = eitan.validCards(round)
 
     then:
@@ -245,7 +252,7 @@ class PlayerSpec extends Specification
     def placed = [new Card(type: Huit, suit: Pique), new Card(type: Ace, suit: Pique)]
 
     when:
-    def round = new Round(cards: placed, players: [rony, corinne], atout: Pique)
+    def round = new Round(cards: placed, players: [rony, corinne], game: gameWithAtout(Pique))
     def set = eitan.validCards(round)
 
     then:
@@ -268,7 +275,7 @@ class PlayerSpec extends Specification
     ]
 
     when:
-    def round = new Round(cards: placed, players: [johnny, rony, corinne], atout: Pique)
+    def round = new Round(cards: placed, players: [johnny, rony, corinne], game: gameWithAtout(Pique))
     def set = eitan.validCards(round)
 
     then:
@@ -292,7 +299,7 @@ class PlayerSpec extends Specification
     ]
 
     when:
-    def round = new Round(cards: placed, players: [johnny, rony, corinne], atout: Pique)
+    def round = new Round(cards: placed, players: [johnny, rony, corinne], game: gameWithAtout(Pique))
     def set = eitan.validCards(round)
 
     then:
@@ -316,7 +323,7 @@ class PlayerSpec extends Specification
     ]
 
     when:
-    def round = new Round(cards: placed, players: [johnny, rony, corinne], atout: Pique)
+    def round = new Round(cards: placed, players: [johnny, rony, corinne], game: gameWithAtout(Pique))
     def set = eitan.validCards(round)
 
     then:

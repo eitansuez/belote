@@ -263,7 +263,7 @@ class Game implements Emitter
   {
     log.info("Round #${rounds.size()+1}")
 
-    def round = new Round(atout: atout, actorRef: this.actorRef)
+    def round = new Round(game: this, actorRef: this.actorRef)
 
     withEachPlayer { Player player ->
       Card selected = player.chooseCard(round)
@@ -272,9 +272,6 @@ class Game implements Emitter
 
       round = round.nextRound(card, player)
     }
-
-    // TODO:  round.resolve should notify game that it's done
-    roundDone(round)
   }
 
   void roundDone(Round round)

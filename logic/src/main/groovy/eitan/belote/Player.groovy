@@ -97,7 +97,7 @@ class Player implements Emitter
       }
 
       Set<Card> allAtouts = hand.findAll { card ->
-        card.suit == round.atout
+        card.suit == round.game.atout
       }
       if (allAtouts) {
         return allAtouts
@@ -112,7 +112,7 @@ class Player implements Emitter
 
     boolean haveToCut = (! isMyPartner(round.master()) )
 
-    if (haveToCut && haveAtout(round.atout))
+    if (haveToCut && haveAtout(round.game.atout))
     {
       if (round.containsAtout())
       {
@@ -123,7 +123,7 @@ class Player implements Emitter
       }
 
       Set<Card> allAtouts = hand.findAll { card ->
-        card.suit == round.atout
+        card.suit == round.game.atout
       }
       if (allAtouts) {
         return allAtouts
@@ -136,7 +136,7 @@ class Player implements Emitter
 
   private Set<Card> findHigherAtouts(Round round)
   {
-    Suit atout = round.atout
+    Suit atout = round.game.atout
     Card highestAtout = round.highest(round.atouts())
     hand.findAll { card ->
       (card.suit == atout) && (card.points(atout) > highestAtout.points(atout))

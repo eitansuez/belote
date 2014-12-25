@@ -7,7 +7,7 @@ class Round implements Emitter
 {
   List<Card> cards = []
   List<Player> players = []
-  Suit atout
+  Game game
 
   Player winner
   int points
@@ -16,7 +16,7 @@ class Round implements Emitter
   {
     def round = new Round(cards: this.cards + card,
         players: this.players + player,
-        atout: this.atout,
+        game: this.game,
         actorRef: this.actorRef)
 
     if (round.isComplete()) {
@@ -33,12 +33,13 @@ class Round implements Emitter
   {
     calculateScore()
     winner = master()
+    game.roundDone(this)
     emit("roundEnds", [winner, points])
   }
 
   ArrayList<Card> atouts()
   {
-    matchingSuit(atout)
+    matchingSuit(game.atout)
   }
 
   private ArrayList<Card> matchingSuit(Suit suit)
@@ -48,22 +49,22 @@ class Round implements Emitter
 
   Card highest(Collection<Card> cardSet)
   {
-    cardSet.max { Card card -> card.points(atout) }
+    cardSet.max { Card card -> card.points(game.atout) }
   }
 
   boolean containsAtout()
   {
-    cards.any { card -> card.suit == atout }
+    cards.any { card -> card.suit == game.atout }
   }
   boolean requestedAtout()
   {
-    requestedSuit() == atout
+    requestedSuit() == game.atout
   }
 
   private void calculateScore()
   {
     points = cards.inject(0) { int acc, Card card ->
-      acc + card.points(atout)
+      acc + card.points(game.atout)
     }
   }
 
