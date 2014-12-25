@@ -148,7 +148,7 @@ class GameSpec extends Specification
     game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
 
     when:
-    game.playRandomRound()
+    game.playRound()
 
     then:
     players.each { player ->
@@ -164,7 +164,7 @@ class GameSpec extends Specification
     game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
 
     when:
-    game.playRandomly()
+    game.playEightRounds()
     game.addBeloteRebelote() >> { }  // mock method to ensure get no interference from possible dealing of belote rebelote
     game.finalizeScore()
 
@@ -184,7 +184,7 @@ class GameSpec extends Specification
     game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
     game.atout = Trefle  // override atout
 
-    game.playRandomly()
+    game.playEightRounds()
     game.scores[game.team1] = 142
     game.scores[game.team2] = 10
     game.rounds.last().winner = eitan
@@ -206,7 +206,7 @@ class GameSpec extends Specification
     game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
     game.atout = Trefle  // override atout
 
-    game.playRandomly()
+    game.playEightRounds()
     game.scores[game.team1] = 152
     game.scores[game.team2] = 0
 
@@ -226,7 +226,7 @@ class GameSpec extends Specification
     game.begin()
     game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
     game.atout = Trefle  // override atout
-    game.playRandomly()
+    game.playEightRounds()
     game.scores[game.team1] = 0
     game.scores[game.team2] = 152
 
@@ -247,7 +247,7 @@ class GameSpec extends Specification
     game.begin()
     game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
     game.atout = Trefle  // override atout
-    game.playRandomly()
+    game.playEightRounds()
     game.scores[game.team1] = 80
     game.scores[game.team2] = 72
     game.rounds.last().winner = corinne
@@ -270,7 +270,7 @@ class GameSpec extends Specification
     game.begin()
     game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
     game.atout = Trefle  // override atout
-    game.playRandomly()
+    game.playEightRounds()
     game.scores[game.team1] = 81
     game.scores[game.team2] = 71
     game.rounds.last().winner = corinne
@@ -532,7 +532,7 @@ class GameSpec extends Specification
     game.dealer.turnUpCandidateCard()
     game.envoi(Trefle, eitan)
 
-    game.playRandomly()
+    game.playEightRounds()
     game.scores[game.team1] = 100
     game.scores[game.team2] = 52
     game.rounds.last().winner = eitan
@@ -567,7 +567,7 @@ class GameSpec extends Specification
     game.dealer.turnUpCandidateCard()
     game.envoi(Trefle, eitan)
 
-    game.playRandomly()
+    game.playEightRounds()
     game.scores[game.team1] = 100
     game.scores[game.team2] = 52
     game.rounds.last().winner = eitan

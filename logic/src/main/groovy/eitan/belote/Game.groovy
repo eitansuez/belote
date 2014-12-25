@@ -254,12 +254,12 @@ class Game implements Emitter
     done && !committedPlayer
   }
 
-  void playRandomly()
+  void playEightRounds()
   {
-    8.times { playRandomRound() }
+    8.times { playRound() }
   }
 
-  void playRandomRound()
+  void playRound()
   {
     log.info("Round #${rounds.size()+1}")
 
@@ -303,7 +303,7 @@ class Game implements Emitter
 
     if (selectionPhase1(dealer.turnUpCandidateCard()) || selectionPhase2())
     {
-      playRandomly()
+      playEightRounds()
       finalizeScore()
       partie.gameDone(this)
     }

@@ -154,7 +154,7 @@ class PartieSpec extends Specification
 
     game.begin()
     game.envoi(game.dealer.turnUpCandidateCard().suit, envoyeur)
-    game.playRandomly()
+    game.playEightRounds()
     customizeScores.call(game)
     game.finalizeScore()
     game
