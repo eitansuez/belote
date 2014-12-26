@@ -64,8 +64,9 @@ class Partie implements Emitter
 
   def gameDone(Game game)
   {
-    if (!game.forfeited())
-    {
+    emit('gameEnds', [game.winningTeam])
+
+    if (!game.forfeited()) {
       transferScores(game)
     }
 

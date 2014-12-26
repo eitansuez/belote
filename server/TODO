@@ -1,12 +1,9 @@
 
 ----ui:
 
-- implement/handle:
- partie score
- game end - clear game score
-
 bugs:
- - my card scoots after being played
+ - player hand area bounds get mucked up by the time next game starts?
+ - show connected status on page
 
 
 - transitions, fine-tune timings

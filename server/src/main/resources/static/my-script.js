@@ -124,7 +124,7 @@ var Bubble = CompoundPath.extend({
         var self = this;
         setTimeout(function() {
             self.eitanShow(false);
-        }, 3000);
+        }, 2000);
     }
 
 });
@@ -137,6 +137,7 @@ function cardFor(serverSideCardName) {
 function connectToServer() {
     var ws = new SockJS('/newPartie');
     client = Stomp.over(ws);
+    //client.debug = null;
 
     client.connect({}, function() {
         console.log('connected');
@@ -455,9 +456,6 @@ function setupCmds() {
 
             bubbles[players[playerName]].say(text);
         },
-        gameForfeit : function() {
-            resetDeck();
-        },
         offer : function(playerName, suitName) {
             var firstRound = (typeof suitName !== 'undefined');
             if (firstRound)
@@ -500,15 +498,22 @@ function setupCmds() {
             updateGameScores(team1Score, team2Score);
         },
         roundEnds: function(winner, points) {
-            console.log(winner+" takes with "+points+" points");
+            //console.log(winner+" takes with "+points+" points");
             clearTable();
+        },
+        gameEnds : function(winningTeam) {
+            if (winningTeam) // forfeit has no winning team
+            {
+                window.alert(winningTeam + " wins");
+            }
             clearScores();
+            resetDeck();
         },
         partieUpdate: function(team1, team1Score, team2, team2Score) {
             updatePartieScores(team1Score, team2Score);
         },
         partieEnds: function(winningTeam) {
-            alert("Partie is over.  Winner is "+winningTeam);  // TODO: for now
+            window.alert("Partie is over.  Winner is "+winningTeam);  // TODO: for now
         }
     };
 }

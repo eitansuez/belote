@@ -59,12 +59,12 @@ class Game implements Emitter
 
   def pass()
   {
-    emit("playerDecision", [currentPlayer, false, dealer.candidate.suit])
+    emit('playerDecision', [currentPlayer, false, dealer.candidate.suit])
     continueSelectionPhase1()
   }
   def passDeuxFois()
   {
-    emit("playerDecision", [currentPlayer, false, null])
+    emit('playerDecision', [currentPlayer, false, null])
     continueSelectionPhase2()
   }
 
@@ -78,7 +78,7 @@ class Game implements Emitter
     this.committedPlayer = currentPlayer
     this.atout = suit
 
-    emit("playerDecision", [committedPlayer, true, suit])
+    emit('playerDecision', [committedPlayer, true, suit])
 
     dealer.dealRemaining(players(), committedPlayer)
 
@@ -102,8 +102,6 @@ class Game implements Emitter
     Player player = nextPlayer()
     if (player == null)
     {
-      emit("gameForfeit", [])
-
       players().each { p ->
         p.gameDone()
       }
@@ -308,7 +306,7 @@ class Game implements Emitter
   private void updateScore(Round round)
   {
     scores[round.winner.team] += round.points
-    emit("gameUpdate", [team1, scores[team1], team2, scores[team2]])
+    emit('gameUpdate', [team1, scores[team1], team2, scores[team2]])
   }
 
   int scoreAdjustment(Team team)
