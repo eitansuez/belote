@@ -2,12 +2,6 @@
 ----ui:
 
 - timing, transitions, etc..
-- make a nice prompter
-- bubble -- does not treat both the bubble and the text as a single object.
-
-- js has to be more object-oriented:  rather than create a whole list of functions, add functions to the group
- that represents a player area.
-
 - implement/handle:
  passeDeuxFoi,
  second envoi,
@@ -15,5 +9,11 @@
  game end
  partie score
 
+
+- make a nice prompter
+- bubble -- does not treat both the bubble and the text as a single object
+
+- js has to be more object-oriented:  rather than create a whole list of functions, add functions to the group
+ that represents a player area.
 
 -- switch to using actors between game and players?

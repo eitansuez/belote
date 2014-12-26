@@ -31,6 +31,7 @@ public class BeloteController {
         }
 
         def eitan = new Player(name: "Eitan", actorRef: stompActor, strategy: remoteStrategy)
+        remoteStrategy.actorRef = stompActor
         def johnny = new Player(name: "Johnny", actorRef: stompActor)
         def corinne = new Player(name: "Corinne", actorRef: stompActor)
         def rony = new Player(name: "Rony", actorRef: stompActor)

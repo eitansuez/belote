@@ -1,36 +1,29 @@
 package eitan.belote
 
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.messaging.simp.SimpMessagingTemplate
+import akka.actor.ActorRef
 import org.springframework.stereotype.Component
 
 @Component
 class RemoteStrategy implements Strategy
 {
   Player player
-
-  @Autowired
-  private final SimpMessagingTemplate template
-
-  private void sendCmd(cmd, args) {
-    template.convertAndSend('/topic/belote', [cmd: cmd, args: args.collect { arg -> StompActor.marshal(arg) }])
-  }
+  ActorRef actorRef
 
   @Override
   void offer(Game game, Card candidate)
   {
-    sendCmd('offer', [player, candidate])
+    actorRef.tell(new BeloteEvent(name: 'offer', args: [player, candidate]), ActorRef.noSender())
   }
 
   @Override
   void offer(Game game)
   {
-    sendCmd('offer', [player])
+    actorRef.tell(new BeloteEvent(name: 'offer', args: [player]), ActorRef.noSender())
   }
 
   @Override
   void play(Game game, Set<Card> validCards, Round round)
   {
-    sendCmd('play', [player, validCards])
+    actorRef.tell(new BeloteEvent(name: 'play', args: [player, validCards]), ActorRef.noSender())
   }
 }

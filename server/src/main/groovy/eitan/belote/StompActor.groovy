@@ -15,6 +15,7 @@ class StompActor extends UntypedActor
   void onReceive(Object message) throws Exception
   {
     if (message instanceof BeloteEvent) {
+      sleep(1000)
       BeloteEvent event = (BeloteEvent) message
       sendCmd(event.name, event.args)
     }
@@ -31,6 +32,10 @@ class StompActor extends UntypedActor
     if (arg instanceof Player)
     {
       ((Player) arg).name
+    }
+    else if (arg instanceof Team)
+    {
+      ((Team) arg).toString()
     }
     else if (arg instanceof Card)
     {

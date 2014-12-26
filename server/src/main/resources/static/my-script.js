@@ -3,6 +3,7 @@ var cardSeparation, selectDelta;
 var handAspectRatio = 3;
 var table, groups, bubbles;
 var cmds, players;
+var client;
 
 var Bubble = CompoundPath.extend({
     _class: 'Bubble',
@@ -120,8 +121,6 @@ function cardFor(serverSideCardName) {
     var card_name = serverSideCardName.replace(/ /g, '_');
     return cards[card_name];
 }
-
-var client
 
 function connectToServer() {
     var ws = new SockJS('/newGame');
