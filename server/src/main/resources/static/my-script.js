@@ -121,16 +121,23 @@ function cardFor(serverSideCardName) {
     return cards[card_name];
 }
 
+var client
+
 function connectToServer() {
     var ws = new SockJS('/newGame');
-    var client = Stomp.over(ws);
+    client = Stomp.over(ws);
 
     client.connect({}, function() {
         console.log('connected');
 
         client.subscribe("/topic/belote", function(message) {
             var body = JSON.parse(message.body);
-            cmds[body.cmd].apply(null, body.args);
+            var cmd = cmds[body.cmd];
+            if (!cmd) {
+                console.error("unimplemented command: "+body.cmd);
+            } else {
+                cmd.apply(null, body.args);
+            }
         });
 
         $("#disconnect-btn").on('click', function() {
@@ -147,6 +154,15 @@ function connectToServer() {
         console.log('error: '+error.headers.message);
     });
 }
+
+function sendResponse(cmd, args) {
+    var msg = {
+      name: cmd,
+      args: args || []
+    };
+    client.send('/app/respond', {}, JSON.stringify(msg));
+}
+
 
 $(function() {
     // for now hard-code
@@ -169,7 +185,29 @@ $(function() {
             bubbles[players[playerName]].say(text);
         },
         gameForfeit : function() {
-            //resetDeck();
+            resetDeck();
+        },
+        offer : function(playerName, cardName) {
+            var prompt = "Would you like to envoi a "+cardName+"'s suite?";
+            bubbles[players[playerName]].say(prompt);
+            var envoi = confirm(prompt);  // TODO: remove scaffold
+            if (envoi)
+            {
+                sendResponse("envoi")
+            }
+            else
+            {
+                sendResponse("pass")
+            }
+        },
+        play: function(playerName, cardNames) {
+            var cards = _.map(cardNames, function(cardName) {
+                return cardFor(cardName);
+            });
+            chooseCard(cards);
+        },
+        playCard: function(playerName, cardName) {
+            playCard(cardFor(cardName));
         }
     };
 
@@ -228,6 +266,7 @@ function armCard(card) {
         playCard(card);
         deselect([card]);
         deselect(chosenCards(card.parent), true);
+        sendResponse("playerChooses", [ card.name ]);
     });
 }
 

@@ -27,16 +27,22 @@ class StompActor extends UntypedActor
     template.convertAndSend('/topic/belote', [cmd: cmd, args: args.collect { arg -> marshal(arg) }])
   }
 
-  private static marshal(arg) {
+  public static marshal(arg) {
     if (arg instanceof Player)
     {
       ((Player) arg).name
     }
-    else if (arg instanceof Card) {
+    else if (arg instanceof Card)
+    {
       ((Card) arg).toString()
     }
-    else if (arg instanceof Enum) {
+    else if (arg instanceof Enum)
+    {
       ((Enum) arg).name()
+    }
+    else if (arg instanceof Collection)
+    {
+      arg.collect { item -> marshal(item) }
     }
     else {
       arg
