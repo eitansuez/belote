@@ -85,6 +85,13 @@ var Bubble = CompoundPath.extend({
         this._pointText.content = this._splitText();
         this._pointText.fillColor = 'black';
         this._pointText.bringToFront();
+
+        this.eitanShow(false);
+    },
+
+    eitanShow: function(visible) {
+        this.visible = visible;
+        this._pointText.visible = visible;
     },
 
     _splitText: function() {
@@ -114,6 +121,11 @@ var Bubble = CompoundPath.extend({
         this.setText(text);
         this.bringToFront();
         this._pointText.bringToFront();
+        this.eitanShow(true);
+        var self = this;
+        setTimeout(function() {
+            self.eitanShow(false);
+        }, 3000);
     }
 
 });
