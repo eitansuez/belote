@@ -45,13 +45,16 @@ class GameSpec extends Specification
 
   def "should be able to construct a game with two teams and a card deck"()
   {
+    given:
+    game.startSelectionPhase1() >> {}
+
     when:
     game.begin()
 
     then:
     1 * game.dealer.deal(_)
     eitan.hand.size() == 5
-    deck.size() == 12
+    deck.size() == 11
     game.scores[game.team1] == 0
     game.scores[game.team2] == 0
   }
@@ -64,6 +67,9 @@ class GameSpec extends Specification
 
   def "envoi should set atout and designate team"()
   {
+    given:
+    game.startSelectionPhase1() >> {}
+
     when:
     game.begin()
 
@@ -72,11 +78,12 @@ class GameSpec extends Specification
     5 * johnny.receiveCard(_)
 
     when:
-    Card card = game.dealer.turnUpCandidateCard()
-    game.envoi(card.suit, eitan)
+    def candidate = game.dealer.candidate
+    game.nextPlayer()
+    game.envoi()
 
     then:
-    game.atout == card.suit
+    game.atout == candidate.suit
     game.committedPlayer == eitan
     game.committedTeam == game.team1
   }
@@ -84,10 +91,14 @@ class GameSpec extends Specification
   def "after envoi should know points for cards"()
   {
     given:
-    game.begin()
+    game.startSelectionPhase1() >> {}
 
     when:
-    game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
+    game.begin()
+
+    and:
+    game.nextPlayer()
+    game.envoi()
 
     then:
     game.points(new Card(type: Ace, suit: game.atout)) == 11
@@ -104,10 +115,15 @@ class GameSpec extends Specification
   def "envoi should trigger deal remaining cards"()
   {
     given:
-    game.begin()
+    game.startSelectionPhase1() >> {}
+    game.startPlayPhase() >> {}
 
     when:
-    game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
+    game.begin()
+
+    and:
+    game.nextPlayer()
+    game.envoi()
 
     then:
     1 * game.dealer.dealRemaining(_, _)
@@ -118,11 +134,18 @@ class GameSpec extends Specification
   def "play first round"()
   {
     given:
-    game.begin()
-    game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
-    game.atout = Trefle
+    game.startSelectionPhase1() >> {}
 
     when:
+    game.begin()
+
+
+    and:
+    game.nextPlayer()
+    game.envoi()
+    game.atout = Trefle
+
+    and:
     def cards = [
         new Card(type: Ace, suit: Coeur),
         new Card(type: Dix, suit: Coeur),
@@ -165,7 +188,7 @@ class GameSpec extends Specification
 
     when:
     game.playEightRounds()
-    game.addBeloteRebelote() >> { }  // mock method to ensure get no interference from possible dealing of belote rebelote
+    game.addBeloteRebelote() >> {}  // mock method to ensure get no interference from possible dealing of belote rebelote
     game.finalizeScore()
 
     then:
@@ -189,7 +212,7 @@ class GameSpec extends Specification
     game.scores[game.team2] = 10
     game.rounds.last().winner = eitan
 
-    game.addBeloteRebelote() >> { }  // mock method to ensure get no interference from possible dealing of belote rebelote
+    game.addBeloteRebelote() >> {}  // mock method to ensure get no interference from possible dealing of belote rebelote
 
     when:
     game.finalizeScore()
@@ -252,7 +275,7 @@ class GameSpec extends Specification
     game.scores[game.team2] = 72
     game.rounds.last().winner = corinne
 
-    game.addBeloteRebelote() >> { }  // mock method to ensure get no interference from possible dealing of belote rebelote
+    game.addBeloteRebelote() >> {}  // mock method to ensure get no interference from possible dealing of belote rebelote
 
     when:
     game.finalizeScore()
@@ -275,7 +298,7 @@ class GameSpec extends Specification
     game.scores[game.team2] = 71
     game.rounds.last().winner = corinne
 
-    game.addBeloteRebelote() >> { }  // mock method to ensure get no interference from possible dealing of belote rebelote
+    game.addBeloteRebelote() >> {}  // mock method to ensure get no interference from possible dealing of belote rebelote
 
     when:
     game.finalizeScore()

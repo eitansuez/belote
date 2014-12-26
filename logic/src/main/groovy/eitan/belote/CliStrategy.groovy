@@ -5,27 +5,37 @@ class CliStrategy implements Strategy
   Player player
 
   @Override
-  boolean envoi(Card candidate)
+  void offer(Game game, Card candidate)
   {
     def response = prompt("Would you like to go for ${candidate.suit} (y/n) ?")
-    response?.toLowerCase()?.startsWith("y")
+    boolean envoi = response?.toLowerCase()?.startsWith("y")
+    if (envoi)
+    {
+      game.envoi()
+    }
+    else
+    {
+      game.pass()
+    }
   }
 
   @Override
-  Suit envoi()
+  void offer(Game game)
   {
     def response = ''
     while (!Suit.isValidAcronym(response)) {
       response = prompt("Any other suit you'd like to go for? (h=heart,d=diamond,s=spade,c=clubs, or p for pass)")
       if (response?.toLowerCase() == 'p') {
-        return null
+        game.passDeuxFois()
+        return
       }
     }
-    Suit.interpretSuitFromAcronym(response)
+    def suit = Suit.interpretSuitFromAcronym(response)
+    game.envoi(suit)
   }
 
   @Override
-  Card chooseCard(Set<Card> validCards, Round round)
+  void play(Game game, Set<Card> validCards, Round round)
   {
     player.showHand()
 
@@ -42,8 +52,7 @@ class CliStrategy implements Strategy
       card = player.hand[cardIndex]
     }
 
-    println "${player} plays ${card}"
-    card
+    game.playerChooses(card)
   }
 
   private String prompt(String caption) {

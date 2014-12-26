@@ -20,7 +20,7 @@ Partie partie = new Partie(
 partie.begin()
 while (!partie.done())
 {
-  partie.nextGame().play()
+  partie.nextGame().begin()
 }
 
 println "Partie is over."

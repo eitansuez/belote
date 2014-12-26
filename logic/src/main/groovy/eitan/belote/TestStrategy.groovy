@@ -5,20 +5,21 @@ class TestStrategy implements Strategy
   Player player
 
   @Override
-  boolean envoi(Card candidate)
+  void offer(Game game, Card candidate)
   {
-    false
+    game.pass()
   }
 
   @Override
-  Suit envoi()
+  void offer(Game game)
   {
-    null
+    game.passDeuxFois()
   }
 
   @Override
-  Card chooseCard(Set<Card> validCards, Round round)
+  void play(Game game, Set<Card> validCards, Round round)
   {
-    round.highest(validCards)
+    game.playerChooses(round.highest(validCards))
   }
+
 }

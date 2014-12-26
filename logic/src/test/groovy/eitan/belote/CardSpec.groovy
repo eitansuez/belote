@@ -59,4 +59,13 @@ class CardSpec extends Specification
     new Card(type: Dix, suit: Trefle) == new Card(type: Dix, suit: Trefle)
   }
 
+  def "unmarshal from name"()
+  {
+    when:
+    def cardName = "Dix_de_Coeur"
+
+    then:
+    Card.fromName(cardName) == new Card(type: Dix, suit: Coeur)
+  }
+
 }

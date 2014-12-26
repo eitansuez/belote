@@ -5,20 +5,21 @@ class RandomStrategy implements Strategy
   Player player
 
   @Override
-  boolean envoi(Card candidate)
+  void offer(Game game, Card candidate)
   {
-    false  // pass all the time
+    game.pass()  // alternately game.envoi()
   }
 
   @Override
-  Suit envoi()
+  void offer(Game game)
   {
-    null
+    game.passDeuxFois()  // alternately game.envoi(suit)
   }
 
   @Override
-  Card chooseCard(Set<Card> validCards, Round round)
+  void play(Game game, Set<Card> validCards, Round round)
   {
-    validCards.first()
+    game.playerChooses(validCards.first())
   }
+
 }

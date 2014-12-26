@@ -10,19 +10,24 @@ import static eitan.belote.Suit.Trefle
 class RandomStrategySpec extends Specification
 {
   Strategy strategy
+  Game game
 
   def setup()
   {
     strategy = new RandomStrategy()
+    game = Mock()
   }
 
   def "should pass"()
   {
+    given:
+    Card candidate = new Card(type: Ace, suit: Trefle)
+
     when:
-    Card card = new Card(type: Ace, suit: Trefle)
+    strategy.offer(game, candidate)
 
     then:
-    !strategy.envoi(card)
+    1 * game.pass()
   }
 
   def "should pick a card among the valids"()
@@ -31,10 +36,10 @@ class RandomStrategySpec extends Specification
     def validCards = [new Card(type: Ace, suit: Trefle), new Card(type: Roi, suit: Coeur)] as Set
 
     when:
-    Card chosen = strategy.chooseCard(validCards, null)
+    strategy.play(game, validCards, null)
 
     then:
-    validCards.contains chosen
+    1 * game.playerChooses { card -> validCards.contains(card) }
   }
 
 }

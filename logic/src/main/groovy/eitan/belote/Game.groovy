@@ -16,11 +16,12 @@ class Game implements Emitter
 
   Player starter, currentPlayer
 
-
   List<Round> rounds = []
+  Round currentRound = null
 
   boolean done  // do i need this field?
   Team teamWithBeloteRebelote = null
+
 
   def begin()
   {
@@ -35,48 +36,84 @@ class Game implements Emitter
     done = false
     initScores()
     dealCards()
+    dealer.turnUpCandidateCard()
+    startSelectionPhase1()
   }
 
-  def selectionPhase1(Card candidate)
+  def startSelectionPhase1()
   {
-    log.info("envoi a ${candidate.suit}?")
-
-    withEachPlayerUntilReturns { Player player ->
-      if (player.envoi(candidate)) {
-        envoi(candidate.suit, player)
-        return [player, candidate]
-      } else {
-        return null
-      }
+    currentPlayer = null
+    continueSelectionPhase1()
+  }
+  def continueSelectionPhase1()
+  {
+    Player player = nextPlayer()
+    if (player == null) {
+      startSelectionPhase2()
+    }
+    else
+    {
+      player.offer(this, dealer.candidate)
     }
   }
 
-  def selectionPhase2()
+  def pass()
   {
-    log.info("second round of atout selection begins..")
+    emit("playerDecision", [currentPlayer, false, dealer.candidate.suit])
+    continueSelectionPhase1()
+  }
+  def passDeuxFois()
+  {
+    emit("playerDecision", [currentPlayer, false, null])
+    continueSelectionPhase2()
+  }
 
-    def response = withEachPlayerUntilReturns { Player player ->
-      Suit suit = player.envoi()
-      if (suit) {
-        envoi(suit, player)
-        return [player, suit]
-      } else {
-        return null
-      }
+  def envoi()
+  {
+    envoi(dealer.candidate.suit)
+  }
+
+  def envoi(Suit suit)
+  {
+    this.committedPlayer = currentPlayer
+    this.atout = suit
+
+    emit("playerDecision", [committedPlayer, true, suit])
+
+    dealer.dealRemaining(players(), committedPlayer)
+
+    Player playerWithBeloteRebelote = beloteRebelote()
+    if (playerWithBeloteRebelote) {
+      teamWithBeloteRebelote = playerWithBeloteRebelote.team
     }
 
-    if (!response) {
+    showPlayerCards()
 
+    startPlayPhase()
+  }
+
+  def startSelectionPhase2()
+  {
+    currentPlayer = null
+    continueSelectionPhase2()
+  }
+  def continueSelectionPhase2()
+  {
+    Player player = nextPlayer()
+    if (player == null)
+    {
       emit("gameForfeit", [])
 
-      players().each { player ->
-        player.gameDone()
+      players().each { p ->
+        p.gameDone()
       }
 
       done = true
     }
-
-    response
+    else
+    {
+      player.offer(this)
+    }
   }
 
   private void initScores() {
@@ -89,60 +126,6 @@ class Game implements Emitter
     log.info("Dealing cards..")
     dealer.deal(players())
     showPlayerCards()
-  }
-
-  private void showPlayerCards()
-  {
-    withEachPlayer { Player player ->
-      player.showHand()
-    }
-  }
-
-  def envoi(Suit suit, Player player)
-  {
-    this.committedPlayer = player
-    this.atout = suit
-    log.info("Game starting with ${player} envoie a ${suit}")
-
-    dealer.dealRemaining(players(), committedPlayer)
-
-    Player playerWithBeloteRebelote = beloteRebelote()
-    if (playerWithBeloteRebelote) {
-      teamWithBeloteRebelote = playerWithBeloteRebelote.team
-    }
-
-    showPlayerCards()
-  }
-
-  List<Player> players()
-  {
-    def players = []
-    currentPlayer = null
-    withEachPlayer { player ->
-      players << player
-    }
-    players
-  }
-
-  void withEachPlayer(Closure closure) {
-    currentPlayer = null
-    Player player = nextPlayer()
-    while (player != null)
-    {
-      closure.call(player)
-      player = nextPlayer()
-    }
-  }
-  def withEachPlayerUntilReturns(Closure closure) {
-    currentPlayer = null
-    Player player = nextPlayer()
-    def response = null
-    while (player != null && !response)
-    {
-      response = closure.call(player)
-      player = nextPlayer()
-    }
-    response
   }
 
   private Player nextPlayer()
@@ -269,27 +252,42 @@ class Game implements Emitter
     done && !committedPlayer
   }
 
-  void playEightRounds()
+  def startPlayPhase()
   {
-    8.times { playRound() }
+    starter = nextStarter()
+    currentRound = new Round(game: this, actorRef: this.actorRef)
+    currentPlayer = null
+    continuePlayPhase()
   }
 
-  void playRound()
+  def continuePlayPhase()
   {
-    log.info("Round #${rounds.size()+1}")
-
-    starter = nextStarter()
-
-    def round = new Round(game: this, actorRef: this.actorRef)
-
-    withEachPlayer { Player player ->
-      Card selected = player.chooseCard(round)
-      def card = player.playCard(selected)
-      log.info("${player} plays ${card}")
-
-      round = round.nextPlay(card, player)
+    Player player = nextPlayer()
+    if (player == null)
+    {
+      if (isLastRound())
+      {
+        finalizeScore()
+        partie.gameDone(this)
+      }
+      else
+      {
+        startPlayPhase()
+      }
+    }
+    else
+    {
+      player.play(this, currentRound)
     }
   }
+
+  def playerChooses(Card card)
+  {
+    currentPlayer.playCard(card)
+    currentRound = currentRound.nextPlay(card, currentPlayer)
+    continuePlayPhase()
+  }
+
 
   Player nextStarter()
   {
@@ -319,22 +317,48 @@ class Game implements Emitter
     roundedScore - score
   }
 
-  def play()
-  {
-    begin()
-
-    if (selectionPhase1(dealer.turnUpCandidateCard()) || selectionPhase2())
-    {
-      playEightRounds()
-      finalizeScore()
-      partie.gameDone(this)
-    }
-  }
-
   Player beloteRebelote()
   {
     assert atout != null
     players().find { player -> player.hasBeloteRebelote(atout) }
+  }
+
+  private void showPlayerCards()
+  {
+    withEachPlayer { Player player ->
+      player.showHand()
+    }
+  }
+
+  List<Player> players()
+  {
+    def players = []
+    currentPlayer = null
+    withEachPlayer { player ->
+      players << player
+    }
+    players
+  }
+
+  void withEachPlayer(Closure closure) {
+    currentPlayer = null
+    Player player = nextPlayer()
+    while (player != null)
+    {
+      closure.call(player)
+      player = nextPlayer()
+    }
+  }
+  def withEachPlayerUntilReturns(Closure closure) {
+    currentPlayer = null
+    Player player = nextPlayer()
+    def response = null
+    while (player != null && !response)
+    {
+      response = closure.call(player)
+      player = nextPlayer()
+    }
+    response
   }
 
 }

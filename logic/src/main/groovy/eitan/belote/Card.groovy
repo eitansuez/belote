@@ -18,6 +18,12 @@ class Card
     atout == suit ? type.pointsWhenAtout : type.points
   }
 
+  static Card fromName(String name)
+  {
+    def (typeName, discard, suitName) = name.split("_")
+    new Card(type: CardType.valueOf(typeName), suit: Suit.valueOf(suitName))
+  }
+
   @Override
   String toString() {
     "${type} de ${suit}"

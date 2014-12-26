@@ -34,28 +34,15 @@ class Player implements Emitter
     }
   }
 
-  Card chooseCard(Round round)
-  {
+  void offer(Game game, Card candidate) {
+    strategy.offer(game, candidate)
+  }
+  void offer(Game game) {
+    strategy.offer(game)
+  }
+  void play(Game game, Round round) {
     def validCards = validCards(round)
-    def card = strategy.chooseCard(validCards, round)
-    assert validCards.contains(card)
-    card
-  }
-
-  boolean envoi(Card candidate) {
-    boolean response = strategy.envoi(candidate)
-
-    emit("playerDecision", [this, response, candidate.suit])
-
-    response
-  }
-
-  Suit envoi() {
-    def suit = strategy.envoi()
-
-    emit("playerDecision", [this, (suit != null), suit])
-
-    suit
+    strategy.play(game, validCards, round)
   }
 
   def playCard(Card card)
