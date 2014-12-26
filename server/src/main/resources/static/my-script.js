@@ -68,7 +68,7 @@ var Bubble = CompoundPath.extend({
 
         this._bubble = this._body.unite(chupchik);
         this.style = {
-            fillColor: '#fff4a3',
+            fillColor: new Color(1, 0.95, 0.64, 0.8),
             strokeColor: 'black',
             strokeWidth: 1,
             shadowColor: new Color(0, 0, 0, 0.3),
