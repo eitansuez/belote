@@ -200,16 +200,32 @@ $(function() {
             resetDeck();
         },
         offer : function(playerName, cardName) {
-            var prompt = "Would you like to envoi a "+cardName+"'s suite?";
-            bubbles[players[playerName]].say(prompt);
-            var envoi = confirm(prompt);  // TODO: remove scaffold
-            if (envoi)
+            var firstRound = (typeof cardName !== 'undefined');
+            if (firstRound)
             {
-                sendResponse("envoi")
+                var prompt = "Would you like to envoi a "+cardName+"'s suite?";
+                var envoi = window.confirm(prompt);  // TODO: remove scaffold
+                if (envoi)
+                {
+                    sendResponse("envoi");
+                }
+                else
+                {
+                    sendResponse("pass");
+                }
             }
             else
             {
-                sendResponse("pass")
+                var promptCaption = "Second round, envoi? (pass/pique/coeur/carreau/trefle)";
+                var response = window.prompt(promptCaption, "");
+                if (response === "pass" || (response == null))
+                {
+                    sendResponse("pass2");
+                } else
+                {
+                    var suitName = response.toLowerCase();
+                    sendResponse("envoi", [suitName]);
+                }
             }
         },
         play: function(playerName, cardNames) {

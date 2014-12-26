@@ -51,11 +51,23 @@ public class BeloteController {
     void respond(BeloteEvent event) {
         if ("envoi" == event.name)
         {
-            game.envoi()
+            if (event.args.size() > 0)
+            {
+                def suit = Suit.fromName(event.args[0])
+                game.envoi(suit)
+            }
+            else
+            {
+                game.envoi()
+            }
         }
         else if ("pass" == event.name)
         {
             game.pass()
+        }
+        else if ("pass2" == event.name)
+        {
+            game.passDeuxFois()
         }
         else if ("playerChooses" == event.name)
         {

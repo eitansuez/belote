@@ -2,11 +2,12 @@
 ----ui:
 
 - implement/handle:
- passeDeuxFoi,
- second envoi,
- score display/update
- game end - clear game score
  partie score
+ game end - clear game score
+
+bugs:
+ - my card scoots after being played
+
 
 - transitions, fine-tune timings
 
