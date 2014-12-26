@@ -24,6 +24,12 @@ enum Suit
     map[acronym]
   }
 
+  static Suit fromName(String name)
+  {
+    valueOf(name.toLowerCase().capitalize())
+  }
+
+
   @Override
   String toString() {
     name()

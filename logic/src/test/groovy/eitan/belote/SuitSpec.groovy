@@ -33,4 +33,13 @@ class SuitSpec extends Specification
     thrown(AssertionError)
   }
 
+  def "can interpret suit from its name, irrespective of capitalization"()
+  {
+    expect:
+    Suit.fromName("trEfle") == Trefle
+    Suit.fromName("carreau") == Carreau
+    Suit.fromName("Coeur") == Coeur
+    Suit.fromName("PIQUE") == Pique
+  }
+
 }
