@@ -443,3 +443,7 @@ function hasCards(group) {
     return items && items.length > 0;
 }
 
+
+function onFrame(event) {
+
+}

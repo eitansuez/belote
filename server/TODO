@@ -1,13 +1,14 @@
 
 ----ui:
 
-- timing, transitions, etc..
 - implement/handle:
  passeDeuxFoi,
  second envoi,
  score display/update
  game end - clear game score
  partie score
+
+- transitions, fine-tune timings
 
 
 - make a nice prompter
