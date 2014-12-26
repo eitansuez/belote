@@ -4,6 +4,7 @@ var handAspectRatio = 3;
 var table, groups, bubbles;
 var cmds, players;
 var client;
+var cardsLayer;
 
 var Bubble = CompoundPath.extend({
     _class: 'Bubble',
@@ -137,7 +138,7 @@ function cardFor(serverSideCardName) {
 function connectToServer() {
     var ws = new SockJS('/newPartie');
     client = Stomp.over(ws);
-    //client.debug = null;
+    client.debug = null;
 
     client.connect({}, function() {
         console.log('connected');
@@ -370,7 +371,7 @@ function setupBubbles() {
 }
 
 function loadCards() {
-    var cardsLayer = new Layer();
+    cardsLayer = new Layer();
     cardsLayer.name = 'cards';
 
     $("#images_section").find("img").each(function() {
@@ -432,6 +433,13 @@ function placeCard(card, position, group) {
 function hasCards(group) {
     var items = group.getItems({className: 'Raster'});
     return items && items.length > 0;
+}
+
+function removeCards() {
+    for (card in cards) {
+        cards[card].remove();
+        cardsLayer.addChild(cards[card]);
+    }
 }
 
 
@@ -508,6 +516,7 @@ function setupCmds() {
             }
             clearScores();
             resetDeck();
+            removeCards();
         },
         partieUpdate: function(team1, team1Score, team2, team2Score) {
             updatePartieScores(team1Score, team2Score);

@@ -1,18 +1,14 @@
 
 ----ui:
 
-bugs:
- - player hand area bounds get mucked up by the time next game starts?
- - show connected status on page
+- js has to be more object-oriented:  rather than create a whole list of functions, add functions to the group
+ that represents a player area.
+- bubble -- does not treat both the bubble and the text as a single object
+- make a nice prompter
 
 
+- show player names / teams somewhere
+- show connected status on page
 - transitions, fine-tune timings
 
 
-- make a nice prompter
-- bubble -- does not treat both the bubble and the text as a single object
-
-- js has to be more object-oriented:  rather than create a whole list of functions, add functions to the group
- that represents a player area.
-
--- switch to using actors between game and players?
