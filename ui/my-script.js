@@ -3,47 +3,6 @@ var cardSeparation, selectDelta;
 var handAspectRatio = 3;
 var table, groups;
 
-/*
- placeCards([
- cards['Sept_de_Trefle'],
- cards['Roi_de_Couer'],
- cards['Ace_de_Carreau'],
- cards['Valet_de_Trefle'],
- cards['Neuf_de_Pique']
- ], groups, 0);
- chooseCard([cards['Sept_de_Trefle'], cards['Valet_de_Trefle']]);
-
- placeCards([
- cards['Dix_de_Trefle'],
- cards['Dix_de_Coeur'],
- cards['Dix_de_Carreau'],
- cards['Dix_de_Pique'],
- cards['Valet_de_Coeur']
- ], groups, 1);
- chooseCard([cards['10_clubs'], cards['10_spades']]);
-
- placeCards([
- cards['Ace_de_Coeur'],
- cards['Huit_de_Carreau'],
- cards['Neuf_de_Trefle'],
- cards['Dame_de_Trefle'],
- cards['Valet_de_Pique']
- ], groups, 2);
- chooseCard([cards['Huit_de_Carreau'], cards['Dame_de_Trefle']]);
-
- placeCards([
- cards['Ace_de_Trefle'],
- cards['Huit_de_Coeur'],
- cards['Sept_de_Pique'],
- cards['Valet_de_Carreau'],
- cards['Roi_de_Pique']
- ], groups, 3);
- chooseCard([cards['Roi_de_Pique'], cards['Sept_de_Pique']]);
-
- turnUpCard(cards['Dame_de_Coeur']);
- */
-
-
 $(function() {
 
     loadCards();
@@ -66,13 +25,43 @@ $(function() {
     var b = handAspectRatio * c;
 
     groups = setupAreas(c, b);
+    setupScore(c, b);
 
-    var scale = c / cards['7_clubs'].height;
+    var scale = c / cards['Sept_de_Trefle'].height;
     scaleCards(scale);
     var card = randomCard();
     cardSeparation = [card.bounds.width / 2, 0];
     selectDelta = [0, card.bounds.height / 5];
 });
+
+var score1, score2;
+function setupScore(c, b)
+{
+    var point = new Point(b+c + 15, 15);
+    new PointText({
+        point: point,
+        content: "Nous: "
+    });
+    new PointText({
+        point: point + [0, 20],
+        content: "Eux: "
+    });
+    score1 = new PointText({
+        point: point + [60, 0],
+        content: "0",
+        justification: "right"
+    });
+    score2 = new PointText({
+        point: point + [60, 20],
+        content: "0",
+        justification: "right"
+    });
+}
+function updateScore(team1Score, team2Score)
+{
+    score1.content = "" + team1Score;
+    score2.content = "" + team2Score;
+}
 
 function randomCard() {
     var index = parseInt(Math.random()*32);
