@@ -29,7 +29,7 @@ class Application extends AbstractWebSocketMessageBrokerConfigurer
   @Override
   void registerStompEndpoints(StompEndpointRegistry registry)
   {
-    registry.addEndpoint("/newGame").withSockJS()
+    registry.addEndpoint("/newPartie").withSockJS()
   }
 
   @Autowired

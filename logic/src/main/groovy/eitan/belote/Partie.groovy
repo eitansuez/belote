@@ -10,10 +10,14 @@ class Partie implements Emitter
   Player starter
   List<Game> games = []
 
+  Game currentGame = null
+
   def begin()
   {
     log.info("La partie commence avec teams: ${team1} vs ${team2}")
     initScores()
+
+    nextGame()
   }
 
   private void initScores() {
@@ -53,12 +57,26 @@ class Partie implements Emitter
     starter = nextStarter()
     games << game
     log.info("Game #${games.size()} about to begin..")
+    currentGame = game
+    currentGame.begin()
     game
   }
 
   def gameDone(Game game)
   {
-    transferScores(game)
+    if (!game.forfeited())
+    {
+      transferScores(game)
+    }
+
+    if (done())
+    {
+      emit("partieEnds", winner)
+    }
+    else
+    {
+      nextGame()
+    }
   }
 
   private void transferScores(Game game)
@@ -75,7 +93,6 @@ class Partie implements Emitter
       scores[team1] += thisGameScoreTeam1
       int thisGameScoreTeam2 = roundScore(game.scores[team2])
       scores[team2] += thisGameScoreTeam2
-      log.info("Game score: ${team1}: ${thisGameScoreTeam1} / ${team2}: ${thisGameScoreTeam2}")
 
       def prevGame = previousGame(game)
       while (prevGame?.litige())
@@ -91,7 +108,7 @@ class Partie implements Emitter
       }
     }
 
-    log.info("Partie score:  ${team1}: ${scores[team1]} / ${team2}: ${scores[team2]}")
+    emit("partieUpdate", [team1, scores[team1], team2, scores[team2]])
   }
 
   Game previousGame(Game game)

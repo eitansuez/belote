@@ -12,7 +12,7 @@ class RemoteStrategy implements Strategy
   @Override
   void offer(Game game, Card candidate)
   {
-    actorRef.tell(new BeloteEvent(name: 'offer', args: [player, candidate]), ActorRef.noSender())
+    actorRef.tell(new BeloteEvent(name: 'offer', args: [player, candidate.suit]), ActorRef.noSender())
   }
 
   @Override

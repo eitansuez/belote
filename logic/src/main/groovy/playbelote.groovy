@@ -18,12 +18,6 @@ Partie partie = new Partie(
 )
 
 partie.begin()
-while (!partie.done())
-{
-  partie.nextGame().begin()
-}
-
-println "Partie is over."
 
 
 

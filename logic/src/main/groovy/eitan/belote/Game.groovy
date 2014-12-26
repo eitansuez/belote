@@ -109,6 +109,7 @@ class Game implements Emitter
       }
 
       done = true
+      partie.gameDone(this)
     }
     else
     {

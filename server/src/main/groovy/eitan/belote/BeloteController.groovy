@@ -20,10 +20,10 @@ public class BeloteController {
     @Autowired
     RemoteStrategy remoteStrategy
 
-    Game game
+    Partie partie
 
-    @MessageMapping("/newGame")
-    void newGame() throws Exception {
+    @MessageMapping("/newPartie")
+    void newPartie() throws Exception {
 
         if (stompActor == null) {
             stompActor = system.actorOf(
@@ -36,19 +36,19 @@ public class BeloteController {
         def corinne = new Player(name: "Corinne", actorRef: stompActor)
         def rony = new Player(name: "Rony", actorRef: stompActor)
 
-        def partie = new Partie(
+        partie = new Partie(
             team1: new Team(first: eitan, second: rony),
             team2: new Team(first: johnny, second: corinne),
             actorRef: stompActor
         )
 
         partie.begin()
-        game = partie.nextGame()
-        game.begin()
     }
 
     @MessageMapping("/respond")
     void respond(BeloteEvent event) {
+        def game = partie.currentGame
+
         if ("envoi" == event.name)
         {
             if (event.args.size() > 0)
