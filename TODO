@@ -1,9 +1,5 @@
 
-- introduce a delay in dealing cards, etc..
-
-- how do messages go in the other direction?
-  how does logic wait for input?  don't want to block.  rather would like a state machine
-  with incoming messages triggering transitions whenever they come in
+- introduce a delay in dealing cards
 
 - show player names
 - show score

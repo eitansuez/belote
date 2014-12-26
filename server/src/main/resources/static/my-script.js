@@ -4,6 +4,7 @@ var handAspectRatio = 3;
 var table, groups, bubbles;
 var cmds, players;
 var client;
+var score1, score2;
 
 var Bubble = CompoundPath.extend({
     _class: 'Bubble',
@@ -47,14 +48,14 @@ var Bubble = CompoundPath.extend({
         chupchik.scale(1, -1.5);
         chupchik.shear(-0.6, 0);
 
-        chupchik.rotate(-90*this._orientation, this._body.bottomLeft);
+        chupchik.rotate(90*this._orientation, this._body.bottomLeft);
         if (this._orientation == 0)
         {
             chupchik.translate(0.25*size.width, size.height + chupchikOffset+2);
         }
         else if (this._orientation == 1)
         {
-            chupchik.translate(size.width+chupchikOffset-3, 0.5*size.height);
+            chupchik.translate(-chupchikOffset-5, 0.5*size.height);
         }
         else if (this._orientation == 2)
         {
@@ -62,7 +63,7 @@ var Bubble = CompoundPath.extend({
         }
         else if (this._orientation == 3)
         {
-            chupchik.translate(-chupchikOffset-5, 0.5*size.height);
+            chupchik.translate(size.width+chupchikOffset-3, 0.5*size.height);
         }
 
         chupchik.visible = false;
@@ -101,7 +102,7 @@ var Bubble = CompoundPath.extend({
             if (this._orientation == 2) {
                 // scootch down on account of chupchik
                 topLeft += [0, 20];
-            } else if (this._orientation == 3) {
+            } else if (this._orientation == 1) {
                 // scootch right on account of chupchik
                 topLeft += [20, 0];
             }
@@ -207,6 +208,15 @@ $(function() {
         },
         playCard: function(playerName, cardName) {
             playCard(cardFor(cardName));
+        },
+        gameUpdate: function(team1, team1Score, team2, team2Score) {
+            console.log(team1+": "+team1Score+" / "+team2+": "+team2Score);
+            score1.content = "" + team1Score;
+            score2.content = "" + team2Score;
+        },
+        roundEnds: function(winner, points) {
+            console.log(winner+" takes with "+points+" points");
+            clearTable();
         }
     };
 
@@ -214,13 +224,12 @@ $(function() {
 
     var a = Math.min(view.bounds.width, view.bounds.height);
     setupTable(a);
-    $("#button-area").css('left', (a + 10)+"px");
-
     var c = a / (2 + handAspectRatio);
     var b = handAspectRatio * c;
-
     groups = setupAreas(c, b);
     bubbles = setupBubbles();
+
+    setupScoreArea(c, b);
 
     var scale = c / cards['Sept_de_Trefle'].height;
     scaleCards(scale);
@@ -229,7 +238,33 @@ $(function() {
     selectDelta = [0, card.bounds.height / 5];
 
     connectToServer();
+
+    $("#button-area").css('left', (a + 10)+"px");
 });
+
+function setupScoreArea(c, b)
+{
+    var point = new Point(b+c + 15, 15);
+    new PointText({
+        point: point,
+        content: "Nous: "
+    });
+    new PointText({
+        point: point + [0, 20],
+        content: "Eux: "
+    });
+    score1 = new PointText({
+        point: point + [60, 0],
+        content: "0",
+        justification: "right"
+    });
+    score2 = new PointText({
+        point: point + [60, 20],
+        content: "0",
+        justification: "right"
+    });
+}
+
 
 function setupTable(a) {
     table = new Path.Rectangle({
@@ -285,17 +320,26 @@ function deselect(cards, reposition) {
 
 function doInGroupCoordinates(group, what) {
     var index = group.data.index;
-    group.rotate(90*index, table.bounds.center);
-    what.call(null, group);
     group.rotate(-90*index, table.bounds.center);
+    what.call(null, group);
+    group.rotate(90*index, table.bounds.center);
 }
 
+var played = [];
 function playCard(card) {
     var group = card.parent;
     doInGroupCoordinates(group, function(group) {
         var position = group.position + [0, -(card.bounds.height+5)];
         placeCard(card, position);
     });
+    played.push(card);
+}
+
+function clearTable() {
+    _.each(played, function(card) {
+        card.visible = false;
+    });
+    played = [];
 }
 
 function setupAreas(c, b) {
@@ -320,7 +364,7 @@ function setupAreas(c, b) {
         group.transformContent = false;
         groups.push(group);
         path = path.clone();
-        group.rotate(-90*i, table.bounds.center);
+        group.rotate(90*i, table.bounds.center);
     }
 
     return groups;

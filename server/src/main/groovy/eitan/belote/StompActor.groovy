@@ -15,7 +15,7 @@ class StompActor extends UntypedActor
   void onReceive(Object message) throws Exception
   {
     if (message instanceof BeloteEvent) {
-      sleep(1000)
+      sleep(500)
       BeloteEvent event = (BeloteEvent) message
       sendCmd(event.name, event.args)
     }
