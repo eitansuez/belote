@@ -87,7 +87,7 @@ class Game implements Emitter
       teamWithBeloteRebelote = playerWithBeloteRebelote.team
     }
 
-    showPlayerCards()
+//    showPlayerCards()
 
     startPlayPhase()
   }
@@ -124,7 +124,7 @@ class Game implements Emitter
   {
     log.info("Dealing cards..")
     dealer.deal(players())
-    showPlayerCards()
+//    showPlayerCards()
   }
 
   private Player nextPlayer()

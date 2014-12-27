@@ -4,7 +4,7 @@ import akka.actor.Props
 import eitan.belote.*
 
 ActorSystem system = ActorSystem.create("BeloteWithAkka")
-ActorRef actorRef = system.actorOf(Props.create(TextUI.class))
+ActorRef actorRef = system.actorOf(Props.create(TextActor.class))
 
 def eitan = new Player(name: "Eitan", strategy: new CliStrategy(), actorRef: actorRef)
 def johnny = new Player(name: "Johnny", actorRef: actorRef)
