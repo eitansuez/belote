@@ -24,7 +24,7 @@ class Player implements Emitter
   def receiveCard(Card card)
   {
     hand << card
-    emit("receiveCard", [this, card])
+    emit('receiveCard', [this, card])
   }
 
   def receiveCards(List<Card> cards)
@@ -50,7 +50,7 @@ class Player implements Emitter
     assert hand.contains(card)
 
     if (hand.remove(card)) {
-      emit("playCard", [this, card])
+      emit('playCard', [this, card])
       return card
     }
   }

@@ -24,7 +24,7 @@ class Dealer implements Emitter
 
   Card turnUpCandidateCard() {
     candidate = deck.takeCard()
-    emit("turnUpCard", [candidate])
+    emit('turnUpCard', [candidate])
     candidate
   }
 

@@ -14,6 +14,7 @@ class Partie implements Emitter
 
   def begin()
   {
+    // TODO:  replace with emit('partieStart', [players, teams])
     log.info("La partie commence avec teams: ${team1} vs ${team2}")
     initScores()
 
@@ -72,7 +73,7 @@ class Partie implements Emitter
 
     if (done())
     {
-      emit("partieEnds", winner)
+      emit('partieEnds', winner)
     }
     else
     {
@@ -109,7 +110,7 @@ class Partie implements Emitter
       }
     }
 
-    emit("partieUpdate", [team1, scores[team1], team2, scores[team2]])
+    emit('partieUpdate', [team1, scores[team1], team2, scores[team2]])
   }
 
   Game previousGame(Game game)
