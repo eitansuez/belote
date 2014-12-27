@@ -6,6 +6,10 @@
 - bubble -- does not treat both the bubble and the text as a single object
 - make a nice prompter
 
+---- how to write components for paperjs????
+  study examples.
+  how to externalize implementations of "objects"
+  what's polymer-project???
 
 - show player names / teams somewhere
 - show connected status on page

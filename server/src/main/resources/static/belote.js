@@ -94,14 +94,12 @@ var ScoreArea = Group.extend({
     _class: 'ScoreArea',
     _score1: 0,
     _score2: 0,
-    title: '',
-    topLeft: new Point(0, 0),
 
     initialize: function ScoreArea() {
         Group.apply(this, arguments);
 
         var padding = 15, rowHeight = 20;
-        var point = new Point(this.topLeft.x + padding, this.topLeft.y + padding);
+        var point = new Point(this.topLeft.x + padding, this.topLeft.y + padding + 5);
         this.addChild(new PointText({
             point: point,
             content: this.title
@@ -126,6 +124,19 @@ var ScoreArea = Group.extend({
             justification: "right"
         });
         this.addChild(this._score2);
+
+        var bg = new Path.Rectangle(this.topLeft + [5, 5], this.size - [10, 10] , 5);
+        this.addChild(bg);
+        bg.style = {
+            fillColor: new Color(1, 0.95, 0.64, 0.8),
+            strokeColor: 'black',
+            strokeWidth: 1,
+            shadowColor: new Color(0, 0, 0, 0.3),
+            shadowBlur: 12,
+            shadowOffset: new Point(10, 10)
+        };
+        bg.sendToBack();
+
     },
 
     updateScores: function(team1Score, team2Score) {
@@ -337,12 +348,6 @@ function cardFor(serverSideCardName) {
 
 
 
-// TODO:  technically when add a text field to the canvas it's in some group and
-//  a variable is not necessary to obtain a reference to it:  learn how to properly
-//  use paper js and improve this implementation
-
-
-
 function chooseCard(validCards) {
     _.each(validCards, function(card) {
         card.candidate = true;
@@ -536,11 +541,13 @@ function setupScoreAreas(c, b)
 {
     gameScoreArea = new ScoreArea({
         title: "Game Score",
-        topLeft: new Point(b+c, 0)
+        topLeft: new Point(b+c, 0),
+        size: new Size(c, c)
     });
 
     partieScoreArea = new ScoreArea({
         title: "Partie Score",
-        topLeft: new Point(0, 0)
+        topLeft: new Point(0, 0),
+        size: new Size(c, c)
     });
 }
