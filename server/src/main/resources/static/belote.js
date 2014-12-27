@@ -5,6 +5,56 @@ var table, groups, bubbles;
 var cmds, players;
 var client;
 var cardsLayer;
+var gameScoreArea, partieScoreArea;
+
+
+var ScoreArea = Group.extend({
+    _class: 'ScoreArea',
+    _score1: 0,
+    _score2: 0,
+    title: '',
+    topLeft: new Point(0, 0),
+
+    initialize: function ScoreArea() {
+        Group.apply(this, arguments);
+
+        var padding = 15, rowHeight = 20;
+        var point = new Point(this.topLeft.x + padding, this.topLeft.y + padding);
+        this.addChild(new PointText({
+            point: point,
+            content: this.title
+        }));
+        this.addChild(new PointText({
+            point: point + [0, 1 * rowHeight],
+            content: "Nous: "
+        }));
+        this._score1 = new PointText({
+            point: point + [60, 1 * rowHeight],
+            content: "0",
+            justification: "right"
+        });
+        this.addChild(this._score1);
+        this.addChild(new PointText({
+            point: point + [0, 2 * rowHeight],
+            content: "Eux: "
+        }));
+        this._score2 = new PointText({
+            point: point + [60, 2 * rowHeight],
+            content: "0",
+            justification: "right"
+        });
+        this.addChild(this._score2);
+    },
+
+    updateScores: function(team1Score, team2Score) {
+        this._score1.content = "" + team1Score;
+        this._score2.content = "" + team2Score;
+    },
+    clearScores: function() {
+        this.updateScores(0, 0);
+    }
+
+});
 
 var Bubble = CompoundPath.extend({
     _class: 'Bubble',
@@ -207,57 +257,19 @@ $(function() {
 
 // TODO:  technically when add a text field to the canvas it's in some group and
 //  a variable is not necessary to obtain a reference to it:  learn how to properly
-//  use paper js and improve this impelmentation
+//  use paper js and improve this implementation
 
-var gameScoreFields, partieScoreFields;
-
-// TODO:  a scorearea should be an object!!
 function setupScoreAreas(c, b)
 {
-    gameScoreFields = setupScoreArea("Game Score", b+c, 0);
-    partieScoreFields = setupScoreArea("Partie Score", 0, 0);
-}
-function setupScoreArea(title, x, y)
-{
-    var padding = 15, rowHeight = 20;
-    var point = new Point(x + padding, y + padding);
-    new PointText({
-        point: point,
-        content: title
+    gameScoreArea = new ScoreArea({
+        title: "Game Score",
+        topLeft: new Point(b+c, 0)
     });
-    new PointText({
-        point: point + [0, 1 * rowHeight],
-        content: "Nous: "
+
+    partieScoreArea = new ScoreArea({
+        title: "Partie Score",
+        topLeft: new Point(0, 0)
     });
-    var score1 = new PointText({
-        point: point + [60, 1 * rowHeight],
-        content: "0",
-        justification: "right"
-    });
-    new PointText({
-        point: point + [0, 2 * rowHeight],
-        content: "Eux: "
-    });
-    var score2 = new PointText({
-        point: point + [60, 2 * rowHeight],
-        content: "0",
-        justification: "right"
-    });
-    return [score1, score2];
-}
-function clearScores()
-{
-    updateGameScores(0, 0);
-}
-function updateGameScores(team1Score, team2Score)
-{
-    gameScoreFields[0].content = "" + team1Score;
-    gameScoreFields[1].content = "" + team2Score;
-}
-function updatePartieScores(team1Score, team2Score)
-{
-    partieScoreFields[0].content = "" + team1Score;
-    partieScoreFields[1].content = "" + team2Score;
 }
 
 function setupTable(a) {
@@ -503,7 +515,7 @@ function setupCmds() {
             playCard(cardFor(cardName));
         },
         gameUpdate: function(team1, team1Score, team2, team2Score) {
-            updateGameScores(team1Score, team2Score);
+            gameScoreArea.updateScores(team1Score, team2Score);
         },
         roundEnds: function(winner, points) {
             //console.log(winner+" takes with "+points+" points");
@@ -514,12 +526,12 @@ function setupCmds() {
             {
                 window.alert(winningTeam + " wins");
             }
-            clearScores();
+            gameScoreArea.clearScores();
             resetDeck();
             removeCards();
         },
         partieUpdate: function(team1, team1Score, team2, team2Score) {
-            updatePartieScores(team1Score, team2Score);
+            partieScoreArea.updateScores(team1Score, team2Score);
         },
         partieEnds: function(winningTeam) {
             window.alert("Partie is over.  Winner is "+winningTeam);  // TODO: for now
