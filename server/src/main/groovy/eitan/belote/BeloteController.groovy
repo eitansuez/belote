@@ -2,14 +2,15 @@ package eitan.belote
 
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
-import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.stereotype.Controller
+
+import java.security.Principal
+
 import static eitan.belote.SpringExtension.SpringExtProvider
 
 @Controller
-@Slf4j
 public class BeloteController {
 
     @Autowired
@@ -23,22 +24,27 @@ public class BeloteController {
     Partie partie
 
     @MessageMapping("/newPartie")
-    void newPartie() throws Exception {
+    void newPartie(Principal user) throws Exception {
 
         if (stompActor == null) {
             stompActor = system.actorOf(
                 SpringExtProvider.get(system).props("StompActor"), "stompActor")
+
+            remoteStrategy.actorRef = stompActor
         }
 
-        def eitan = new Player(name: "Eitan", actorRef: stompActor, strategy: remoteStrategy)
-        remoteStrategy.actorRef = stompActor
-        def johnny = new Player(name: "Johnny", actorRef: stompActor)
-        def corinne = new Player(name: "Corinne", actorRef: stompActor)
-        def rony = new Player(name: "Rony", actorRef: stompActor)
+        def players = ['Eitan', 'Rony', 'Johnny', 'Corinne'].collect { name ->
+            def player = new Player(name: name, actorRef: stompActor)
+            if (name == user.name)
+            {
+                player.strategy = remoteStrategy
+            }
+            player
+        }
 
         partie = new Partie(
-            team1: new Team(first: eitan, second: rony),
-            team2: new Team(first: johnny, second: corinne),
+            team1: new Team(first: players[0], second: players[1]),
+            team2: new Team(first: players[2], second: players[3]),
             actorRef: stompActor
         )
 
@@ -72,7 +78,6 @@ public class BeloteController {
         else if ("playerChooses" == event.name)
         {
             String cardName = event.args[0]
-            log.info("received card name from client: "+cardName)
             Card card = Card.fromName(cardName)
             game.playerChooses(card)
         }

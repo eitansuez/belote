@@ -15,5 +15,7 @@ dependencies {
   compile('org.springframework:spring-messaging')
   compile('com.typesafe.akka:akka-actor_2.10:2.3.8')
   compile('javax.inject:javax.inject:1')
+
+  compile('org.springframework.boot:spring-boot-starter-security')
 }
 

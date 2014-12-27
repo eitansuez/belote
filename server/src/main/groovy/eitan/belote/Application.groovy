@@ -3,16 +3,19 @@ package eitan.belote
 import akka.actor.ActorSystem
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.SpringApplication
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.autoconfigure.security.SecurityProperties
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.annotation.Order
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
+
 import static eitan.belote.SpringExtension.SpringExtProvider
 
 @SpringBootApplication
@@ -45,6 +48,25 @@ class Application extends AbstractWebSocketMessageBrokerConfigurer
 
   static void main(String[] args) {
     SpringApplication.run(Application.class, args)
+  }
+
+  @Configuration
+  @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
+  protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private SecurityProperties security
+
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+      String pass = "any"
+      auth.inMemoryAuthentication()
+          .withUser("Eitan").password(pass).roles("USER").and()
+          .withUser("Rony").password(pass).roles("USER").and()
+          .withUser("Johnny").password(pass).roles("USER").and()
+          .withUser("Corinne").password(pass).roles("USER")
+    }
+
   }
 
 }
