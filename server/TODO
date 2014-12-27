@@ -30,23 +30,24 @@
   - score update (highlight/fade)
 
 
-6.---- multiplayer
-
-- client is a player or an observer
-- server should prompt only player, not publish prompt to all observers.
-- work towards being able to play a game with two humans in two different windows
-
 7.---miscellaneous ui:
   a. find a nice tablecloth to draw at bottom layer
   b. onResize handler
 
-
 8.---server side:
 
-monitor all games in progress
-support multiple games in progress
+support identification of clients as player or observer
+server should prompt only player, not publish prompt to all observers
+show that can support 1 human player + 1 or more observers
+
+ability to join partie as a player or observer, pick player name
+show that can support 1 or more human players in the same partie
+
 ability to leave game (close window) and get back to it
 ability to cancel/stop a game in progress
+
+support multiple games in progress
+monitor all games in progress
 
 9.---javascript tests
 0.---bower/javascript build
