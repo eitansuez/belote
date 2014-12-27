@@ -1,7 +1,7 @@
 
-fix broken tests
+1. fix broken tests
 
------logging wording:
+2.-----logging wording:
  make card placement log wording semantic:  "Eitan cuts with .."
   or "Johnny follows suit with .."
   or "Corinne monte with .."
@@ -9,10 +9,11 @@ fix broken tests
  likewise, should state at end of each game "stat" such as:
   - team x wins after having committed to trefle
 
------switch to using actors between game and players?
+
+3.-----switch to using actors between game and players?
 
 
------play strategies:
+4.-----play strategies:
  how to build a decent playing strategy?
  should human players plug in as a strategy?
  should Strategy be mixed in to Player with groovy traits?

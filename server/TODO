@@ -1,26 +1,50 @@
 
-----ui:
+1.----ui componentization & cleanup & finish implementation:
 
 - js has to be more object-oriented:  rather than create a whole list of functions, add functions to the group
  that represents a player area.
 - bubble -- does not treat both the bubble and the text as a single object
 - make a nice prompter
+- eliminate use of native alerts
+
+- why paperjs?  why not just use canvas?
 
 ---- how to write components for paperjs????
   study examples.
   how to externalize implementations of "objects"
-  what's polymer-project???
-
-- show player names / teams somewhere
-- show connected status on page
-- transitions, fine-tune timings
+  what's polymer-project??? / research polymer-project.org
 
 
----- multiview
+2.- show player names / teams somewhere
+
+3.- fine-tune timings
+
+4.- transitions/animations:
+  - show dealer cards in center, next to turned up card
+  - animate dealer dealing cards to players
+  - show dealing 3, then 2, then 3
+  - animate play card
+  - win round (cards move towards winning player, perhaps highlight/fade winnig player)
+  - score update (highlight/fade)
+
+
+5.---- multiplayer
 
 - client is a player or an observer
-- player prompts are not published to all clients, only to player
+- server should prompt only player, not publish prompt to all observers.
+- work towards being able to play a game with two humans in two different windows
+
+6.---miscellaneous ui:
+  a. find a nice tablecloth to draw at bottom layer
+  b. onResize handler
 
 
----- why not just use canvas?
----- research polymer-project.org
+7.---server side:
+
+monitor all games in progress
+support multiple games in progress
+ability to leave game (close window) and get back to it
+ability to cancel/stop a game in progress
+
+8.---javascript tests
+9.---bower/javascript build
