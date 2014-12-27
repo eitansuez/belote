@@ -108,6 +108,38 @@ class RoundSpec extends Specification
     round.master() == johnny
   }
 
+  def "8 wins over 7 even though they're both 0 points"()
+  {
+    when:
+    def cards = [
+        new Card(type: CardType.Sept, suit: Pique),
+        new Card(type: CardType.Dix, suit: Coeur),
+        new Card(type: CardType.Huit, suit: Pique),
+        new Card(type: CardType.Valet, suit: Coeur)
+    ]
+    def round = new Round(cards: cards, players: players, game: gameWithAtout(Trefle))
+
+    then:
+    round.masterCard() == cards[2]
+    round.master() == players[2]
+  }
+
+  def "9 wins over 8 and 7 even though they're all 0 points"()
+  {
+    when:
+    def cards = [
+        new Card(type: CardType.Sept, suit: Pique),
+        new Card(type: CardType.Dix, suit: Coeur),
+        new Card(type: CardType.Huit, suit: Pique),
+        new Card(type: CardType.Neuf, suit: Pique)
+    ]
+    def round = new Round(cards: cards, players: players, game: gameWithAtout(Trefle))
+
+    then:
+    round.masterCard() == cards[3]
+    round.master() == players[3]
+  }
+
   def "mono-suit round, largest card wins"() {
     given:
     def cards = [
