@@ -4,6 +4,9 @@ var cardSeparation, selectDelta;
 var handAspectRatio = 3;
 var played = [];
 
+// for now hard-code:
+var players = { Eitan: 0, Johnny: 1, Rony: 2, Corinne: 3 };
+
 var table, groups, bubbles;
 var gameScoreArea, partieScoreArea;
 
@@ -84,8 +87,6 @@ var cmds = {
         window.alert("Partie is over.  Winner is "+winningTeam);  // TODO: for now
     }
 };
-// for now hard-code:
-var players = { Eitan: 0, Johnny: 1, Rony: 2, Corinne: 3 };
 
 var client;
 
@@ -289,9 +290,9 @@ $(function() {
     setupScoreAreas(c, b);
 
     var card = randomCard();
-    var scale = c / card.height;
+    var scale = (0.8 * c) / card.height;
     scaleCards(scale);
-    cardSeparation = [card.bounds.width / 2, 0];
+    cardSeparation = [card.bounds.width / 1.8, 0];
     selectDelta = [0, card.bounds.height / 5];
 
     $("#button-area").css('left', (a + 10)+"px");
@@ -379,7 +380,8 @@ function deselect(cards) {
 function playCard(card) {
     var group = card.parent;
     doInGroupCoordinates(group, function(group) {
-        var position = group.hand.position + [0, -(card.bounds.height+5)];
+        var verticalOffset = ( group.hand.bounds.height + card.bounds.height ) / 2 + (card.bounds.height / 4);
+        var position = group.hand.position - [0, verticalOffset];
         placeCard(card, position);
     });
     played.push(card);
@@ -413,7 +415,9 @@ function placeCard(card, position, group) {
         }
         else
         {
-            card.position = group.hand.position - [group.hand.bounds.width/2, 0] + [card.bounds.width/2, 0];
+            var verticalOffset = (group.hand.bounds.height - card.bounds.height) / 2;
+            var horizontalOffset = (group.hand.bounds.width - card.bounds.width ) / 2;
+            card.position = group.hand.position - [horizontalOffset, verticalOffset];
         }
         group.addChild(card);
     } else {
@@ -522,6 +526,15 @@ function setupAreas(c, b) {
         group.transformContent = false;
         groups.push(group);
         path = path.clone();
+
+        var playerNameField = new PointText({
+            point: path.bounds.center + [0, path.bounds.height/2 - 3],
+            content: _.keys(players)[i],
+            justification: 'center'
+        });
+        group.addChild(playerNameField);
+        playerNameField.bringToFront();
+
         group.rotate(90*i, table.bounds.center);
     }
 

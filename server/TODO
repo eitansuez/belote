@@ -15,11 +15,13 @@
   what's polymer-project??? / research polymer-project.org
 
 
-2.- show player names / teams somewhere
+2.- show team names in score
+ .- show atout envoiyee and by whom
+ .- show dernier pli
 
-3.- fine-tune timings
+4.- fine-tune timings
 
-4.- transitions/animations:
+5.- transitions/animations:
   - show dealer cards in center, next to turned up card
   - animate dealer dealing cards to players
   - show dealing 3, then 2, then 3
@@ -28,23 +30,23 @@
   - score update (highlight/fade)
 
 
-5.---- multiplayer
+6.---- multiplayer
 
 - client is a player or an observer
 - server should prompt only player, not publish prompt to all observers.
 - work towards being able to play a game with two humans in two different windows
 
-6.---miscellaneous ui:
+7.---miscellaneous ui:
   a. find a nice tablecloth to draw at bottom layer
   b. onResize handler
 
 
-7.---server side:
+8.---server side:
 
 monitor all games in progress
 support multiple games in progress
 ability to leave game (close window) and get back to it
 ability to cancel/stop a game in progress
 
-8.---javascript tests
-9.---bower/javascript build
+9.---javascript tests
+0.---bower/javascript build
