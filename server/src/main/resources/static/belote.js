@@ -302,14 +302,14 @@ $(function() {
 
 
 function connectToServer() {
-    var ws = new SockJS('/newPartie');
+    var ws = new SockJS('/belote');
     client = Stomp.over(ws);
-    client.debug = null;
+    //client.debug = null;
 
     client.connect({}, function() {
         console.log('connected');
 
-        client.subscribe("/topic/belote", function(message) {
+        var handleCmd = function(message) {
             var body = JSON.parse(message.body);
             var cmd = cmds[body.cmd];
             if (!cmd) {
@@ -317,7 +317,10 @@ function connectToServer() {
             } else {
                 cmd.apply(null, body.args);
             }
-        });
+        };
+
+        client.subscribe("/topic/belote", handleCmd);
+        client.subscribe("/user/queue/belote", handleCmd);
 
         $("#disconnect-btn").on('click', function() {
             client.disconnect(function() {

@@ -17,7 +17,14 @@ class StompActor extends UntypedActor
     if (message instanceof BeloteEvent) {
       sleep(250)
       BeloteEvent event = (BeloteEvent) message
-      sendCmd(event.name, event.args)
+      if (event.to)
+      {
+        sendCmdToUser(event.to, event.name, event.args)
+      }
+      else
+      {
+        sendCmd(event.name, event.args)
+      }
     }
   }
 
@@ -26,6 +33,10 @@ class StompActor extends UntypedActor
 
   private void sendCmd(cmd, args) {
     template.convertAndSend('/topic/belote', [cmd: cmd, args: args.collect { arg -> marshal(arg) }])
+  }
+
+  private void sendCmdToUser(user, cmd, args) {
+    template.convertAndSendToUser(user, '/queue/belote', [cmd: cmd, args: args.collect { arg -> marshal(arg) }])
   }
 
   public static marshal(arg) {

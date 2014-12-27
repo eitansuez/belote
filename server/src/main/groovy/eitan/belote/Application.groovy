@@ -22,14 +22,14 @@ class Application extends AbstractWebSocketMessageBrokerConfigurer
   @Override
   void configureMessageBroker(MessageBrokerRegistry registry)
   {
-    registry.enableSimpleBroker("/topic")
+    registry.enableSimpleBroker("/topic", "/queue")
     registry.setApplicationDestinationPrefixes("/app")
   }
 
   @Override
   void registerStompEndpoints(StompEndpointRegistry registry)
   {
-    registry.addEndpoint("/newPartie").withSockJS()
+    registry.addEndpoint("/belote").withSockJS()
   }
 
   @Autowired
