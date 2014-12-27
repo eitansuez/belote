@@ -1,11 +1,93 @@
 var cards = {};
+var cardsLayer;
 var cardSeparation, selectDelta;
 var handAspectRatio = 3;
+var played = [];
+
 var table, groups, bubbles;
-var cmds, players;
-var client;
-var cardsLayer;
 var gameScoreArea, partieScoreArea;
+
+var cmds = {
+    receiveCard : function(playerName, cardName) {
+        placeCards([cardFor(cardName)], groups, players[playerName]);
+    },
+    turnUpCard : function(cardName) {
+        turnUpCard(cardFor(cardName));
+    },
+    playerDecision : function(playerName, envoi, suitName) {
+        var passesText = (suitName ? " passes at " : " passes again.");
+        var text = playerName + (envoi ? " goes for " : passesText);
+        if (suitName) {
+            text += suitName;
+        }
+
+        bubbles[players[playerName]].say(text);
+    },
+    offer : function(playerName, suitName) {
+        var firstRound = (typeof suitName !== 'undefined');
+        if (firstRound)
+        {
+            var prompt = "Would you like to envoi a "+suitName+"?";
+            var envoi = window.confirm(prompt);  // TODO: remove scaffold
+            if (envoi)
+            {
+                sendResponse("envoi");
+            }
+            else
+            {
+                sendResponse("pass");
+            }
+        }
+        else
+        {
+            var promptCaption = "Second round, envoi? (pass/pique/coeur/carreau/trefle)";
+            var response = window.prompt(promptCaption, "");
+            if (response === "pass" || (response == null))
+            {
+                sendResponse("pass2");
+            } else
+            {
+                var suitName = response.toLowerCase();
+                sendResponse("envoi", [suitName]);
+            }
+        }
+    },
+    play: function(playerName, cardNames) {
+        var cards = _.map(cardNames, function(cardName) {
+            return cardFor(cardName);
+        });
+        chooseCard(cards);
+    },
+    playCard: function(playerName, cardName) {
+        playCard(cardFor(cardName));
+    },
+    gameUpdate: function(team1, team1Score, team2, team2Score) {
+        gameScoreArea.updateScores(team1Score, team2Score);
+    },
+    roundEnds: function(winner, points) {
+        //console.log(winner+" takes with "+points+" points");
+        clearTable();
+    },
+    gameEnds : function(winningTeam) {
+        if (winningTeam) // forfeit has no winning team
+        {
+            window.alert(winningTeam + " wins");
+        }
+        gameScoreArea.clearScores();
+        resetDeck();
+        removeCards();
+    },
+    partieUpdate: function(team1, team1Score, team2, team2Score) {
+        partieScoreArea.updateScores(team1Score, team2Score);
+    },
+    partieEnds: function(winningTeam) {
+        window.alert("Partie is over.  Winner is "+winningTeam);  // TODO: for now
+    }
+};
+// for now hard-code:
+var players = { Eitan: 0, Johnny: 1, Rony: 2, Corinne: 3 };
+
+var client;
 
 
 var ScoreArea = Group.extend({
@@ -228,10 +310,6 @@ function sendResponse(cmd, args) {
 
 
 $(function() {
-    // for now hard-code
-    players = {Eitan: 0, Johnny: 1, Rony: 2, Corinne: 3};
-
-    cmds = setupCmds();
     loadCards();
 
     var a = Math.min(view.bounds.width, view.bounds.height);
@@ -243,15 +321,15 @@ $(function() {
 
     setupScoreAreas(c, b);
 
-    var scale = c / cards['Sept_de_Trefle'].height;
-    scaleCards(scale);
     var card = randomCard();
+    var scale = c / card.height;
+    scaleCards(scale);
     cardSeparation = [card.bounds.width / 2, 0];
     selectDelta = [0, card.bounds.height / 5];
 
-    connectToServer();
-
     $("#button-area").css('left', (a + 10)+"px");
+
+    connectToServer();
 });
 
 
@@ -328,7 +406,6 @@ function doInGroupCoordinates(group, what) {
     group.rotate(90*index, table.bounds.center);
 }
 
-var played = [];
 function playCard(card) {
     var group = card.parent;
     doInGroupCoordinates(group, function(group) {
@@ -457,84 +534,4 @@ function removeCards() {
 
 function onFrame(event) {
 
-}
-
-function setupCmds() {
-    return {
-        receiveCard : function(playerName, cardName) {
-            placeCards([cardFor(cardName)], groups, players[playerName]);
-        },
-        turnUpCard : function(cardName) {
-            turnUpCard(cardFor(cardName));
-        },
-        playerDecision : function(playerName, envoi, suitName) {
-            var passesText = (suitName ? " passes at " : " passes again.");
-            var text = playerName + (envoi ? " goes for " : passesText);
-            if (suitName) {
-                text += suitName;
-            }
-
-            bubbles[players[playerName]].say(text);
-        },
-        offer : function(playerName, suitName) {
-            var firstRound = (typeof suitName !== 'undefined');
-            if (firstRound)
-            {
-                var prompt = "Would you like to envoi a "+suitName+"?";
-                var envoi = window.confirm(prompt);  // TODO: remove scaffold
-                if (envoi)
-                {
-                    sendResponse("envoi");
-                }
-                else
-                {
-                    sendResponse("pass");
-                }
-            }
-            else
-            {
-                var promptCaption = "Second round, envoi? (pass/pique/coeur/carreau/trefle)";
-                var response = window.prompt(promptCaption, "");
-                if (response === "pass" || (response == null))
-                {
-                    sendResponse("pass2");
-                } else
-                {
-                    var suitName = response.toLowerCase();
-                    sendResponse("envoi", [suitName]);
-                }
-            }
-        },
-        play: function(playerName, cardNames) {
-            var cards = _.map(cardNames, function(cardName) {
-                return cardFor(cardName);
-            });
-            chooseCard(cards);
-        },
-        playCard: function(playerName, cardName) {
-            playCard(cardFor(cardName));
-        },
-        gameUpdate: function(team1, team1Score, team2, team2Score) {
-            gameScoreArea.updateScores(team1Score, team2Score);
-        },
-        roundEnds: function(winner, points) {
-            //console.log(winner+" takes with "+points+" points");
-            clearTable();
-        },
-        gameEnds : function(winningTeam) {
-            if (winningTeam) // forfeit has no winning team
-            {
-                window.alert(winningTeam + " wins");
-            }
-            gameScoreArea.clearScores();
-            resetDeck();
-            removeCards();
-        },
-        partieUpdate: function(team1, team1Score, team2, team2Score) {
-            partieScoreArea.updateScores(team1Score, team2Score);
-        },
-        partieEnds: function(winningTeam) {
-            window.alert("Partie is over.  Winner is "+winningTeam);  // TODO: for now
-        }
-    };
 }

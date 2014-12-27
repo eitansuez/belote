@@ -16,3 +16,7 @@
 
 - client is a player or an observer
 - player prompts are not published to all clients, only to player
+
+
+---- why not just use canvas?
+---- research polymer-project.org
