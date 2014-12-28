@@ -181,20 +181,23 @@ class Game implements Emitter
       done = true
 
       Round lastRound = rounds.last()
-      if (capot()) {
+      if (capot())
+      {
         log.info("${losingTeam} are capot")
         addCapotCredit()
-        return
       }
-      addDixDedere(lastRound.winner.team)
+      else
+      {
+        addDixDedere(lastRound.winner.team)
+      }
 
       addBeloteRebelote()
 
       if (dedans())
       {
         log.info("${committedTeam} are dedans")
+        scores[otherTeam] += scores[committedTeam]
         scores[committedTeam] = 0
-        scores[otherTeam] = 162
       }
     }
     finally {
@@ -223,7 +226,7 @@ class Game implements Emitter
   private void addCapotCredit()
   {
     assert capot()
-    Team creditee = ( scores[team2] == 152 ) ? team2 : team1
+    Team creditee = ( scores[team2] == 0 ) ? team1 : team2
     scores[creditee] += 100
   }
 
