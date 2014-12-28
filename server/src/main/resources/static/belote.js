@@ -1,8 +1,8 @@
 var cards = {};
 var suits = {};
-var tableLayer, suitsLayer, cardsLayer, groupsLayer;
+var tableLayer, suitsLayer, cardsLayer, groupsLayer, bubblesLayer;
 var cardSeparation, selectDelta;
-var handAspectRatio = 3;
+var handAspectRatio = 2.5;
 var played = [];
 
 var players = ['p1', 'p2', 'p3', 'p4'];
@@ -112,32 +112,38 @@ var ScoreArea = Group.extend({
     initialize: function ScoreArea() {
         Group.apply(this, arguments);
 
+        var fontSize = 10;
         var padding = 15, rowHeight = 20;
         var point = new Point(this.topLeft.x + padding, this.topLeft.y + padding + 5);
         this.addChild(new PointText({
             point: point,
-            content: this.title
+            content: this.title,
+            fontSize: fontSize
         }));
         this._team1 = new PointText({
             point: point + [0, 1 * rowHeight],
-            content: "Nous: "
+            content: "Nous: ",
+            fontSize: fontSize
         });
         this.addChild(this._team1);
         this._score1 = new PointText({
             point: point + [this.size.width - 30, 1 * rowHeight],
             content: "0",
-            justification: "right"
+            justification: "right",
+            fontSize: fontSize
         });
         this.addChild(this._score1);
         this._team2 = new PointText({
             point: point + [0, 2 * rowHeight],
-            content: "Eux: "
+            content: "Eux: ",
+            fontSize: fontSize
         });
         this.addChild(this._team2);
         this._score2 = new PointText({
             point: point + [this.size.width - 30, 2 * rowHeight],
             content: "0",
-            justification: "right"
+            justification: "right",
+            fontSize: fontSize
         });
         this.addChild(this._score2);
 
@@ -285,7 +291,6 @@ $(function() {
     scaleSuits(b);
 
     groups = setupAreas(c, b);
-    bubbles = setupBubbles();
     setupScoreAreas(c, b);
 
     loadCards();
@@ -293,10 +298,14 @@ $(function() {
     var scale = (0.8 * c) / card.height;
     scaleCards(scale);
 
-    cardSeparation = [card.bounds.width / 1.8, 0];
+    bubbles = setupBubbles();
+
+    cardSeparation = [card.bounds.width / 2, 0];
     selectDelta = [0, card.bounds.height / 5];
 
     $("#button-area").css('left', (a + 10)+"px");
+
+    groupsLayer.activate();
 
     connectToServer();
 });
@@ -544,7 +553,7 @@ function setupTable(a) {
 }
 
 function setupAreas(c, b) {
-    var groupsLayer = new Layer();
+    groupsLayer = new Layer();
     groupsLayer.name = 'groups';
 
     var groups = [];
@@ -594,6 +603,9 @@ function paintPlayerNames()
 }
 
 function setupBubbles() {
+    bubblesLayer = new Layer();
+    bubblesLayer.name = 'bubbles';
+
     var bubbles = [];
     for (var i=0; i<4; i++) {
         bubbles[i] = new Bubble({ orientation: i, text: '...' });

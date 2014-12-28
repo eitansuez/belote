@@ -4,16 +4,14 @@
 - use paperjs properly
 - object-oriented
 - not so many variable references when they're all available in the scene graph
-- bubble bug:  text is not part of bubble 'group' (see eitanShow)
+
 - implement a prompt for atout to replace scaffold window.prompt
 - implement a confirm for envoi to replace scaffold window.confirm
 - implement an alert for notification to replace scaffold window.alert
 
 learn:
-- why paperjs?  why not just use canvas?
 - how to write components for paperjs????
-- study examples that come with distribution
-- how to externalize implementations of "objects" (bubble, scorearea, etc..)
+- how to externalize implementations of "objects" (bubble, scorearea, etc..)???
 - learn polymer-project.org
 
 2.-----features
