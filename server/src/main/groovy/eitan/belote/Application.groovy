@@ -10,8 +10,12 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
+import org.springframework.security.authentication.AuthenticationProvider
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.AuthenticationException
 import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
@@ -59,12 +63,21 @@ class Application extends AbstractWebSocketMessageBrokerConfigurer
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-      String pass = "any"
-      auth.inMemoryAuthentication()
-          .withUser("Eitan").password(pass).roles("USER").and()
-          .withUser("Rony").password(pass).roles("USER").and()
-          .withUser("Johnny").password(pass).roles("USER").and()
-          .withUser("Corinne").password(pass).roles("USER")
+
+      auth.authenticationProvider(new AuthenticationProvider() {
+
+        boolean supports(Class<?> authentication) {
+          UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication)
+        }
+
+        Authentication authenticate(Authentication authentication) throws AuthenticationException {
+          UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication
+
+          new UsernamePasswordAuthenticationToken(token.name, token.credentials, null)
+        }
+      })
+
+
     }
 
   }
