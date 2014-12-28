@@ -32,7 +32,7 @@ class GameSpec extends Specification
         team2: new Team(first: johnny, second: corinne)
     )
 
-    partie.begin()
+    partie.init()
 
     // override game with a spy constructed the same way
     def gameSpy = GroovySpy(Game, constructorArgs: [[partie: partie, actorRef: partie.actorRef]])

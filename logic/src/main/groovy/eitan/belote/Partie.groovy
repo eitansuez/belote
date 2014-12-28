@@ -2,6 +2,8 @@ package eitan.belote
 
 import groovy.util.logging.Slf4j
 
+import static eitan.belote.ScoreUtils.roundScore
+
 @Slf4j
 class Partie implements Emitter
 {
@@ -13,13 +15,17 @@ class Partie implements Emitter
 
   Game currentGame = null
 
-  def begin()
+  def init()
   {
     players = [team1.first, team2.first, team1.second, team2.second]
+    initScores()
+  }
+
+  def begin()
+  {
+    init()
 
     emit('partieStarts', [team1, team2, players])
-    initScores()
-
     nextGame()
   }
 
@@ -126,10 +132,6 @@ class Partie implements Emitter
       index -= 1
     }
     null
-  }
-
-  static int roundScore(int score) {
-    Math.round(score/10) * 10
   }
 
   private Player nextStarter()

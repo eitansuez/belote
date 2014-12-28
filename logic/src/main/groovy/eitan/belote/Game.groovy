@@ -2,6 +2,8 @@ package eitan.belote
 
 import groovy.util.logging.Slf4j
 
+import static eitan.belote.ScoreUtils.*
+
 @Slf4j
 class Game implements Emitter
 {
@@ -315,7 +317,7 @@ class Game implements Emitter
   int scoreAdjustment(Team team)
   {
     def score = scores[team]
-    def roundedScore = Partie.roundScore(score)
+    def roundedScore = roundScore(score)
     roundedScore - score
   }
 
@@ -323,13 +325,6 @@ class Game implements Emitter
   {
     assert atout != null
     players().find { player -> player.hasBeloteRebelote(atout) }
-  }
-
-  private void showPlayerCards()
-  {
-    withEachPlayer { Player player ->
-      player.showHand()
-    }
   }
 
   List<Player> players()
