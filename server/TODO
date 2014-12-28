@@ -21,6 +21,8 @@ learn:
  .- show a table of rounds for game on sidebar with points in each round
  .- onResize handler to redraw table
 
+ .- scrolling log of events:  dedans, capot, messages notifying players of events
+
 3.- review time delays setup to pace the game
 
 4.- transitions/animations:
@@ -37,8 +39,13 @@ learn:
 - ability to join partie as a player or observer, pick player name
 - show that can support 1 or more human players in the same partie
 
+- perhaps:  similar to collabedit:  unique url for a game room that can go back to
+- ability for a client to receive a full log of events to reconstruct game state in the event
+   that an observer joins a game after it has already started
+
 - ability to leave game (close window) and get back to it
 - ability to cancel/stop a game in progress
+
 
 support multiple games in progress
 monitor all games in progress
