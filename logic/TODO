@@ -3,6 +3,13 @@
 2. update TextUI
 3. organize/sort player's hand by suit, by value/ordinal
 
+
+>> bug:  belote rebelote credit not given when have a capot (fixed, but need to write/add test)
+
+>> may have noticed while playing:  when partner is master, player must:
+ - follow suit
+ - but if don't have, can play anything, including an atout
+
 ?. calculate/add/show dix-dedere as part of last round score instead of adding it to the gamescore separately ??
 
 

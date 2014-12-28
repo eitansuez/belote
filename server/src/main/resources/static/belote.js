@@ -79,7 +79,7 @@ var cmds = {
     gameEnds : function(winningTeam) {
         if (winningTeam) // forfeit has no winning team
         {
-            window.alert(winningTeam + " wins");
+            console.log(winningTeam + " wins");
         }
         gameScoreArea.clearScores();
         resetSuits();
@@ -413,7 +413,7 @@ function placeCards(hand, groups, index) {
 }
 
 function doInGroupCoordinates(group, what) {
-    var index = group.data.index;
+    var index = groups.indexOf(group);
     group.rotate(-90*index, table.bounds.center);
     what.call(null, group);
     group.rotate(90*index, table.bounds.center);
@@ -492,6 +492,12 @@ function loadCards() {
     resetDeck();
 }
 
+function scaleCards(scale) {
+    for (var card in cards) {
+        cards[card].scale(scale);
+    }
+}
+
 function loadSuits() {
     suitsLayer = new Layer();
     suitsLayer.name = 'suits';
@@ -531,12 +537,6 @@ function resetSuits() {
 }
 
 
-function scaleCards(scale) {
-    for (var card in cards) {
-        cards[card].scale(scale);
-    }
-}
-
 function randomCard() {
     var index = parseInt(Math.random()*32);
     var key = Object.keys(cards)[index];
@@ -567,14 +567,7 @@ function setupAreas(c, b) {
     for (var i=0; i<4; i++)
     {
         var group = new Group(path);
-        group.style = {
-            strokeColor: '#000',
-            dashArray: [4, 10],
-            strokeWidth: 1,
-            strokeCap: 'round'
-        };
         group.hand = path;
-        group.data.index = i;
         group.transformContent = false;
         groups.push(group);
         path = path.clone();
@@ -582,7 +575,10 @@ function setupAreas(c, b) {
         var playerNameField = new PointText({
             point: path.bounds.center + [0, path.bounds.height/2 - 3],
             content: players[i],
-            justification: 'center'
+            justification: 'center',
+            fillColor: new Color(1, 1, 1),
+            fontWeight: 'bold',
+            fontSize: 12
         });
         group.addChild(playerNameField);
         group.playerName = playerNameField;
