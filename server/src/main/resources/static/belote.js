@@ -544,18 +544,9 @@ function setupTable(a) {
     tableLayer = new Layer();
     tableLayer.name = 'table';
 
-    table = new Path.Rectangle({
-        topLeft: new Point(0, 0),
-        size: new Size(a, a)
-    });
-    table.fillColor = {
-        gradient: {
-            stops: ['#038406', '#038406', '#8af28a'],
-            radial: true
-        },
-        origin: table.bounds.center,
-        destination: table.bounds.rightCenter
-    };
+    table = new Raster("tablecloth");
+    table.position = [a/2, a/2];
+    table.scale(a / table.bounds.height);
 }
 
 function setupAreas(c, b) {
