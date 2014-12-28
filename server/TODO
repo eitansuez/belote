@@ -1,28 +1,29 @@
 
 1.----ui componentization & cleanup & finish implementation:
 
-- js has to be more object-oriented:  rather than create a whole list of functions, add functions to the group
- that represents a player area.
-- bubble -- does not treat both the bubble and the text as a single object
-- make a nice prompter
-- eliminate use of native alerts
+- use paperjs properly
+- object-oriented
+- not so many variable references when they're all available in the scene graph
+- bubble bug:  text is not part of bubble 'group' (see eitanShow)
+- implement a prompt for atout to replace scaffold window.prompt
+- implement a confirm for envoi to replace scaffold window.confirm
+- implement an alert for notification to replace scaffold window.alert
 
+learn:
 - why paperjs?  why not just use canvas?
+- how to write components for paperjs????
+- study examples that come with distribution
+- how to externalize implementations of "objects" (bubble, scorearea, etc..)
+- learn polymer-project.org
 
----- how to write components for paperjs????
-  study examples.
-  how to externalize implementations of "objects"
-  learn polymer-project.org
-
-
-2.
- .- don't hard-code player names
+2.-----features
  .- show dernier pli
  .- show a table of rounds for game on sidebar with points in each round
+ .- onResize handler to redraw table
 
-4.- fine-tune timings
+3.- review time delays setup to pace the game
 
-5.- transitions/animations:
+4.- transitions/animations:
   - show dealer cards in center, next to turned up card
   - animate dealer dealing cards to players
   - show dealing 3, then 2, then 3
@@ -30,10 +31,7 @@
   - win round (cards move towards winning player, perhaps highlight/fade winnig player)
   - score update (highlight/fade)
 
-7.---miscellaneous ui:
-  a. onResize handler
-
-8.---server side:
+5.---server side:
 
 - support identification of clients as player or observer
 - ability to join partie as a player or observer, pick player name
@@ -45,5 +43,5 @@
 support multiple games in progress
 monitor all games in progress
 
-9.---javascript tests
-0.---bower/javascript build
+6.---javascript tests
+7.---bower/javascript build

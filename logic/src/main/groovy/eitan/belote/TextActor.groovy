@@ -59,7 +59,7 @@ class TextActor extends UntypedActor
     }
   }
 
-  void partieStarts(Team team1, Team team2)
+  void partieStarts(Team team1, Team team2, players)
   {
     log.info("La partie commence avec teams: ${team1} vs ${team2}")
   }

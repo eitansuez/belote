@@ -5,15 +5,14 @@ var cardSeparation, selectDelta;
 var handAspectRatio = 3;
 var played = [];
 
-// for now hard-code:
-var players = { Eitan: 0, Johnny: 1, Rony: 2, Corinne: 3 };
+var players = ['p1', 'p2', 'p3', 'p4'];
 
 var table, groups, bubbles;
 var gameScoreArea, partieScoreArea;
 
 var cmds = {
     receiveCard : function(playerName, cardName) {
-        placeCards([cardFor(cardName)], groups, players[playerName]);
+        placeCards([cardFor(cardName)], groups, players.indexOf(playerName));
     },
     turnUpCard : function(cardName) {
         turnUpCard(cardFor(cardName));
@@ -26,11 +25,11 @@ var cmds = {
         }
 
         if (envoi) {
-            var playerIndex = players[playerName];
+            var playerIndex = players.indexOf(playerName);
             placeSuit(suits[suitName.toLowerCase()], playerIndex);
         }
 
-        bubbles[players[playerName]].say(text);
+        bubbles[players.indexOf(playerName)].say(text);
     },
     offer : function(playerName, suitName) {
         var firstRound = (typeof suitName !== 'undefined');
@@ -93,14 +92,15 @@ var cmds = {
     partieEnds: function(winningTeam) {
         window.alert("Partie is over.  Winner is "+winningTeam);  // TODO: for now
     },
-    partieStarts: function(team1, team2) {
+    partieStarts: function(team1, team2, playerNames) {
         gameScoreArea.setTeams(team1, team2);
         partieScoreArea.setTeams(team1, team2);
+        players = playerNames;
+        paintPlayerNames();
     }
 };
 
 var client;
-
 
 var ScoreArea = Group.extend({
     _class: 'ScoreArea',
@@ -590,16 +590,25 @@ function setupAreas(c, b) {
 
         var playerNameField = new PointText({
             point: path.bounds.center + [0, path.bounds.height/2 - 3],
-            content: _.keys(players)[i],
+            content: players[i],
             justification: 'center'
         });
         group.addChild(playerNameField);
+        group.playerName = playerNameField;
         playerNameField.bringToFront();
 
         group.rotate(90*i, table.bounds.center);
     }
 
     return groups;
+}
+
+function paintPlayerNames()
+{
+    for (var i=0; i<groups.length; i++)
+    {
+        groups[i].playerName.content = players[i];
+    }
 }
 
 function setupBubbles() {

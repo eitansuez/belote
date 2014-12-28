@@ -6,6 +6,7 @@ import groovy.util.logging.Slf4j
 class Partie implements Emitter
 {
   Team team1, team2
+  def players = []
   Map<Team, Integer> scores = [:]
   Player starter
   List<Game> games = []
@@ -14,7 +15,9 @@ class Partie implements Emitter
 
   def begin()
   {
-    emit('partieStarts', [team1, team2])
+    players = [team1.first, team2.first, team1.second, team2.second]
+
+    emit('partieStarts', [team1, team2, players])
     initScores()
 
     nextGame()
@@ -140,7 +143,6 @@ class Partie implements Emitter
 
   Player nextPlayer(Player from)
   {
-    def players = [team1.first, team2.first, team1.second, team2.second]
     def index = players.indexOf(from)
     index = (index + 1) % 4
     players[index]
