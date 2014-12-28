@@ -169,70 +169,57 @@ var ScoreArea = Group.extend({
 
 });
 
-var Bubble = CompoundPath.extend({
+var Bubble = Group.extend({
     _class: 'Bubble',
-    _text: 'Change me',
-    _orientation: 0,
 
-    _serializeFields: {
-        text: null,
-        orientation: null
-    },
-    getText: function() {
-        return this._text;
-    },
+    text: '',
     setText: function(text) {
-        this._text = '' + text;
-        this._pointText.content = this._splitText();
+        this.text = text;
+        this.textField().content = this._splitText();
     },
-    getOrientation: function() {
-        return this._orientation;
-    },
-    setOrientation: function(value) {
-        this._orientation = value;
-    },
+    orientation: 0,
 
-    _pointText: new PointText({visible: false}),
-    _body: null,
-    _bubble: null,
+    textField: function() {
+        return this.getItem({className: 'PointText'});
+    },
 
     initialize: function Bubble() {
-        CompoundPath.apply(this, arguments);
+        Group.apply(this, arguments);
 
         var point = new Point(10, 30);
         var size = new Size(200, 55);
 
         var rect = new Rectangle(point, size);
-        this._body = new Path.Rectangle(rect, 5);
-        this._body.visible = false;
+        var body = new Path.Rectangle(rect, 5);
 
         var chupchik  = new Path.RegularPolygon(point, 3, 10);
         var chupchikOffset = 8;
         chupchik.scale(1, -1.5);
         chupchik.shear(-0.6, 0);
 
-        chupchik.rotate(90*this._orientation, this._body.bottomLeft);
-        if (this._orientation == 0)
+        chupchik.rotate(90*this.orientation, body.bottomLeft);
+        if (this.orientation == 0)
         {
             chupchik.translate(0.25*size.width, size.height + chupchikOffset+2);
         }
-        else if (this._orientation == 1)
+        else if (this.orientation == 1)
         {
             chupchik.translate(-chupchikOffset-5, 0.5*size.height);
         }
-        else if (this._orientation == 2)
+        else if (this.orientation == 2)
         {
             chupchik.translate(0.75 * size.width, -chupchikOffset);
         }
-        else if (this._orientation == 3)
+        else if (this.orientation == 3)
         {
             chupchik.translate(size.width+chupchikOffset-3, 0.5*size.height);
         }
 
-        chupchik.visible = false;
+        body.remove();
+        chupchik.remove();
 
-        this._bubble = this._body.unite(chupchik);
-        this.style = {
+        var bubble = body.unite(chupchik);
+        bubble.style = {
             fillColor: new Color(1, 0.95, 0.64, 0.8),
             strokeColor: 'black',
             strokeWidth: 1,
@@ -242,58 +229,50 @@ var Bubble = CompoundPath.extend({
         };
         this.pivot = chupchik.position;
 
-        this.addChild(this._bubble);
+        var textField = new PointText({point: this.bounds.topLeft + [20, 50]});
+        textField.content = this._splitText();
+        textField.fillColor = 'black';
+        textField.bringToFront();
 
-        this._pointText = new PointText(this.bounds.topLeft + [10, 40]);
-        this._pointText.content = this._splitText();
-        this._pointText.fillColor = 'black';
-        this._pointText.bringToFront();
+        this.addChild(bubble);
+        this.addChild(textField);
 
-        this.eitanShow(false);
-    },
-
-    eitanShow: function(visible) {
-        this.visible = visible;
-        this._pointText.visible = visible;
+        this.hide();
     },
 
     _splitText: function() {
         var lineSizeInChars = 35;
         var lines = [];
-        for (var i = 0; i <= (this._text.length / lineSizeInChars); i++) {
-            lines[i] = this._text.substr( lineSizeInChars * i, Math.min(this._text.length - (i * lineSizeInChars), lineSizeInChars) );
+        for (var i = 0; i <= (this.text.length / lineSizeInChars); i++) {
+            lines[i] = this.text.substr( lineSizeInChars * i, Math.min(this.text.length - (i * lineSizeInChars), lineSizeInChars) );
         }
         return lines.join('\n');
     },
 
-    _changed: function() {
-        if (this._pointText) {
-            var topLeft = this.bounds.topLeft + [10, 15] + [this._pointText.bounds.width/2, 0];
-            if (this._orientation == 2) {
-                // scootch down on account of chupchik
-                topLeft += [0, 20];
-            } else if (this._orientation == 1) {
-                // scootch right on account of chupchik
-                topLeft += [20, 0];
-            }
-            this._pointText.position = topLeft;
+    show: function() {
+        for (var i=0; i<this.children.length; i++) {
+            this.children[i].visible = true;
+        }
+        this.visible = true;
+    },
+
+    hide: function() {
+        this.visible = false;
+        for (var i=0; i<this.children.length; i++) {
+            this.children[i].visible = false;
         }
     },
 
     say: function(text) {
         this.setText(text);
-        this.bringToFront();
-        this._pointText.bringToFront();
-        this.eitanShow(true);
+        this.show();
         var self = this;
         setTimeout(function() {
-            self.eitanShow(false);
+            self.hide();
         }, 2000);
     }
 
 });
-
-
 
 
 $(function() {
@@ -351,6 +330,9 @@ function connectToServer() {
         });
 
         $("#newPartie-btn").on('click', function() {
+            resetSuits();
+            resetDeck();
+            removeCards();
             client.send('/app/newPartie');
         });
 
