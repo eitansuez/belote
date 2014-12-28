@@ -61,7 +61,7 @@ $(function() {
             };
             this.pivot = chupchik.position;
 
-            var textField = new PointText(this.bounds.topLeft + [10, 40]);
+            var textField = new PointText({point: this.bounds.topLeft + [20, 50]});
             textField.content = this._splitText();
             textField.fillColor = 'black';
             textField.bringToFront();
@@ -79,18 +79,6 @@ $(function() {
                 lines[i] = this.text.substr( lineSizeInChars * i, Math.min(this.text.length - (i * lineSizeInChars), lineSizeInChars) );
             }
             return lines.join('\n');
-        },
-
-        _changed: function() {
-            if (this.textField()) {
-                var topLeft = this.bounds.topLeft + [10, 15] + [this.textField().bounds.width/2, 0];
-                if (this.orientation == 2) {
-                    topLeft += [0, 20];  // scootch down on account of chupchik
-                } else if (this.orientation == 1) {
-                    topLeft += [20, 0];  // scootch right on account of chupchik
-                }
-                this.textField().position = topLeft;
-            }
         },
 
         show: function() {
@@ -118,15 +106,18 @@ $(function() {
 
     });
 
-
     var bubble = new Bubble({ text: 'Player "Johnny" passes at Trefle', orientation: 0 });
     bubble.position = [200, 80];
+    bubble.show();
     var bubble2 = new Bubble({ text: 'Testing 123..', orientation: 1 });
     bubble2.position = [400, 80];
+    bubble2.show();
     var bubble3 = new Bubble({ text: 'Hello "Johnny"', orientation: 2 });
     bubble3.position = [200, 150];
+    bubble3.show();
     var bubble4 = new Bubble({ text: 'Player "Johnny" passes at Trefle', orientation: 3 });
     bubble4.position = [550, 180];
+    bubble4.show();
 
     setTimeout(function() {
         bubble4.say("Hello Mister Banjo");
