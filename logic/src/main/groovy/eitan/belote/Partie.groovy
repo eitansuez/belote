@@ -14,8 +14,7 @@ class Partie implements Emitter
 
   def begin()
   {
-    // TODO:  replace with emit('partieStart', [players, teams])
-    log.info("La partie commence avec teams: ${team1} vs ${team2}")
+    emit('partieStarts', [team1, team2])
     initScores()
 
     nextGame()

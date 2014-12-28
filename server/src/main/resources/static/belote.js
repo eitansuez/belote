@@ -92,6 +92,10 @@ var cmds = {
     },
     partieEnds: function(winningTeam) {
         window.alert("Partie is over.  Winner is "+winningTeam);  // TODO: for now
+    },
+    partieStarts: function(team1, team2) {
+        gameScoreArea.setTeams(team1, team2);
+        partieScoreArea.setTeams(team1, team2);
     }
 };
 
@@ -100,8 +104,10 @@ var client;
 
 var ScoreArea = Group.extend({
     _class: 'ScoreArea',
-    _score1: 0,
-    _score2: 0,
+    _score1: null,
+    _score2: null,
+    _team1: null,
+    _team2: null,
 
     initialize: function ScoreArea() {
         Group.apply(this, arguments);
@@ -112,22 +118,24 @@ var ScoreArea = Group.extend({
             point: point,
             content: this.title
         }));
-        this.addChild(new PointText({
+        this._team1 = new PointText({
             point: point + [0, 1 * rowHeight],
             content: "Nous: "
-        }));
+        });
+        this.addChild(this._team1);
         this._score1 = new PointText({
-            point: point + [60, 1 * rowHeight],
+            point: point + [this.size.width - 30, 1 * rowHeight],
             content: "0",
             justification: "right"
         });
         this.addChild(this._score1);
-        this.addChild(new PointText({
+        this._team2 = new PointText({
             point: point + [0, 2 * rowHeight],
             content: "Eux: "
-        }));
+        });
+        this.addChild(this._team2);
         this._score2 = new PointText({
-            point: point + [60, 2 * rowHeight],
+            point: point + [this.size.width - 30, 2 * rowHeight],
             content: "0",
             justification: "right"
         });
@@ -153,6 +161,10 @@ var ScoreArea = Group.extend({
     },
     clearScores: function() {
         this.updateScores(0, 0);
+    },
+    setTeams: function(team1, team2) {
+        this._team1.setContent(team1+":");
+        this._team2.setContent(team2+":");
     }
 
 });
