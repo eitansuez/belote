@@ -33,7 +33,7 @@ public class BeloteController {
             remoteStrategy.actorRef = stompActor
         }
 
-        def players = ['Eitan', 'Rony', 'Johnny', 'Corinne'].collect { name ->
+        def players = [user.name, 'Rony', 'Johnny', 'Corinne'].collect { name ->
             def player = new Player(name: name, actorRef: stompActor)
             if (name == user.name)
             {
