@@ -16,9 +16,8 @@
 
 
 2.- show team names in score
- .- show atout envoiyee and by whom
  .- show dernier pli
- .- organize/sort cards in hand by suit, by value/ordinal
+ .- show a table of rounds for game on sidebar with points in each round
 
 4.- fine-tune timings
 
@@ -38,8 +37,6 @@
 8.---server side:
 
 - support identification of clients as player or observer
-x server should prompt only player, not publish prompt to all observers
-x show that can support 1 human player + 1 or more observers
 
 ability to join partie as a player or observer, pick player name
 show that can support 1 or more human players in the same partie

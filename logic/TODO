@@ -1,7 +1,10 @@
 
 1. fix broken tests
 2. update TextUI
-?. calculate/add/show dix-dedere as part of last round score instead of adding it to the gamescore separately
+
+3. organize/sort player's hand by suit, by value/ordinal
+
+?. calculate/add/show dix-dedere as part of last round score instead of adding it to the gamescore separately ??
 
 
 2.-----logging wording:
@@ -12,9 +15,7 @@
  likewise, should state at end of each game "stat" such as:
   - team x wins after having committed to trefle
 
-
 3.-----switch to using actors between game and players?
-
 
 4.-----play strategies:
  how to build a decent playing strategy?

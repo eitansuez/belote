@@ -1,5 +1,6 @@
 var cards = {};
-var cardsLayer;
+var suits = {};
+var tableLayer, suitsLayer, cardsLayer, groupsLayer;
 var cardSeparation, selectDelta;
 var handAspectRatio = 3;
 var played = [];
@@ -22,6 +23,11 @@ var cmds = {
         var text = playerName + (envoi ? " goes for " : passesText);
         if (suitName) {
             text += suitName;
+        }
+
+        if (envoi) {
+            var playerIndex = players[playerName];
+            placeSuit(suits[suitName.toLowerCase()], playerIndex);
         }
 
         bubbles[players[playerName]].say(text);
@@ -77,6 +83,7 @@ var cmds = {
             window.alert(winningTeam + " wins");
         }
         gameScoreArea.clearScores();
+        resetSuits();
         resetDeck();
         removeCards();
     },
@@ -278,20 +285,23 @@ var Bubble = CompoundPath.extend({
 
 
 $(function() {
-    loadCards();
-
     var a = Math.min(view.bounds.width, view.bounds.height);
     setupTable(a);
     var c = a / (2 + handAspectRatio);
     var b = handAspectRatio * c;
+
+    loadSuits();
+    scaleSuits(b);
+
     groups = setupAreas(c, b);
     bubbles = setupBubbles();
-
     setupScoreAreas(c, b);
 
+    loadCards();
     var card = randomCard();
     var scale = (0.8 * c) / card.height;
     scaleCards(scale);
+
     cardSeparation = [card.bounds.width / 1.8, 0];
     selectDelta = [0, card.bounds.height / 5];
 
@@ -468,7 +478,7 @@ function loadCards() {
     cardsLayer = new Layer();
     cardsLayer.name = 'cards';
 
-    $("#images_section").find("img").each(function() {
+    $("#card_images").find("img").each(function() {
         var img = $(this);
         var id = img.attr("id");
         var card = new Raster(id);
@@ -478,6 +488,45 @@ function loadCards() {
 
     resetDeck();
 }
+
+function loadSuits() {
+    suitsLayer = new Layer();
+    suitsLayer.name = 'suits';
+
+    $("#suit_images").find("img").each(function() {
+        var img = $(this);
+        var id = img.attr("id");
+        var suit = new Raster(id);
+        suit.name = id;
+        suit.opacity = 0.5;
+        suit.visible = false;
+        suits[id] = suit;
+    });
+}
+
+function scaleSuits(b) {
+    var desiredHeight = b / 2;
+    var scale = desiredHeight / suits['trefle'].bounds.height ;
+    for (var suit in suits) {
+        suits[suit].scale(scale);
+    }
+}
+
+function placeSuit(suit, index)
+{
+    var point = table.bounds.center + [0, table.bounds.width / 5];
+    var position = point.rotate(index * 90, table.bounds.center);
+    suit.position = position;
+    suit.visible = true;
+    suit.bringToFront();
+}
+
+function resetSuits() {
+    for (var suit in suits) {
+        suits[suit].visible = false;
+    }
+}
+
 
 function scaleCards(scale) {
     for (var card in cards) {
@@ -492,6 +541,9 @@ function randomCard() {
 }
 
 function setupTable(a) {
+    tableLayer = new Layer();
+    tableLayer.name = 'table';
+
     table = new Path.Rectangle({
         topLeft: new Point(0, 0),
         size: new Size(a, a)
@@ -507,6 +559,9 @@ function setupTable(a) {
 }
 
 function setupAreas(c, b) {
+    var groupsLayer = new Layer();
+    groupsLayer.name = 'groups';
+
     var groups = [];
 
     var path = new Path.Rectangle(
