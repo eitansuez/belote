@@ -27,16 +27,18 @@ class Game implements Emitter
   Team teamWithBeloteRebelote = null
 
 
-  def begin()
+  def init()
   {
     dealer.setActorRef(this.actorRef)
-
     starter = partie.starter
-
     teamWithBeloteRebelote = null
-
     done = false
     initScores()
+  }
+
+  def begin()
+  {
+    init()
     dealCards()
     dealer.turnUpCandidateCard()
     startSelectionPhase1()

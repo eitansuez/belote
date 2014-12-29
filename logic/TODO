@@ -1,7 +1,6 @@
 
-1. fix broken tests
-2. update TextUI
-3. organize/sort player's hand by suit, by value/ordinal
+1. update TextUI
+2. organize/sort player's hand by suit, by value/ordinal
 
 
 >> bug:  belote rebelote credit not given when have a capot (fixed, but need to write/add test)

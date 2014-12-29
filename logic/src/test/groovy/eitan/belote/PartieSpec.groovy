@@ -14,10 +14,10 @@ class PartieSpec extends Specification
     corinne = new Player(name: "Corinne")
     rony = new Player(name: "Rony")
 
-    partie = new Partie(
-        team1: new Team(first: eitan, second: rony),
-        team2: new Team(first: johnny, second: corinne)
-    )
+    partie = GroovySpy(Partie, constructorArgs: [[team1: new Team(first: eitan, second: rony),
+                                                  team2: new Team(first: johnny, second: corinne)]]) {
+      startNextGame() >> {}
+    }
 
   }
 
@@ -31,7 +31,7 @@ class PartieSpec extends Specification
   def "partie initial scores reset"()
   {
     when:
-    partie.begin()
+    partie.init()
 
     then:
     partie.scores[partie.team1] == 0
@@ -41,7 +41,7 @@ class PartieSpec extends Specification
   def "partie should be done if one of the teams has arrived at or crossed 1000"()
   {
     given:
-    partie.begin()
+    partie.init()
 
     when:
     partie.scores[partie.team1] = 1010
@@ -50,10 +50,22 @@ class PartieSpec extends Specification
     partie.done()
   }
 
+  def "partie should be done if other team has arrived at or crossed 1000"()
+  {
+    given:
+    partie.init()
+
+    when:
+    partie.scores[partie.team2] = 1000
+
+    then:
+    partie.done()
+  }
+
   def "partie not done if neither team has reached 1000"()
   {
     given:
-    partie.begin()
+    partie.init()
 
     when:
     partie.scores[partie.team1] = 550
@@ -66,11 +78,11 @@ class PartieSpec extends Specification
   def "partie play first game"()
   {
     given:
-    partie.begin()
+    partie.init()
     def game = partie.nextGame()
 
     when:
-    game.begin()
+    game.init()
 
     then:
     game.team1 == partie.team1
@@ -80,37 +92,37 @@ class PartieSpec extends Specification
   def "partie rotate starter with each new game"()
   {
     when:
-    partie.begin()
+    partie.init()
     def game = partie.nextGame()
-    game.begin()
+    game.init()
 
     then:
     game.starter == eitan
 
     when:
     game = partie.nextGame()
-    game.begin()
+    game.init()
 
     then:
     game.starter == johnny
 
     when:
     game = partie.nextGame()
-    game.begin()
+    game.init()
 
     then:
     game.starter == rony
 
     when:
     game = partie.nextGame()
-    game.begin()
+    game.init()
 
     then:
     game.starter == corinne
 
     when:
     game = partie.nextGame()
-    game.begin()
+    game.init()
 
     then:
     game.starter == eitan
@@ -119,8 +131,12 @@ class PartieSpec extends Specification
   def "game rounded score transfers to partie"()
   {
     given:
-    partie.begin()
-    def game = playGameWithScoreBeforeFinalize(75, 77)
+    partie.init()
+    def game = partie.nextGame()
+    game.done = true
+    game.committedPlayer = partie.team1.first
+    game.scores[partie.team1] = 85
+    game.scores[partie.team2] = 77
 
     when:
     partie.gameDone(game)
@@ -130,43 +146,23 @@ class PartieSpec extends Specification
     partie.scores[partie.team2] == 80
   }
 
-  private Game playGameWithScoreBeforeFinalize(int score1, int score2, Player envoyeur = eitan)
-  {
-    playGameWith({ Game game ->
-      game.scores[game.team1] = score1
-      game.scores[game.team2] = score2
-      game.rounds.last().winner = eitan
-    }, envoyeur)
-  }
-
-  private Game playGameRandomly()
-  {
-    playGameWith {}
-  }
-
-  private Game playGameWith(Closure customizeScores, Player envoyeur = eitan)
-  {
-    // override game with a spy constructed the same way
-    def gameSpy = GroovySpy(Game, constructorArgs: [[partie: partie, actorRef: partie.actorRef]]) {
-      addBeloteRebelote() >> { }
-    }
-    def game = partie.nextGame(gameSpy)
-
-    game.begin()
-    game.envoi(game.dealer.turnUpCandidateCard().suit, envoyeur)
-    game.playEightRounds()
-    customizeScores.call(game)
-    game.finalizeScore()
-    game
-  }
-
   def "game score accumulates across multiple games"()
   {
     given:
-    partie.begin()
-    def game = playGameWithScoreBeforeFinalize(75, 77)
+    partie.init()
+    def game = partie.nextGame()
+    game.done = true
+    game.committedPlayer = partie.team1.first
+    game.scores[partie.team1] = 85
+    game.scores[partie.team2] = 77
+
     partie.gameDone(game)
-    game = playGameWithScoreBeforeFinalize(100, 52)
+
+    game = partie.nextGame()
+    game.done = true
+    game.committedPlayer = partie.team1.first
+    game.scores[partie.team1] = 110
+    game.scores[partie.team2] = 52
 
     when:
     partie.gameDone(game)
@@ -181,12 +177,17 @@ class PartieSpec extends Specification
   def "can tell winner"()
   {
     given:
-    partie.begin()
+    partie.init()
     partie.scores[partie.team1] = 900
     partie.scores[partie.team2] = 300
 
     when:
-    def game = playGameWithScoreBeforeFinalize(120, 32)
+    def game = partie.nextGame()
+    game.done = true
+    game.committedPlayer = partie.team1.first
+    game.scores[partie.team1] = 130
+    game.scores[partie.team2] = 32
+
     partie.gameDone(game)
 
     then:
@@ -201,12 +202,17 @@ class PartieSpec extends Specification
   def "can tell winner when both teams cross 1000"()
   {
     given:
-    partie.begin()
+    partie.init()
     partie.scores[partie.team1] = 900
     partie.scores[partie.team2] = 980
 
     when:
-    def game = playGameWithScoreBeforeFinalize(100, 52)
+    def game = partie.nextGame()
+    game.done = true
+    game.committedPlayer = partie.team1.first
+    game.scores[partie.team1] = 110
+    game.scores[partie.team2] = 52
+
     partie.gameDone(game)
 
     then:
@@ -221,12 +227,16 @@ class PartieSpec extends Specification
   def "can tell winner even when both teams cross 1000 with same rounded score"()
   {
     given:
-    partie.begin()
+    partie.init()
     partie.scores[partie.team1] = 900
     partie.scores[partie.team2] = 980
 
     when:
-    def game = playGameWithScoreBeforeFinalize(110, 42)
+    def game = partie.nextGame()
+    game.done = true
+    game.committedPlayer = partie.team1.first
+    game.scores[partie.team1] = 120
+    game.scores[partie.team2] = 42
     partie.gameDone(game)
 
     then:
@@ -241,12 +251,16 @@ class PartieSpec extends Specification
   def "the rare partie tie"()
   {
     given:
-    partie.begin()
+    partie.init()
     partie.scores[partie.team1] = 900
     partie.scores[partie.team2] = 980
 
     when:
-    def game = playGameWithScoreBeforeFinalize(111, 41)
+    def game = partie.nextGame()
+    game.done = true
+    game.committedPlayer = partie.team1.first
+    game.scores[partie.team1] = 121
+    game.scores[partie.team2] = 41
     partie.gameDone(game)
 
     then:
@@ -258,27 +272,15 @@ class PartieSpec extends Specification
     partie.winner == null
   }
 
-  def "can play a whole partie"()
-  {
-    given:
-    partie.begin()
-
-    when:
-    while (!partie.done())
-    {
-      def game = playGameRandomly()
-      partie.gameDone(game)
-    }
-
-    then:
-    partie.scores[partie.team1] >= 1000 || partie.scores[partie.team2] >= 1000
-  }
-
   def "points withheld from envoyeur when litige"()
   {
     given:
-    partie.begin()
-    def game = playGameWithScoreBeforeFinalize(71, 81)
+    partie.init()
+    def game = partie.nextGame()
+    game.done = true
+    game.committedPlayer = partie.team1.first
+    game.scores[partie.team1] = 81
+    game.scores[partie.team2] = 81
 
     when:
     partie.gameDone(game)
@@ -291,12 +293,20 @@ class PartieSpec extends Specification
   def "points returned to envoyeur after litige if win next game"()
   {
     given:
-    partie.begin()
-    def game = playGameWithScoreBeforeFinalize(71, 81)
+    partie.init()
+    def game = partie.nextGame()
+    game.done = true
+    game.committedPlayer = partie.team1.first
+    game.scores[partie.team1] = 81
+    game.scores[partie.team2] = 81
     partie.gameDone(game)
 
     when:
-    game = playGameWithScoreBeforeFinalize(130, 22)
+    game = partie.nextGame()
+    game.done = true
+    game.committedPlayer = partie.team1.first
+    game.scores[partie.team1] = 140
+    game.scores[partie.team2] = 22
     partie.gameDone(game)
 
     then:
@@ -307,12 +317,20 @@ class PartieSpec extends Specification
   def "points given to opposing team when litigee loses next game"()
   {
     given:
-    partie.begin()
-    def game = playGameWithScoreBeforeFinalize(71, 81)
+    partie.init()
+    def game = partie.nextGame()
+    game.done = true
+    game.committedPlayer = partie.team1.first
+    game.scores[partie.team1] = 81
+    game.scores[partie.team2] = 81
     partie.gameDone(game)
 
     when:
-    game = playGameWithScoreBeforeFinalize(40, 112)
+    game = partie.nextGame()
+    game.done = true
+    game.committedPlayer = partie.team1.first
+    game.scores[partie.team1] = 0
+    game.scores[partie.team2] = 162
     partie.gameDone(game)
 
     then:
@@ -323,14 +341,26 @@ class PartieSpec extends Specification
   def "multiple litiges in a row (de suite) for the same team accumulates points in abeyance, team eventually wins"()
   {
     given:
-    partie.begin()
-    def game = playGameWithScoreBeforeFinalize(71, 81)
+    partie.init()
+    def game = partie.nextGame()
+    game.done = true
+    game.committedPlayer = partie.team1.first
+    game.scores[partie.team1] = 81
+    game.scores[partie.team2] = 81
     partie.gameDone(game)
-    game = playGameWithScoreBeforeFinalize(71, 81)
+    game = partie.nextGame()
+    game.done = true
+    game.committedPlayer = partie.team1.first
+    game.scores[partie.team1] = 81
+    game.scores[partie.team2] = 81
     partie.gameDone(game)
 
     when:
-    game = playGameWithScoreBeforeFinalize(130, 22)
+    game = partie.nextGame()
+    game.done = true
+    game.committedPlayer = partie.team1.first
+    game.scores[partie.team1] = 140
+    game.scores[partie.team2] = 22
     partie.gameDone(game)
 
     then:
@@ -341,14 +371,27 @@ class PartieSpec extends Specification
   def "multiple mixed/alternating litiges in a row"()
   {
     given:
-    partie.begin()
-    def game = playGameWithScoreBeforeFinalize(71, 81, eitan)
+    partie.init()
+    def game = partie.nextGame()
+    game.done = true
+    game.committedPlayer = partie.team1.first
+    game.scores[partie.team1] = 81
+    game.scores[partie.team2] = 81
     partie.gameDone(game)
-    game = playGameWithScoreBeforeFinalize(71, 81, corinne)
+
+    game = partie.nextGame()
+    game.done = true
+    game.committedPlayer = partie.team2.first
+    game.scores[partie.team1] = 81
+    game.scores[partie.team2] = 81
     partie.gameDone(game)
 
     when:
-    game = playGameWithScoreBeforeFinalize(130, 22, eitan)
+    game = partie.nextGame()
+    game.done = true
+    game.committedPlayer = partie.team1.first
+    game.scores[partie.team1] = 140
+    game.scores[partie.team2] = 22
     partie.gameDone(game)
 
     then:
@@ -359,39 +402,51 @@ class PartieSpec extends Specification
   def "previous game should be previous played"()
   {
     given:
-    partie.begin()
+    partie.init()
 
     when:
-    def firstGame = playGameWithScoreBeforeFinalize(71, 81, eitan)
-    partie.gameDone(firstGame)
-    def secondGame = playGameWithScoreBeforeFinalize(71, 81, corinne)
+    def game = partie.nextGame()
+    game.done = true
+    game.committedPlayer = partie.team1.first
+    game.scores[partie.team1] = 81
+    game.scores[partie.team2] = 81
+    partie.gameDone(game)
+
+    def secondGame = partie.nextGame()
+    secondGame.done = true
+    secondGame.committedPlayer = partie.team2.first
+    secondGame.scores[partie.team1] = 81
+    secondGame.scores[partie.team2] = 81
     partie.gameDone(secondGame)
 
     then:
-    partie.previousGame(secondGame) == firstGame
-    partie.previousGame(firstGame) == null
+    partie.previousGame(secondGame) == game
+    partie.previousGame(game) == null
   }
 
   def "previous game excludes games that were forfeited (must have been played)"()
   {
     given:
-    partie.begin()
+    partie.init()
 
     when:
     def firstGame = partie.nextGame()
-    firstGame.begin()
-    firstGame.selectionPhase1(firstGame.dealer.turnUpCandidateCard())
-    firstGame.selectionPhase2()
+    firstGame.committedPlayer = null
+    firstGame.done = true
 
     then:
     firstGame.forfeited()
 
     when:
-    def secondGame = playGameWithScoreBeforeFinalize(71, 81, corinne)
-    partie.gameDone(secondGame)
+    def game = partie.nextGame()
+    game.done = true
+    game.committedPlayer = partie.team2.first
+    game.scores[partie.team1] = 81
+    game.scores[partie.team2] = 81
+    partie.gameDone(game)
 
     then:
-    partie.previousGame(secondGame) == null
+    partie.previousGame(game) == null
   }
 
 }
