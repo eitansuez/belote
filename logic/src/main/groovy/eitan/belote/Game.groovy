@@ -10,7 +10,9 @@ class Game implements Emitter
   Partie partie
   Dealer dealer = new Dealer()
 
-  Team team1, team2
+  Team getTeam1() { partie?.team1 }
+  Team getTeam2() { partie?.team2 }
+
   Map<Team, Integer> scores = [:]
 
   Suit atout
@@ -29,8 +31,6 @@ class Game implements Emitter
   {
     dealer.setActorRef(this.actorRef)
 
-    team1 = partie.team1
-    team2 = partie.team2
     starter = partie.starter
 
     teamWithBeloteRebelote = null
@@ -89,8 +89,6 @@ class Game implements Emitter
       teamWithBeloteRebelote = playerWithBeloteRebelote.team
     }
 
-//    showPlayerCards()
-
     startPlayPhase()
   }
 
@@ -126,7 +124,6 @@ class Game implements Emitter
   {
     log.info("Dealing cards..")
     dealer.deal(players())
-//    showPlayerCards()
   }
 
   private Player nextPlayer()
@@ -177,38 +174,25 @@ class Game implements Emitter
 
   void finalizeScore()
   {
-    try
-    {
-      assert isLastRound()
-      done = true
+    assert isLastRound()
+    done = true
 
-      Round lastRound = rounds.last()
-      if (capot())
-      {
-        log.info("${losingTeam} are capot")
-        addCapotCredit()
-      }
-      else
-      {
-        addDixDedere(lastRound.winner.team)
-      }
-
-      addBeloteRebelote()
-
-      if (dedans())
-      {
-        log.info("${committedTeam} are dedans")
-        scores[otherTeam] += scores[committedTeam]
-        scores[committedTeam] = 0
-      }
+    Round lastRound = rounds.last()
+    if (capot()) {
+      log.info("${losingTeam} are capot")
+      addCapotCredit()
+    } else {
+      addDixDedere(lastRound.winner.team)
     }
-    finally {
-      showScore()
-    }
-  }
 
-  private void showScore()
-  {
+    addBeloteRebelote()
+
+    if (dedans()) {
+      log.info("${committedTeam} are dedans")
+      scores[otherTeam] += scores[committedTeam]
+      scores[committedTeam] = 0
+    }
+
     log.info("${team1}: ${scores[team1]} / ${team2}: ${scores[team2]}")
   }
 

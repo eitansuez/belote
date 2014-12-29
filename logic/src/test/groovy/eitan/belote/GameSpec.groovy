@@ -17,9 +17,7 @@ class GameSpec extends Specification
 
   def setup()
   {
-    eitan = GroovySpy(Player, constructorArgs: [[name: 'Eitan']]) {
-      envoi(_) >> true
-    }
+    eitan = GroovySpy(Player, constructorArgs: [[name: 'Eitan']])
 
     johnny = GroovySpy(Player, constructorArgs: [[name: 'Johnny']])
     corinne = new Player(name: "Corinne")
@@ -27,15 +25,16 @@ class GameSpec extends Specification
 
     players = [eitan, johnny, rony, corinne]
 
-    partie = new Partie(
-        team1: new Team(first: eitan, second: rony),
-        team2: new Team(first: johnny, second: corinne)
-    )
+    partie = GroovySpy(Partie, constructorArgs: [[team1: new Team(first: eitan, second: rony),
+                                                  team2: new Team(first: johnny, second: corinne)]]) {
+      gameDone(_) >> {}  // prevent next game from kicking off
+    }
 
     partie.init()
 
     // override game with a spy constructed the same way
     def gameSpy = GroovySpy(Game, constructorArgs: [[partie: partie, actorRef: partie.actorRef]])
+
     game = partie.nextGame(gameSpy)
 
     deck = GroovySpy(Deck)
@@ -69,6 +68,7 @@ class GameSpec extends Specification
   {
     given:
     game.startSelectionPhase1() >> {}
+    game.startPlayPhase() >> {}
 
     when:
     game.begin()
@@ -92,6 +92,7 @@ class GameSpec extends Specification
   {
     given:
     game.startSelectionPhase1() >> {}
+    game.startPlayPhase() >> {}
 
     when:
     game.begin()
@@ -135,6 +136,7 @@ class GameSpec extends Specification
   {
     given:
     game.startSelectionPhase1() >> {}
+    game.startPlayPhase() >> {}
 
     when:
     game.begin()
@@ -167,11 +169,11 @@ class GameSpec extends Specification
   def "cards drawn from players"()
   {
     given:
-    game.begin()
-    game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
+    eitan.offer(_, _) >> { Game game, Card card -> game.envoi() }
+    game.continuePlayPhase() >> {}
 
     when:
-    game.playRound()
+    game.begin()
 
     then:
     players.each { player ->
@@ -183,13 +185,11 @@ class GameSpec extends Specification
   def "players should have no more cards after eight rounds"()
   {
     given:
-    game.begin()
-    game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
+    eitan.offer(_, _) >> { Game game, Card card -> game.envoi() }
+    game.addBeloteRebelote() >> {}  // mock method to ensure get no interference from possible dealing of belote rebelote
 
     when:
-    game.playEightRounds()
-    game.addBeloteRebelote() >> {}  // mock method to ensure get no interference from possible dealing of belote rebelote
-    game.finalizeScore()
+    game.begin()
 
     then:
     players.each { player ->
@@ -203,16 +203,13 @@ class GameSpec extends Specification
 
   def "score finalization adds dix dedere"() {
     given:
-    game.begin()
-    game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
-    game.atout = Trefle  // override atout
-
-    game.playEightRounds()
+    game.isLastRound() >> true
+    game.done = true
+    def lastRound = new Round(winner: eitan)
+    game.rounds << lastRound
     game.scores[game.team1] = 142
     game.scores[game.team2] = 10
-    game.rounds.last().winner = eitan
-
-    game.addBeloteRebelote() >> {}  // mock method to ensure get no interference from possible dealing of belote rebelote
+    game.committedPlayer = eitan
 
     when:
     game.finalizeScore()
@@ -225,18 +222,19 @@ class GameSpec extends Specification
 
   def "score finalization handles capot"() {
     given:
-    game.begin()
-    game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
-    game.atout = Trefle  // override atout
-
-    game.playEightRounds()
+    game.isLastRound() >> true
+    game.done = true
+    def lastRound = new Round(winner: eitan)
+    game.rounds << lastRound
     game.scores[game.team1] = 152
     game.scores[game.team2] = 0
+    game.committedPlayer = eitan
 
     when:
     game.finalizeScore()
 
     then:
+    !game.dedans()
     game.capot()
     game.scores[game.team1] == 252
     game.scores[game.team2] == 0
@@ -246,12 +244,13 @@ class GameSpec extends Specification
 
   def "winning team is capot should also amount to 252 points for winner"() {
     given:
-    game.begin()
-    game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
-    game.atout = Trefle  // override atout
-    game.playEightRounds()
+    game.isLastRound() >> true
+    game.done = true
+    def lastRound = new Round(winner: eitan)
+    game.rounds << lastRound
     game.scores[game.team1] = 0
     game.scores[game.team2] = 152
+    game.committedPlayer = eitan
 
     when:
     game.finalizeScore()
@@ -267,15 +266,13 @@ class GameSpec extends Specification
 
   def "score finalization handles dedans"() {
     given:
-    game.begin()
-    game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
-    game.atout = Trefle  // override atout
-    game.playEightRounds()
+    game.isLastRound() >> true
+    game.done = true
+    def lastRound = new Round(winner: corinne)
+    game.rounds << lastRound
     game.scores[game.team1] = 80
     game.scores[game.team2] = 72
-    game.rounds.last().winner = corinne
-
-    game.addBeloteRebelote() >> {}  // mock method to ensure get no interference from possible dealing of belote rebelote
+    game.committedPlayer = eitan
 
     when:
     game.finalizeScore()
@@ -290,15 +287,13 @@ class GameSpec extends Specification
 
   def "score finalization handles litige"() {
     given:
-    game.begin()
-    game.envoi(game.dealer.turnUpCandidateCard().suit, eitan)
-    game.atout = Trefle  // override atout
-    game.playEightRounds()
+    game.isLastRound() >> true
+    game.done = true
+    def lastRound = new Round(winner: corinne)
+    game.rounds << lastRound
     game.scores[game.team1] = 81
     game.scores[game.team2] = 71
-    game.rounds.last().winner = corinne
-
-    game.addBeloteRebelote() >> {}  // mock method to ensure get no interference from possible dealing of belote rebelote
+    game.committedPlayer = eitan
 
     when:
     game.finalizeScore()
@@ -314,8 +309,6 @@ class GameSpec extends Specification
   def "players ordering from eitan"()
   {
     when:
-    game.team1 = partie.team1
-    game.team2 = partie.team2
     game.starter = eitan
 
     then:
@@ -325,8 +318,6 @@ class GameSpec extends Specification
   def "players ordering from johnny"()
   {
     when:
-    game.team1 = partie.team1
-    game.team2 = partie.team2
     game.starter = johnny
 
     then:
@@ -336,8 +327,6 @@ class GameSpec extends Specification
   def "players ordering from rony"()
   {
     when:
-    game.team1 = partie.team1
-    game.team2 = partie.team2
     game.starter = rony
 
     then:
@@ -347,8 +336,6 @@ class GameSpec extends Specification
   def "players ordering from corinne"()
   {
     when:
-    game.team1 = partie.team1
-    game.team2 = partie.team2
     game.starter = corinne
 
     then:
@@ -358,8 +345,6 @@ class GameSpec extends Specification
   def "should stop at third player"()
   {
     when:
-    game.team1 = partie.team1
-    game.team2 = partie.team2
     game.starter = eitan
 
     then:
@@ -378,6 +363,9 @@ class GameSpec extends Specification
 
   def "should iterate through players at most 4 times"()
   {
+    given:
+    game.startSelectionPhase1() >> {}
+
     when:
     game.begin()
     int count = 0
@@ -393,6 +381,9 @@ class GameSpec extends Specification
 
   def "players dealt 5 cards after game start"()
   {
+    given:
+    game.startSelectionPhase1() >> {}
+
     when:
     game.begin()
 
@@ -404,9 +395,12 @@ class GameSpec extends Specification
 
   def "after selection phase, players dealt remaining cards, and committed player set"()
   {
+    given:
+    eitan.offer(_, _) >> { Game game, Card card -> game.envoi() }
+    game.startSelectionPhase2() >> {}
+
     when:
     game.begin()
-    game.selectionPhase1(game.dealer.turnUpCandidateCard())
 
     then:
     game.committedPlayer == eitan
@@ -418,65 +412,49 @@ class GameSpec extends Specification
 
   def "everyone passes first round, game is not done, and score is 0"()
   {
+    given:
+    eitan.offer(_, _) >> { Game game, Card candidate -> game.pass() }
+    game.startSelectionPhase2() >> {}
+
     when:
     game.begin()
-    setupPlayerToPass()
-    def commit = game.selectionPhase1(game.dealer.turnUpCandidateCard())
 
     then:
-    !commit
     !game.done
     game.atout == null
+    game.committedPlayer == null
   }
 
   def "everyone passes, game is done, and score is 0"()
   {
+    given:
+    eitan.offer(_, _) >> { Game game, Card card -> game.pass() }
+    eitan.offer(_) >> { Game game -> game.passDeuxFois() }
+
     when:
     game.begin()
-    setupPlayerToPass()
-    game.selectionPhase1(game.dealer.turnUpCandidateCard())
-    game.selectionPhase2()
 
     then:
     game.scores[game.team1] == 0
     game.scores[game.team2] == 0
     game.done
+    game.forfeited()
     game.atout == null
-  }
-
-  private void setupPlayerToPass()
-  {
-    Player player = new Player(name: "Eitan")
-    game.team1.first = player
-    game.starter = player
-  }
-
-  private void setupPlayerToEnvoiA(Suit suit) {
-    Player player = GroovySpy(Player, constructorArgs: [[name: 'Eitan']]) {
-      envoi() >> suit
-    }
-    game.team1.first = player
-    game.starter = player
   }
 
   def "envoi occurs during second round of selection phase"()
   {
     given:
-    game.begin()
-
-    setupPlayerToPass()
-    Card turnedUp = game.dealer.turnUpCandidateCard()
-    game.selectionPhase1(turnedUp)
-
-    Suit other = Suit.values().find { Suit suit -> suit != game.atout }
-    setupPlayerToEnvoiA(other)
+    eitan.offer(_, _) >> { Game game, Card card -> game.pass() }
+    eitan.offer(_) >> { Game game -> game.envoi(Pique) }
+    game.startPlayPhase() >> {}
 
     when:
-    game.selectionPhase2()
+    game.begin()
 
     then:
     game.committedPlayer == game.team1.first
-    game.atout == other
+    game.atout == Pique
     ! game.done
     1 * game.dealer.dealRemaining(_, _)
   }
@@ -485,10 +463,7 @@ class GameSpec extends Specification
   def "detect player with belote rebelote"()
   {
     given:
-    game.team1 = partie.team1
-    game.team2 = partie.team2
-    game.starter = partie.starter
-
+    game.starter = eitan
     eitan.receiveCards([
         deck.takeSpecificCard(new Card(type: Dame, suit: Trefle)),
         deck.takeSpecificCard(new Card(type: Dix, suit: Coeur)),
@@ -501,8 +476,7 @@ class GameSpec extends Specification
     }
 
     when:
-    game.dealer.turnUpCandidateCard()
-    game.envoi(Trefle, eitan)
+    game.atout = Trefle
 
     then:
     game.beloteRebelote() == eitan
@@ -511,9 +485,7 @@ class GameSpec extends Specification
   def "this game has no belote rebelote"()
   {
     given:
-    game.team1 = partie.team1
-    game.team2 = partie.team2
-    game.starter = partie.starter
+    game.starter == eitan
 
     eitan.receiveCards([
         deck.takeSpecificCard(new Card(type: Dame, suit: Trefle)),
@@ -527,8 +499,7 @@ class GameSpec extends Specification
     }
 
     when:
-    game.dealer.turnUpCandidateCard()
-    game.envoi(Trefle, eitan)
+    game.atout = Trefle
 
     then:
     game.beloteRebelote() == null
@@ -537,8 +508,9 @@ class GameSpec extends Specification
   def "score accounts for belote rebelote for team of player bearing the cards"()
   {
     given:
-    game.team1 = partie.team1
-    game.team2 = partie.team2
+    game.startPlayPhase() >> {}
+    eitan.offer(_,_) >> { Game game, Card candidate -> game.envoi(Trefle)}
+
     game.starter = partie.starter
     game.initScores()
 
@@ -552,16 +524,20 @@ class GameSpec extends Specification
     [rony, corinne, johnny].each { player ->
       game.dealer.dealToPlayer(player, deck.takeCards(5))
     }
-
     game.dealer.turnUpCandidateCard()
-    game.envoi(Trefle, eitan)
-
-    game.playEightRounds()
-    game.scores[game.team1] = 100
-    game.scores[game.team2] = 52
-    game.rounds.last().winner = eitan
 
     when:
+    game.startSelectionPhase1()
+
+    and:
+    game.isLastRound() >> true
+    game.done = true
+    def lastRound = new Round(winner: eitan)
+    game.rounds << lastRound
+    game.scores[game.team1] = 100
+    game.scores[game.team2] = 52
+
+    and:
     game.finalizeScore()
 
     then:
@@ -572,8 +548,9 @@ class GameSpec extends Specification
   def "score accounts for belote rebelote when other team bears it"()
   {
     given:
-    game.team1 = partie.team1
-    game.team2 = partie.team2
+    game.startPlayPhase() >> {}
+    eitan.offer(_,_) >> { Game game, Card candidate -> game.envoi(Trefle)}
+
     game.starter = partie.starter
     game.initScores()
 
@@ -589,12 +566,16 @@ class GameSpec extends Specification
     }
 
     game.dealer.turnUpCandidateCard()
-    game.envoi(Trefle, eitan)
 
-    game.playEightRounds()
+    game.startSelectionPhase1()
+
+    game.isLastRound() >> true
+    game.done = true
+    def lastRound = new Round(winner: eitan)
+    game.rounds << lastRound
+
     game.scores[game.team1] = 100
     game.scores[game.team2] = 52
-    game.rounds.last().winner = eitan
 
     when:
     game.finalizeScore()

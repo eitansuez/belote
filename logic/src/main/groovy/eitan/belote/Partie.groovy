@@ -26,7 +26,7 @@ class Partie implements Emitter
     init()
 
     emit('partieStarts', [team1, team2, players])
-    nextGame()
+    startNextGame()
   }
 
   private void initScores() {
@@ -65,10 +65,15 @@ class Partie implements Emitter
   {
     starter = nextStarter()
     games << game
-    log.info("Game #${games.size()} about to begin..")
     currentGame = game
-    currentGame.begin()
     game
+  }
+
+  Game startNextGame()
+  {
+    nextGame()
+    log.info("Game #${games.size()} about to begin..")
+    currentGame.begin()
   }
 
   def gameDone(Game game)
@@ -85,7 +90,7 @@ class Partie implements Emitter
     }
     else
     {
-      nextGame()
+      startNextGame()
     }
   }
 
