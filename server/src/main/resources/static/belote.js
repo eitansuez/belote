@@ -5,13 +5,14 @@ var cardsLayer, groupsLayer;
 var cardSeparation, selectDelta;
 var handAspectRatio = 2.5;
 var played = [];
+var thisPlayerName;
 
 var table, groups;
 var gameScoreArea, partieScoreArea;
 
 var cmds = {
     receiveCard : function(playerName, cardName) {
-        placeCards([cardFor(cardName)], players[playerName]);
+        placeCards([cardFor(cardName)], players[playerName], !isPlayerMe(playerName));
     },
     turnUpCard : function(cardName) {
         turnUpCard(cardFor(cardName));
@@ -66,7 +67,12 @@ var cmds = {
         chooseCard(cards);
     },
     playCard: function(playerName, cardName) {
-        playCard(cardFor(cardName));
+        var card = cardFor(cardName);
+        if (!isPlayerMe(playerName))
+        {
+            card.cardback.visible = false;
+        }
+        playCard(card);
     },
     gameUpdate: function(team1, team1Score, team2, team2Score) {
         gameScoreArea.updateScores(team1Score, team2Score);
@@ -295,12 +301,12 @@ $(function() {
     setupScoreAreas(c, b);
 
     loadCards();
-    var card = randomCard();
-    var scale = (0.8 * c) / card.height;
-    scaleCards(scale);
+    scaleCards(c);
+    setupCardbacks(c);
 
     setupBubbles();
 
+    var card = randomCard();
     cardSeparation = [card.bounds.width / 2, 0];
     selectDelta = [0, card.bounds.height / 5];
 
@@ -311,14 +317,20 @@ $(function() {
     connectToServer();
 });
 
+function isPlayerMe(playerName) {
+    return playerName == thisPlayerName;
+}
+
 
 function connectToServer() {
     var ws = new SockJS('/belote');
     client = Stomp.over(ws);
-    //client.debug = null;
+    client.debug = null;
 
-    client.connect({}, function() {
+    client.connect({}, function(frame) {
         console.log('connected');
+
+        thisPlayerName = frame.headers['user-name'];
 
         var handleCmd = function(message) {
             var body = JSON.parse(message.body);
@@ -401,10 +413,10 @@ function playCard(card) {
     played.push(card);
 }
 
-function placeCards(cards, group) {
+function placeCards(cards, group, backface) {
     doInGroupCoordinates(group, function() {
         _.each(cards, function(card) {
-            placeCard(card, null, group);
+            placeCard(card, null, group, backface);
         });
     });
 }
@@ -420,37 +432,50 @@ function turnUpCard(card) {
     placeCard(card, table.bounds.center);
 }
 
-function placeCard(card, position, group) {
+function placeCard(card, position, group, backface) {
+    var cardToPlace = backface ? card.cardback : card;
     if (group) {
+        var position;
         if (hasCards(group))
         {
-            card.position = group.lastChild.position + cardSeparation;
+            position = group.lastChild.position + cardSeparation;
         }
         else
         {
-            var verticalOffset = (group.hand.bounds.height - card.bounds.height) / 2;
-            var horizontalOffset = (group.hand.bounds.width - card.bounds.width ) / 2;
-            card.position = group.hand.position - [horizontalOffset, verticalOffset];
+            var verticalOffset = (group.hand.bounds.height - cardToPlace.bounds.height) / 2;
+            var horizontalOffset = (group.hand.bounds.width - cardToPlace.bounds.width ) / 2;
+            position = group.hand.position - [horizontalOffset, verticalOffset];
         }
-        group.addChild(card);
-    } else {
-        card.position = position;
+
+        cardToPlace.position = position;
+        group.addChild(cardToPlace);
+        if (backface) {
+            group.addChild(card);  // put both card and cardback into group
+        }
+    }
+    else
+    {
+        cardToPlace.position = position;
     }
 
-    card.visible = true;
-    card.bringToFront();
-    return card;
+    cardToPlace.visible = true;
+    cardToPlace.bringToFront();
+    return cardToPlace;
 }
 
 function hasCards(group) {
-    var items = group.getItems({className: 'Raster'});
-    return items && items.length > 0;
+    var cardItems = group.getItems({childType: 'card'});
+    return cardItems && cardItems.length > 0;
 }
 
 function removeCards() {
-    for (card in cards) {
-        cards[card].remove();
-        cardsLayer.addChild(cards[card]);
+    var cardName
+    for (cardName in cards) {
+        var card = cards[cardName];
+        card.remove();
+        card.cardback.remove();
+        cardsLayer.addChild(card);
+        cardsLayer.addChild(card.cardback);
     }
 }
 
@@ -482,15 +507,32 @@ function loadCards() {
         var id = img.attr("id");
         var card = new Raster(id);
         card.name = id;
+        card.childType = 'card';
         cards[id] = card;
     });
 
     resetDeck();
 }
 
-function scaleCards(scale) {
+function scaleCards(c) {
     for (var card in cards) {
+        var scale = (0.8 * c) / cards[card].height;
         cards[card].scale(scale);
+    }
+}
+
+function setupCardbacks(c) {
+    var cardback = new Raster('cardback');
+    var scale = (0.8 * c) / cardback.height;
+    cardback.scale(scale);
+    cardback.remove();
+    var symbol = new Symbol(cardback);
+
+    for (var card in cards) {
+        var placedCardback = symbol.place();
+        placedCardback.visible = false;
+        placedCardback.childType = 'card';
+        cards[card].cardback = placedCardback;
     }
 }
 
