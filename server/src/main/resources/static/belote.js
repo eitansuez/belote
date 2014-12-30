@@ -1,18 +1,17 @@
 var cards = {};
 var suits = {};
-var tableLayer, suitsLayer, cardsLayer, groupsLayer, bubblesLayer;
+var players = {};
+var cardsLayer, groupsLayer;
 var cardSeparation, selectDelta;
 var handAspectRatio = 2.5;
 var played = [];
 
-var players = ['p1', 'p2', 'p3', 'p4'];
-
-var table, groups, bubbles;
+var table, groups;
 var gameScoreArea, partieScoreArea;
 
 var cmds = {
     receiveCard : function(playerName, cardName) {
-        placeCards([cardFor(cardName)], groups, players.indexOf(playerName));
+        placeCards([cardFor(cardName)], players[playerName]);
     },
     turnUpCard : function(cardName) {
         turnUpCard(cardFor(cardName));
@@ -24,12 +23,12 @@ var cmds = {
             text += suitName;
         }
 
+        var playerIndex = groups.indexOf(players[playerName]);
         if (envoi) {
-            var playerIndex = players.indexOf(playerName);
             placeSuit(suits[suitName.toLowerCase()], playerIndex);
         }
 
-        bubbles[players.indexOf(playerName)].say(text);
+        groups[playerIndex].bubble.say(text);
     },
     offer : function(playerName, suitName) {
         var firstRound = (typeof suitName !== 'undefined');
@@ -95,8 +94,10 @@ var cmds = {
     partieStarts: function(team1, team2, playerNames) {
         gameScoreArea.setTeams(team1, team2);
         partieScoreArea.setTeams(team1, team2);
-        players = playerNames;
-        paintPlayerNames();
+        paintPlayerNames(playerNames);
+        resetSuits();
+        resetDeck();
+        removeCards();
     }
 };
 
@@ -298,7 +299,7 @@ $(function() {
     var scale = (0.8 * c) / card.height;
     scaleCards(scale);
 
-    bubbles = setupBubbles();
+    setupBubbles();
 
     cardSeparation = [card.bounds.width / 2, 0];
     selectDelta = [0, card.bounds.height / 5];
@@ -339,9 +340,6 @@ function connectToServer() {
         });
 
         $("#newPartie-btn").on('click', function() {
-            resetSuits();
-            resetDeck();
-            removeCards();
             client.send('/app/newPartie');
         });
 
@@ -403,10 +401,9 @@ function playCard(card) {
     played.push(card);
 }
 
-function placeCards(hand, groups, index) {
-    var group = groups[index];
+function placeCards(cards, group) {
     doInGroupCoordinates(group, function() {
-        _.each(hand, function(card) {
+        _.each(cards, function(card) {
             placeCard(card, null, group);
         });
     });
@@ -478,8 +475,7 @@ function onFrame(event) {
 // initial rendering setup..
 
 function loadCards() {
-    cardsLayer = new Layer();
-    cardsLayer.name = 'cards';
+    cardsLayer = new Layer({name: 'cards'});
 
     $("#card_images").find("img").each(function() {
         var img = $(this);
@@ -499,8 +495,7 @@ function scaleCards(scale) {
 }
 
 function loadSuits() {
-    suitsLayer = new Layer();
-    suitsLayer.name = 'suits';
+    new Layer({name: 'suits'});
 
     $("#suit_images").find("img").each(function() {
         var img = $(this);
@@ -544,8 +539,7 @@ function randomCard() {
 }
 
 function setupTable(a) {
-    tableLayer = new Layer();
-    tableLayer.name = 'table';
+    new Layer({name: 'table'});
 
     table = new Raster("tablecloth");
     table.position = [a/2, a/2];
@@ -553,8 +547,7 @@ function setupTable(a) {
 }
 
 function setupAreas(c, b) {
-    groupsLayer = new Layer();
-    groupsLayer.name = 'groups';
+    groupsLayer = new Layer({name: 'groups'});
 
     var groups = [];
 
@@ -574,7 +567,7 @@ function setupAreas(c, b) {
 
         var playerNameField = new PointText({
             point: path.bounds.center + [0, path.bounds.height/2 - 3],
-            content: players[i],
+            content: 'p'+i,
             justification: 'center',
             fillColor: new Color(1, 1, 1),
             fontWeight: 'bold',
@@ -590,24 +583,24 @@ function setupAreas(c, b) {
     return groups;
 }
 
-function paintPlayerNames()
+function paintPlayerNames(playerNames)
 {
     for (var i=0; i<groups.length; i++)
     {
-        groups[i].playerName.content = players[i];
+        var playerName = playerNames[i];
+        groups[i].playerName.content = playerName;
+        players[playerName] = groups[i];
     }
 }
 
 function setupBubbles() {
-    bubblesLayer = new Layer();
-    bubblesLayer.name = 'bubbles';
+    new Layer({name: 'bubbles'});
 
-    var bubbles = [];
     for (var i=0; i<4; i++) {
-        bubbles[i] = new Bubble({ orientation: i, text: '...' });
-        bubbles[i].position = groups[i].position;
+        var bubble = new Bubble({ orientation: i, text: '...' });
+        bubble.position = groups[i].position;
+        groups[i].bubble = bubble;
     }
-    return bubbles;
 }
 
 function setupScoreAreas(c, b)
