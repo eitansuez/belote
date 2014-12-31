@@ -64,4 +64,14 @@ class TextActor extends UntypedActor
     log.info("La partie commence avec teams: ${team1} vs ${team2}")
   }
 
+  void partieUpdate(Team team1, int score1, Team team2, int score2)
+  {
+    log.info("score is now: ${team1}: ${score1} / ${team2}: ${score2}")
+  }
+
+  void partieEnds(Team winner)
+  {
+    log.info("partie is over;  team ${winner} has won")
+  }
+
 }

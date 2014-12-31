@@ -219,7 +219,11 @@ class Game implements Emitter
   }
 
   boolean capot() {
-    scores[team1] == 0 || scores[team2] == 0
+    def rawScores = rounds.inject([(team1): 0, (team2): 0], { acc, round ->
+      acc[round.winner.team] += round.points
+      acc
+    })
+    rawScores[team1] == 0 || rawScores[team2] == 0
   }
 
   boolean dedans() {

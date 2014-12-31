@@ -2,6 +2,7 @@ package eitan.belote
 
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
+import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.stereotype.Controller
@@ -11,6 +12,7 @@ import java.security.Principal
 import static eitan.belote.SpringExtension.SpringExtProvider
 
 @Controller
+@Slf4j
 public class BeloteController {
 
     @Autowired
@@ -82,7 +84,7 @@ public class BeloteController {
             game.playerChooses(card)
         }
         else {
-            console.error("Received unknown/unsupported event name: "+event.name+" from client.")
+            log.error("Received unknown/unsupported event name: "+event.name+" from client.")
         }
     }
 

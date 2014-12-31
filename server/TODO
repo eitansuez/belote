@@ -1,6 +1,5 @@
 
-- option for ui to display other players' cards face up, default face-down
-- observer sees them face up
+- option for ui to display other players' cards face up
 
 1.----ui componentization & cleanup & finish implementation:
 
@@ -20,7 +19,7 @@ learn:
 2.-----features
  .- show dernier pli
  .- show a table of rounds for game on sidebar with points in each round
- .- onResize handler to redraw table
+>.- onResize handler to redraw table
 
  .- scrolling log of events:  dedans, capot, messages notifying players of events
 

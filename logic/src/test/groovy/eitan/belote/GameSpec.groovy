@@ -205,8 +205,8 @@ class GameSpec extends Specification
     given:
     game.isLastRound() >> true
     game.done = true
-    def lastRound = new Round(winner: eitan)
-    game.rounds << lastRound
+    game.rounds << new Round(winner: corinne, points: 10)
+    game.rounds << new Round(winner: eitan, points: 6)
     game.scores[game.team1] = 142
     game.scores[game.team2] = 10
     game.committedPlayer = eitan
@@ -242,6 +242,52 @@ class GameSpec extends Specification
     game.losingTeam == game.team2
   }
 
+  def "score finalization handles capot with belote rebelote for winning team"() {
+    given:
+    game.isLastRound() >> true
+    game.done = true
+    def lastRound = new Round(winner: eitan)
+    game.rounds << lastRound
+    game.scores[game.team1] = 152
+    game.scores[game.team2] = 0
+    game.teamWithBeloteRebelote = eitan.team
+    game.committedPlayer = eitan
+
+    when:
+    game.finalizeScore()
+
+    then:
+    !game.dedans()
+    game.capot()
+    game.scores[game.team1] == 272
+    game.scores[game.team2] == 0
+    game.winningTeam == game.team1
+    game.losingTeam == game.team2
+  }
+
+  def "score finalization handles capot with belote rebelote for losing team"() {
+    given:
+    game.isLastRound() >> true
+    game.done = true
+    def lastRound = new Round(winner: eitan)
+    game.rounds << lastRound
+    game.scores[game.team1] = 152
+    game.scores[game.team2] = 0
+    game.teamWithBeloteRebelote = game.team2
+    game.committedPlayer = eitan
+
+    when:
+    game.finalizeScore()
+
+    then:
+    !game.dedans()
+    game.capot()
+    game.scores[game.team1] == 252
+    game.scores[game.team2] == 20
+    game.winningTeam == game.team1
+    game.losingTeam == game.team2
+  }
+
   def "winning team is capot should also amount to 252 points for winner"() {
     given:
     game.isLastRound() >> true
@@ -268,8 +314,8 @@ class GameSpec extends Specification
     given:
     game.isLastRound() >> true
     game.done = true
-    def lastRound = new Round(winner: corinne)
-    game.rounds << lastRound
+    game.rounds << new Round(winner: eitan, points: 12)
+    game.rounds << new Round(winner: corinne, points: 10)
     game.scores[game.team1] = 80
     game.scores[game.team2] = 72
     game.committedPlayer = eitan
@@ -289,8 +335,9 @@ class GameSpec extends Specification
     given:
     game.isLastRound() >> true
     game.done = true
-    def lastRound = new Round(winner: corinne)
-    game.rounds << lastRound
+    def lastRound =
+    game.rounds << new Round(winner: eitan, points: 10)
+    game.rounds << new Round(winner: corinne, points: 12)
     game.scores[game.team1] = 81
     game.scores[game.team2] = 71
     game.committedPlayer = eitan
@@ -532,8 +579,8 @@ class GameSpec extends Specification
     and:
     game.isLastRound() >> true
     game.done = true
-    def lastRound = new Round(winner: eitan)
-    game.rounds << lastRound
+    game.rounds << new Round(winner: corinne, points: 8)
+    game.rounds << new Round(winner: eitan, points: 8)
     game.scores[game.team1] = 100
     game.scores[game.team2] = 52
 
@@ -571,8 +618,8 @@ class GameSpec extends Specification
 
     game.isLastRound() >> true
     game.done = true
-    def lastRound = new Round(winner: eitan)
-    game.rounds << lastRound
+    game.rounds << new Round(winner: corinne, points: 8)
+    game.rounds << new Round(winner: eitan, points: 8)
 
     game.scores[game.team1] = 100
     game.scores[game.team2] = 52
