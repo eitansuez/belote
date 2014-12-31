@@ -5,7 +5,6 @@
 - onResize handler to redraw table
 
 - transitions/animations:
-- show dealer cards in center, next to turned up card
 - animate dealer dealing cards to players
 - show dealing 3, then 2, then 3
 - animate play card

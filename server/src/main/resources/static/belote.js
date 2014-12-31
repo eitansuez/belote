@@ -136,13 +136,13 @@ var ScoreArea = Group.extend({
             fontSize: fontSize
         }));
         this._team1 = new PointText({
-            point: point + [0, 1 * rowHeight],
+            point: point + [0, rowHeight],
             content: "Nous: ",
             fontSize: fontSize
         });
         this.addChild(this._team1);
         this._score1 = new PointText({
-            point: point + [this.size.width - 30, 1 * rowHeight],
+            point: point + [this.size.width - 30, rowHeight],
             content: "0",
             justification: "right",
             fontSize: fontSize
@@ -479,7 +479,7 @@ function hasCards(group) {
 }
 
 function removeCards() {
-    var cardName
+    var cardName;
     for (cardName in cards) {
         var card = cards[cardName];
         card.remove();
@@ -501,7 +501,7 @@ function resetDeck() {
     for (var cardName in cards) {
         var card = cards[cardName];
         card.visible = false;
-        var spot = table.bounds.center - new Size(card.bounds.width/2 + 20, 0) - delta;
+        var spot = table.bounds.center - new Size(card.bounds.width/2 + 10, 0) - delta;
         placeCard(card, spot, null, true);
         delta += new Size(0.4, 0.4);
     }
