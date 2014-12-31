@@ -1,41 +1,38 @@
+- implement a prompt for atout to replace scaffold window.prompt
+- implement a confirm for envoi to replace scaffold window.confirm
+- implement an alert for notification to replace scaffold window.alert
+
+- onResize handler to redraw table
+
+- transitions/animations:
+- show dealer cards in center, next to turned up card
+- animate dealer dealing cards to players
+- show dealing 3, then 2, then 3
+- animate play card
+- win round (cards move towards winning player, perhaps highlight/fade winnig player)
+- score update (highlight/fade)
 
 - option for ui to display other players' cards face up
 
-1.----ui componentization & cleanup & finish implementation:
+----ui componentization & cleanup & finish implementation:
 
 - use paperjs properly
 - object-oriented
 - not so many variable references when they're all available in the scene graph
 
-- implement a prompt for atout to replace scaffold window.prompt
-- implement a confirm for envoi to replace scaffold window.confirm
-- implement an alert for notification to replace scaffold window.alert
-
 learn:
 - how to write components for paperjs????
 - how to externalize implementations of "objects" (bubble, scorearea, etc..)???
-- learn polymer-project.org
 
-2.-----features
- .- show dernier pli
- .- show a table of rounds for game on sidebar with points in each round
->.- onResize handler to redraw table
+-----features
+ - show dernier pli
+ - show a table of rounds for game on sidebar with points in each round
+ - scrolling log of events:  dedans, capot, messages notifying players of events
 
- .- scrolling log of events:  dedans, capot, messages notifying players of events
+ - review time delays setup to pace the game
 
-3.- review time delays setup to pace the game
+---server side:
 
-4.- transitions/animations:
-  - show dealer cards in center, next to turned up card
-  - animate dealer dealing cards to players
-  - show dealing 3, then 2, then 3
-  - animate play card
-  - win round (cards move towards winning player, perhaps highlight/fade winnig player)
-  - score update (highlight/fade)
-
-5.---server side:
-
-- support identification of clients as player or observer
 - ability to join partie as a player or observer, pick player name
 - show that can support 1 or more human players in the same partie
 
@@ -46,9 +43,8 @@ learn:
 - ability to leave game (close window) and get back to it
 - ability to cancel/stop a game in progress
 
-
 support multiple games in progress
 monitor all games in progress
 
-6.---javascript tests
-7.---bower/javascript build
+---javascript tests
+---bower/javascript build

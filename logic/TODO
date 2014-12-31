@@ -1,7 +1,5 @@
 
 1. organize/sort player's hand by suit, by value/ordinal
-?. calculate/add/show dix-dedere as part of last round score instead of adding it to the gamescore separately ??
-
 
 2.-----logging wording:
  make card placement log wording semantic:  "Eitan cuts with .."
