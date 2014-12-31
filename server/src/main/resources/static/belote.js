@@ -322,6 +322,8 @@ $(function() {
 
     groupsLayer.activate();
 
+    resetDeck();
+
     connectToServer();
 });
 
@@ -437,11 +439,12 @@ function doInGroupCoordinates(group, what) {
 }
 
 function turnUpCard(card) {
-    placeCard(card, table.bounds.center);
+    placeCard(card, table.bounds.center + new Size(card.bounds.width/2 + 20, 0));
 }
 
 function placeCard(card, position, group, backface) {
     var cardToPlace = backface ? card.cardback : card;
+    var otherSide = backface ? card : card.cardback;
     if (group) {
         var position;
         if (hasCards(group))
@@ -457,9 +460,7 @@ function placeCard(card, position, group, backface) {
 
         cardToPlace.position = position;
         group.addChild(cardToPlace);
-        if (backface) {
-            group.addChild(card);  // put both card and cardback into group
-        }
+        group.addChild(otherSide);
     }
     else
     {
@@ -467,6 +468,7 @@ function placeCard(card, position, group, backface) {
     }
 
     cardToPlace.visible = true;
+    otherSide.visible = false;
     cardToPlace.bringToFront();
     return cardToPlace;
 }
@@ -495,8 +497,13 @@ function clearTable() {
 }
 
 function resetDeck() {
-    for (var card in cards) {
-        cards[card].visible = false;
+    var delta = new Size(0, 0);
+    for (var cardName in cards) {
+        var card = cards[cardName];
+        card.visible = false;
+        var spot = table.bounds.center - new Size(card.bounds.width/2 + 20, 0) - delta;
+        placeCard(card, spot, null, true);
+        delta += new Size(0.4, 0.4);
     }
 }
 
@@ -518,8 +525,6 @@ function loadCards() {
         card.childType = 'card';
         cards[id] = card;
     });
-
-    resetDeck();
 }
 
 function scaleCards(c) {
