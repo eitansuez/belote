@@ -418,7 +418,7 @@ function playCard(card) {
     doInGroupCoordinates(group, function(group) {
         var verticalOffset = ( group.hand.bounds.height + card.bounds.height ) / 2 + (card.bounds.height / 4);
         var position = group.hand.position - [0, verticalOffset];
-        placeCard(card, position);
+        placeCardToPosition(card, position);
     });
     played.push(card);
 }
@@ -426,7 +426,7 @@ function playCard(card) {
 function placeCards(cards, group, backface) {
     doInGroupCoordinates(group, function() {
         _.each(cards, function(card) {
-            placeCard(card, null, group, backface);
+            placeCardInGroup(card, group, backface);
         });
     });
 }
@@ -439,34 +439,36 @@ function doInGroupCoordinates(group, what) {
 }
 
 function turnUpCard(card) {
-    placeCard(card, table.bounds.center + new Size(card.bounds.width/2 + 20, 0));
+    placeCardToPosition(card, table.bounds.center + new Size(card.bounds.width/2 + 20, 0));
 }
 
-function placeCard(card, position, group, backface) {
+function placeCardInGroup(card, group, backface) {
     var cardToPlace = backface ? card.cardback : card;
     var otherSide = backface ? card : card.cardback;
-    if (group) {
-        var position;
-        if (hasCards(group))
-        {
-            position = group.lastChild.position + cardSeparation;
-        }
-        else
-        {
-            var verticalOffset = (group.hand.bounds.height - cardToPlace.bounds.height) / 2;
-            var horizontalOffset = (group.hand.bounds.width - cardToPlace.bounds.width ) / 2;
-            position = group.hand.position - [horizontalOffset, verticalOffset];
-        }
-
-        cardToPlace.position = position;
-        group.addChild(cardToPlace);
-        group.addChild(otherSide);
+    var position;
+    if (hasCards(group))
+    {
+        position = group.lastChild.position + cardSeparation;
     }
     else
     {
-        cardToPlace.position = position;
+        var verticalOffset = (group.hand.bounds.height - cardToPlace.bounds.height) / 2;
+        var horizontalOffset = (group.hand.bounds.width - cardToPlace.bounds.width ) / 2;
+        position = group.hand.position - [horizontalOffset, verticalOffset];
     }
 
+    group.addChild(cardToPlace);
+    group.addChild(otherSide);
+
+    placeCardToPosition(card, position, backface);
+}
+
+function placeCardToPosition(card, position, backface)
+{
+    var cardToPlace = backface ? card.cardback : card;
+    var otherSide = backface ? card : card.cardback;
+
+    cardToPlace.position = position;
     cardToPlace.visible = true;
     otherSide.visible = false;
     cardToPlace.bringToFront();
@@ -502,7 +504,7 @@ function resetDeck() {
         var card = cards[cardName];
         card.visible = false;
         var spot = table.bounds.center - new Size(card.bounds.width/2 + 10, 0) - delta;
-        placeCard(card, spot, null, true);
+        placeCardToPosition(card, spot, true);
         delta += new Size(0.4, 0.4);
     }
 }
