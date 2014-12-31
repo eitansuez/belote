@@ -194,8 +194,6 @@ class Game implements Emitter
       scores[otherTeam] += scores[committedTeam]
       scores[committedTeam] = 0
     }
-
-    log.info("${team1}: ${scores[team1]} / ${team2}: ${scores[team2]}")
   }
 
   private void addDixDedere(Team team)

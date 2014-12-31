@@ -44,14 +44,19 @@ class TextActor extends UntypedActor
 
   void gameUpdate(Team team1, int score1, Team team2, int score2)
   {
-    log.info("${team1}: ${score1} / ${team2}: ${score2}")
+    log.info("game score: ${team1}: ${score1} / ${team2}: ${score2}")
   }
 
-  void gameEnds(Team winningTeam)
+  void gameStarts(int gameNumber)
+  {
+    log.info("Game #${gameNumber} about to begin..")
+  }
+
+  void gameEnds(Team winningTeam, Team team1, int score1, Team team2, int score2)
   {
     if (winningTeam)
     {
-      log.info "game ends, ${winningTeam} wins"
+      log.info "game ends, ${winningTeam} wins; final score: ${team1}: ${score1} / ${team2}: ${score2}"
     }
     else
     {
@@ -66,7 +71,7 @@ class TextActor extends UntypedActor
 
   void partieUpdate(Team team1, int score1, Team team2, int score2)
   {
-    log.info("score is now: ${team1}: ${score1} / ${team2}: ${score2}")
+    log.info("partie score: ${team1}: ${score1} / ${team2}: ${score2}")
   }
 
   void partieEnds(Team winner)

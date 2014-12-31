@@ -81,15 +81,23 @@ var cmds = {
         //console.log(winner+" takes with "+points+" points");
         clearTable();
     },
-    gameEnds : function(winningTeam) {
-        if (winningTeam) // forfeit has no winning team
-        {
-            console.log(winningTeam + " wins");
-        }
+    gameStarts : function(gameNumber) {
         gameScoreArea.clearScores();
         resetSuits();
         resetDeck();
         removeCards();
+        console.log("game #"+gameNumber+" starting")
+    },
+    gameEnds : function(winningTeam, team1, score1, team2, score2) {
+        if (winningTeam) // forfeit has no winning team
+        {
+            console.log(winningTeam + " wins");
+            gameScoreArea.updateScores(score1, score2);
+        }
+        else
+        {
+            console.log("game ends");
+        }
     },
     partieUpdate: function(team1, team1Score, team2, team2Score) {
         partieScoreArea.updateScores(team1Score, team2Score);
