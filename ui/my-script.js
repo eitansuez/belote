@@ -1,77 +1,361 @@
 var cards = {};
+var suits = {};
+var players = {};
+var cardsLayer, groupsLayer;
 var cardSeparation, selectDelta;
-var handAspectRatio = 3;
+var handAspectRatio = 2.5;
+var played = [];
+var thisPlayerName = 'Eitan';
+
 var table, groups;
+var gameScoreArea, partieScoreArea;
+
+var cmds = {
+    receiveCard : function(playerName, cardName) {
+        var useBackface = !isPlayerMe(playerName);
+        var group = players[playerName];
+        var card = cardFor(cardName);
+        placeCards([card], group, useBackface);
+    },
+    turnUpCard : function(cardName) {
+        turnUpCard(cardFor(cardName));
+    },
+    playerDecision : function(playerName, envoi, suitName) {
+        var passesText = (suitName ? " passes at " : " passes again.");
+        var text = playerName + (envoi ? " goes for " : passesText);
+        if (suitName) {
+            text += suitName;
+        }
+
+        var playerIndex = groups.indexOf(players[playerName]);
+        if (envoi) {
+            placeSuit(suits[suitName.toLowerCase()], playerIndex);
+        }
+
+        groups[playerIndex].bubble.say(text);
+    },
+    offer : function(playerName, suitName) {
+        var firstRound = (typeof suitName !== 'undefined');
+        if (firstRound)
+        {
+            var prompt = "Would you like to envoi a "+suitName+"?";
+            var envoi = window.confirm(prompt);  // TODO: remove scaffold
+            if (envoi)
+            {
+                console.log("envoi");
+            }
+            else
+            {
+                console.log("pass");
+            }
+        }
+        else
+        {
+            var promptCaption = "Second round, envoi? (pass/pique/coeur/carreau/trefle)";
+            var response = window.prompt(promptCaption, "");
+            if (response === "pass" || (response == null))
+            {
+                console.log("pass2");
+            } else
+            {
+                console.log("envoi", [response]);
+            }
+        }
+    },
+    play: function(playerName, cardNames) {
+        var cards = _.map(cardNames, function(cardName) {
+            return cardFor(cardName);
+        });
+        chooseCard(cards);
+    },
+    playCard: function(playerName, cardName) {
+        var card = cardFor(cardName);
+        if (!isPlayerMe(playerName))
+        {
+            card.cardback.visible = false;
+        }
+        playCard(card);
+    },
+    gameUpdate: function(team1, team1Score, team2, team2Score) {
+        gameScoreArea.updateScores(team1Score, team2Score);
+    },
+    roundEnds: function(winner, points) {
+        //console.log(winner+" takes with "+points+" points");
+        clearTable();
+    },
+    gameStarts : function(gameNumber) {
+        gameScoreArea.clearScores();
+        resetSuits();
+        resetDeck();
+        removeCards();
+        console.log("game #"+gameNumber+" starting")
+    },
+    gameEnds : function(winningTeam, team1, score1, team2, score2) {
+        if (winningTeam) // forfeit has no winning team
+        {
+            console.log(winningTeam + " wins");
+            gameScoreArea.updateScores(score1, score2);
+        }
+        else
+        {
+            console.log("game ends");
+        }
+    },
+    partieUpdate: function(team1, team1Score, team2, team2Score) {
+        partieScoreArea.updateScores(team1Score, team2Score);
+    },
+    partieEnds: function(winningTeam) {
+        window.alert("Partie is over.  Winner is "+winningTeam);  // TODO: for now
+    },
+    partieStarts: function(team1, team2, playerNames) {
+        gameScoreArea.setTeams(team1, team2);
+        partieScoreArea.setTeams(team1, team2);
+        paintPlayerNames(playerNames);
+        resetSuits();
+        resetDeck();
+        removeCards();
+    }
+};
+
+var ScoreArea = Group.extend({
+    _class: 'ScoreArea',
+    _score1: null,
+    _score2: null,
+    _team1: null,
+    _team2: null,
+
+    initialize: function ScoreArea() {
+        Group.apply(this, arguments);
+
+        var fontSize = 10;
+        var padding = 15, rowHeight = 20;
+        var point = new Point(this.topLeft.x + padding, this.topLeft.y + padding + 5);
+        this.addChild(new PointText({
+            point: point,
+            content: this.title,
+            fontSize: fontSize
+        }));
+        this._team1 = new PointText({
+            point: point + [0, rowHeight],
+            content: "Nous: ",
+            fontSize: fontSize
+        });
+        this.addChild(this._team1);
+        this._score1 = new PointText({
+            point: point + [this.size.width - 30, rowHeight],
+            content: "0",
+            justification: "right",
+            fontSize: fontSize
+        });
+        this.addChild(this._score1);
+        this._team2 = new PointText({
+            point: point + [0, 2 * rowHeight],
+            content: "Eux: ",
+            fontSize: fontSize
+        });
+        this.addChild(this._team2);
+        this._score2 = new PointText({
+            point: point + [this.size.width - 30, 2 * rowHeight],
+            content: "0",
+            justification: "right",
+            fontSize: fontSize
+        });
+        this.addChild(this._score2);
+
+        var bg = new Path.Rectangle(this.topLeft + [5, 5], this.size - [10, 10] , 5);
+        this.addChild(bg);
+        bg.style = {
+            fillColor: new Color(1, 0.95, 0.64, 0.8),
+            strokeColor: 'black',
+            strokeWidth: 1,
+            shadowColor: new Color(0, 0, 0, 0.3),
+            shadowBlur: 12,
+            shadowOffset: new Point(10, 10)
+        };
+        bg.sendToBack();
+
+    },
+
+    updateScores: function(team1Score, team2Score) {
+        this._score1.content = "" + team1Score;
+        this._score2.content = "" + team2Score;
+    },
+    clearScores: function() {
+        this.updateScores(0, 0);
+    },
+    setTeams: function(team1, team2) {
+        this._team1.setContent(team1+":");
+        this._team2.setContent(team2+":");
+    }
+
+});
+
+var Bubble = Group.extend({
+    _class: 'Bubble',
+
+    text: '',
+    setText: function(text) {
+        this.text = text;
+        this.textField().content = this._splitText();
+    },
+    orientation: 0,
+
+    textField: function() {
+        return this.getItem({className: 'PointText'});
+    },
+
+    initialize: function Bubble() {
+        Group.apply(this, arguments);
+
+        var point = new Point(10, 30);
+        var size = new Size(200, 55);
+
+        var rect = new Rectangle(point, size);
+        var body = new Path.Rectangle(rect, 5);
+
+        var chupchik  = new Path.RegularPolygon(point, 3, 10);
+        var chupchikOffset = 8;
+        chupchik.scale(1, -1.5);
+        chupchik.shear(-0.6, 0);
+
+        chupchik.rotate(90*this.orientation, body.bottomLeft);
+        if (this.orientation == 0)
+        {
+            chupchik.translate(0.25*size.width, size.height + chupchikOffset+2);
+        }
+        else if (this.orientation == 1)
+        {
+            chupchik.translate(-chupchikOffset-5, 0.5*size.height);
+        }
+        else if (this.orientation == 2)
+        {
+            chupchik.translate(0.75 * size.width, -chupchikOffset);
+        }
+        else if (this.orientation == 3)
+        {
+            chupchik.translate(size.width+chupchikOffset-3, 0.5*size.height);
+        }
+
+        body.remove();
+        chupchik.remove();
+
+        var bubble = body.unite(chupchik);
+        bubble.style = {
+            fillColor: new Color(1, 0.95, 0.64, 0.8),
+            strokeColor: 'black',
+            strokeWidth: 1,
+            shadowColor: new Color(0, 0, 0, 0.3),
+            shadowBlur: 12,
+            shadowOffset: new Point(10, 10)
+        };
+        this.pivot = chupchik.position;
+
+        var textField = new PointText({point: this.bounds.topLeft + [20, 50]});
+        textField.content = this._splitText();
+        textField.fillColor = 'black';
+        textField.bringToFront();
+
+        this.addChild(bubble);
+        this.addChild(textField);
+
+        this.hide();
+    },
+
+    _splitText: function() {
+        var lineSizeInChars = 35;
+        var lines = [];
+        for (var i = 0; i <= (this.text.length / lineSizeInChars); i++) {
+            lines[i] = this.text.substr( lineSizeInChars * i, Math.min(this.text.length - (i * lineSizeInChars), lineSizeInChars) );
+        }
+        return lines.join('\n');
+    },
+
+    show: function() {
+        for (var i=0; i<this.children.length; i++) {
+            this.children[i].visible = true;
+        }
+        this.visible = true;
+    },
+
+    hide: function() {
+        this.visible = false;
+        for (var i=0; i<this.children.length; i++) {
+            this.children[i].visible = false;
+        }
+    },
+
+    say: function(text) {
+        this.setText(text);
+        this.show();
+        var self = this;
+        setTimeout(function() {
+            self.hide();
+        }, 2000);
+    }
+
+});
+
 
 $(function() {
-
-    loadCards();
-
     var a = Math.min(view.bounds.width, view.bounds.height);
-    table = new Path.Rectangle({
-        topLeft: new Point(0, 0),
-        size: new Size(a, a)
-    });
-    table.fillColor = {
-        gradient: {
-            stops: ['#038406', '#038406', '#8af28a'],
-            radial: true
-        },
-        origin: table.bounds.center,
-        destination: table.bounds.rightcenter
-    };
-
+    setupTable(a);
     var c = a / (2 + handAspectRatio);
     var b = handAspectRatio * c;
 
-    groups = setupAreas(c, b);
-    setupScore(c, b);
+    loadSuits();
+    scaleSuits(b);
 
-    var scale = c / cards['Sept_de_Trefle'].height;
-    scaleCards(scale);
+    groups = setupAreas(c, b);
+    setupScoreAreas(c, b);
+
+    loadCards();
+    scaleCards(c);
+    setupCardbacks(c);
+
+    setupBubbles();
+
     var card = randomCard();
-    cardSeparation = [card.bounds.width / 2, 0];
+    cardSeparation = new Point(card.bounds.width / 2, 0);
     selectDelta = [0, card.bounds.height / 5];
+
+    $("#button-area").css('left', (a + 10)+"px");
+
+    groupsLayer.activate();
+
+    resetDeck();
+
+    cmds.partieStarts('T1', 'T2', ['Eitan', 'P2', 'P3', 'P4']);
+
+    $("#test-btn").on('click', function() {
+        var i = 0;
+        var fn = function() {
+            var card = randomCard();
+            cmds.receiveCard('Eitan', card.name);
+            i++;
+            if (i < 5) {
+                setTimeout(fn, 200);
+            }
+        };
+        setTimeout(fn, 200);
+    });
+
 });
 
-var score1, score2;
-function setupScore(c, b)
-{
-    var point = new Point(b+c + 15, 15);
-    new PointText({
-        point: point,
-        content: "Nous: "
-    });
-    new PointText({
-        point: point + [0, 20],
-        content: "Eux: "
-    });
-    score1 = new PointText({
-        point: point + [60, 0],
-        content: "0",
-        justification: "right"
-    });
-    score2 = new PointText({
-        point: point + [60, 20],
-        content: "0",
-        justification: "right"
-    });
-}
-function updateScore(team1Score, team2Score)
-{
-    score1.content = "" + team1Score;
-    score2.content = "" + team2Score;
+function isPlayerMe(playerName) {
+    return playerName == thisPlayerName;
 }
 
-function randomCard() {
-    var index = parseInt(Math.random()*32);
-    var key = Object.keys(cards)[index];
-    return cards[key];
+
+function cardFor(serverSideCardName) {
+    var card_name = serverSideCardName.replace(/ /g, '_');
+    return cards[card_name];
 }
+
+
 
 function chooseCard(validCards) {
     _.each(validCards, function(card) {
-        card.selected = true;
+        card.candidate = true;
         card.position -= selectDelta;
         armCard(card);
     });
@@ -79,42 +363,248 @@ function chooseCard(validCards) {
 
 function armCard(card) {
     card.on('click', function() {
+        deselect(candidateCards(card.parent), true);
         playCard(card);
-        deselect([card]);
-        deselect(chosenCards(card.parent), true);
+        console.log("playerChooses", [ card.name ]);
     });
 }
 
-function chosenCards(group) {
-    return group.getItems({className: 'Raster', selected: true});
+function candidateCards(group) {
+    return group.getItems({className: 'Raster', candidate: true});
 }
 
-function deselect(cards, reposition) {
+function deselect(cards) {
     _.each(cards, function(card) {
         card.off('click');
-        card.selected = false;
-        if (reposition) {
-            card.position += selectDelta;
-        }
+        card.candidate = false;
+        card.position += selectDelta;
     });
-}
-
-function doInGroupCoordinates(group, what) {
-    var index = group.data.index;
-    group.rotate(90*index, table.bounds.center);
-    what.call(null, group);
-    group.rotate(-90*index, table.bounds.center);
 }
 
 function playCard(card) {
     var group = card.parent;
     doInGroupCoordinates(group, function(group) {
-        var position = group.position + [0, -(card.bounds.height+5)];
-        placeCard(card, position);
+        var verticalOffset = ( group.hand.bounds.height + card.bounds.height ) / 2 + (card.bounds.height / 4);
+        var position = group.hand.position - [0, verticalOffset];
+        moveCardToPosition(card, position);
+    });
+    played.push(card);
+}
+
+function placeCards(cards, group, backface) {
+    doInGroupCoordinates(group, function(group) {
+        _.each(cards, function(card) {
+            placeCardInGroup(card, group, backface);
+        });
     });
 }
 
+function doInGroupCoordinates(group, what) {
+    var index = groups.indexOf(group);
+    group.rotate(-90*index, table.bounds.center);
+    var response = what.call(null, group);
+    group.rotate(90*index, table.bounds.center);
+    return response;
+
+}
+
+function turnUpCard(card) {
+    placeCardToPosition(card, table.bounds.center + new Size(card.bounds.width/2 + 10, 0));
+}
+
+function nextPosition(group, card) {
+    if (group.nextPosition) {
+        group.nextPosition = group.nextPosition + cardSeparation;
+    } else {
+        var verticalOffset = (group.hand.bounds.height - card.bounds.height) / 2;
+        var horizontalOffset = (group.hand.bounds.width - card.bounds.width ) / 2;
+        group.nextPosition = group.hand.position - [horizontalOffset, verticalOffset];
+    }
+    return group.nextPosition;
+}
+
+function placeCardInGroup(card, group, backface) {
+    var cardToPlace = backface ? card.cardback : card;
+    var otherSide = backface ? card : card.cardback;
+    var position = nextPosition(group, cardToPlace);
+
+    moveCardToPosition(card, position, backface, function(card) {
+        group.addChild(cardToPlace);
+        group.addChild(otherSide);
+    });
+}
+
+function placeCardToPosition(card, position, backface)
+{
+    var cardToPlace = backface ? card.cardback : card;
+    var otherSide = backface ? card : card.cardback;
+
+    cardToPlace.visible = true;
+    otherSide.visible = false;
+    cardToPlace.bringToFront();
+    cardToPlace.position = position;
+    otherSide.position = position;
+}
+
+function moveCardToPosition(card, position, backface, doneFn)
+{
+    var cardToPlace = backface ? card.cardback : card;
+    var otherSide = backface ? card : card.cardback;
+
+    cardToPlace.visible = true;
+    otherSide.visible = false;
+    cardToPlace.bringToFront();
+    animateToPosition(cardToPlace, position, doneFn);
+}
+
+function animateToPosition(card, destination, doneFn)
+{
+    var duration = 1; // seconds
+    var vector = destination - card.position;
+
+    card.onFrame = function(event) {
+        var distance = event.delta/duration * vector.length;
+        var trans = new Point({length: distance, angle: vector.angle});
+        card.translate(trans);
+        var distToDestination = (card.position - destination).length;
+        if (distToDestination < 5) {
+            card.position = destination;
+            card.onFrame = null;
+            if (doneFn)
+            {
+                doneFn.call(undefined, card);
+            }
+        }
+    };
+
+}
+
+function onFrame(event) {
+}
+
+
+function removeCards() {
+    var cardName;
+    for (cardName in cards) {
+        var card = cards[cardName];
+        card.remove();
+        card.cardback.remove();
+        cardsLayer.addChild(card);
+        cardsLayer.addChild(card.cardback);
+    }
+}
+
+function clearTable() {
+    _.each(played, function(card) {
+        card.visible = false;
+    });
+    played = [];
+}
+
+function resetDeck() {
+    var delta = new Size(0, 0);
+    for (var cardName in cards) {
+        var card = cards[cardName];
+        card.visible = false;
+        var spot = table.bounds.center - new Size(card.bounds.width/2 + 10, 0) - delta;
+        placeCardToPosition(card, spot, true);
+        delta += new Size(0.25, 0.25);
+    }
+}
+
+
+// initial rendering setup..
+
+function loadCards() {
+    cardsLayer = new Layer({name: 'cards'});
+
+    $("#card_images").find("img").each(function() {
+        var img = $(this);
+        var id = img.attr("id");
+        var card = new Raster(id);
+        card.name = id;
+        card.childType = 'card';
+        cards[id] = card;
+    });
+}
+
+function scaleCards(c) {
+    for (var card in cards) {
+        var scale = (0.8 * c) / cards[card].height;
+        cards[card].scale(scale);
+    }
+}
+
+function setupCardbacks(c) {
+    var cardback = new Raster('cardback');
+    var scale = (0.8 * c) / cardback.height;
+    cardback.scale(scale);
+    cardback.remove();
+    var symbol = new Symbol(cardback);
+
+    for (var card in cards) {
+        var placedCardback = symbol.place();
+        placedCardback.visible = false;
+        placedCardback.childType = 'card';
+        cards[card].cardback = placedCardback;
+    }
+}
+
+function loadSuits() {
+    new Layer({name: 'suits'});
+
+    $("#suit_images").find("img").each(function() {
+        var img = $(this);
+        var id = img.attr("id");
+        var suit = new Raster(id);
+        suit.name = id;
+        suit.opacity = 0.5;
+        suit.visible = false;
+        suits[id] = suit;
+    });
+}
+
+function scaleSuits(b) {
+    var desiredHeight = b / 2;
+    var scale = desiredHeight / suits['trefle'].bounds.height ;
+    for (var suit in suits) {
+        suits[suit].scale(scale);
+    }
+}
+
+function placeSuit(suit, index)
+{
+    var point = table.bounds.center + [0, table.bounds.width / 5];
+    var position = point.rotate(index * 90, table.bounds.center);
+    suit.position = position;
+    suit.visible = true;
+    suit.bringToFront();
+}
+
+function resetSuits() {
+    for (var suit in suits) {
+        suits[suit].visible = false;
+    }
+}
+
+
+function randomCard() {
+    var index = parseInt(Math.random()*32);
+    var key = Object.keys(cards)[index];
+    return cards[key];
+}
+
+function setupTable(a) {
+    new Layer({name: 'table'});
+
+    table = new Raster("tablecloth");
+    table.position = [a/2, a/2];
+    table.scale(a / table.bounds.height);
+}
+
 function setupAreas(c, b) {
+    groupsLayer = new Layer({name: 'groups'});
+
     var groups = [];
 
     var path = new Path.Rectangle(
@@ -126,79 +616,60 @@ function setupAreas(c, b) {
     for (var i=0; i<4; i++)
     {
         var group = new Group(path);
-        group.style = {
-            strokeColor: '#000',
-            dashArray: [4, 10],
-            strokeWidth: 1,
-            strokeCap: 'round'
-        };
-        group.data.index = i;
+        group.hand = path;
         group.transformContent = false;
         groups.push(group);
         path = path.clone();
-        group.rotate(-90*i, table.bounds.center);
+
+        var playerNameField = new PointText({
+            point: path.bounds.center + [0, path.bounds.height/2 - 3],
+            content: 'p'+i,
+            justification: 'center',
+            fillColor: new Color(1, 1, 1),
+            fontWeight: 'bold',
+            fontSize: 12
+        });
+        group.addChild(playerNameField);
+        group.playerName = playerNameField;
+        playerNameField.bringToFront();
+
+        group.rotate(90*i, table.bounds.center);
     }
 
     return groups;
 }
 
-function loadCards() {
-    var cardsLayer = new Layer();
-    cardsLayer.name = 'cards';
-
-    $("#images_section").find("img").each(function() {
-        var img = $(this);
-        var id = img.attr("id");
-        var card = new Raster(id);
-        card.visible = false;
-        card.name = id;
-        cards[id] = card;
-    });
-}
-
-function scaleCards(scale) {
-    for (var card in cards) {
-        cards[card].scale(scale);
+function paintPlayerNames(playerNames)
+{
+    for (var i=0; i<groups.length; i++)
+    {
+        var playerName = playerNames[i];
+        groups[i].playerName.content = playerName;
+        players[playerName] = groups[i];
     }
 }
 
-function placeCards(hand, groups, index) {
+function setupBubbles() {
+    new Layer({name: 'bubbles'});
 
-    var group = groups[index];
-    doInGroupCoordinates(group, function() {
-        _.each(hand, function(card) {
-            placeCard(card, null, group);
-        });
+    for (var i=0; i<4; i++) {
+        var bubble = new Bubble({ orientation: i, text: '...' });
+        bubble.position = groups[i].position;
+        groups[i].bubble = bubble;
+    }
+}
+
+function setupScoreAreas(c, b)
+{
+    gameScoreArea = new ScoreArea({
+        title: "Game Score",
+        topLeft: new Point(b+c, 0),
+        size: new Size(c, c)
     });
 
+    partieScoreArea = new ScoreArea({
+        title: "Partie Score",
+        topLeft: new Point(0, 0),
+        size: new Size(c, c)
+    });
 }
-
-function turnUpCard(card) {
-    placeCard(card, table.bounds.center);
-}
-
-function placeCard(card, position, group) {
-    if (group) {
-        if (hasCards(group))
-        {
-            card.position = group.lastChild.position + cardSeparation;
-        }
-        else
-        {
-            card.position = group.position - [group.bounds.width/2, 0] + [card.bounds.width/2, 0];
-        }
-        group.addChild(card);
-    } else {
-        card.position = position;
-    }
-
-    card.visible = true;
-    card.bringToFront();
-    return card;
-}
-
-function hasCards(group) {
-    var items = group.getItems({className: 'Raster'});
-    return items && items.length > 0;
-}
-
