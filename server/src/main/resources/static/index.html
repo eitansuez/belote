@@ -7,13 +7,10 @@
 		margin: 0;
 		overflow: hidden;
 	}
-	#button-area {
+	#side-panel {
 		position: absolute;
 		top: 0;
 		left: 0;
-	}
-	#button-area button {
-		display: block;
 	}
 </style>
 	<script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
@@ -30,9 +27,11 @@
   <canvas id="myCanvas" resize="true"></canvas>
 
   <!--temporary.. replace with nice ui at some point: -->
-  <div id="button-area">
-	  <button id="newPartie-btn">New Partie</button>
-	  <button id="disconnect-btn">Disconnect</button>
+  <div id="side-panel">
+	  <div id="button-area">
+		  <button id="newPartie-btn">New Partie</button>
+		  <button id="disconnect-btn">Disconnect</button>
+	  </div>
   </div>
 
   <div style="display: none" id="card_images">
