@@ -13,6 +13,9 @@
 			top: 0;
 			left: 0;
 		}
+		.images {
+			display: none;
+		}
 	</style>
 	<script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
 	<script type="text/javascript" src="bower_components/underscore/underscore-min.js"></script>
@@ -27,17 +30,16 @@
 	<script type="text/paperscript" src="belote.js" canvas="myCanvas"></script>
 </head>
 <body>
-  <canvas id="myCanvas" resize="true"></canvas>
+	<canvas id="myCanvas" resize></canvas>
 
-  <!--temporary.. replace with nice ui at some point: -->
-  <div id="side-panel">
-	  <div id="button-area">
-		  <button id="newPartie-btn">New Partie</button>
-		  <button id="disconnect-btn">Disconnect</button>
-	  </div>
-  </div>
+	<div id="side-panel">
+		<div id="button-area">
+			<button id="newPartie-btn">New Partie</button>
+			<button id="disconnect-btn">Disconnect</button>
+		</div>
+	</div>
 
-  <div style="display: none" id="card_images">
+  <div id="card_images" class="images">
 	  <img src="img/Sept_de_Trefle.png" id="Sept_de_Trefle" />
 	  <img src="img/Sept_de_Coeur.png" id="Sept_de_Coeur" />
 	  <img src="img/Sept_de_Carreau.png" id="Sept_de_Carreau" />
@@ -71,13 +73,13 @@
 	  <img src="img/Ace_de_Carreau.png" id="Ace_de_Carreau" />
 	  <img src="img/Ace_de_Pique.png" id="Ace_de_Pique" />
   </div>
-  <div style="display: none" id="suit_images">
+  <div id="suit_images" class="images">
 	  <img src="img/coeur.png" id="coeur" />
 	  <img src="img/carreau.png" id="carreau" />
 	  <img src="img/pique.png" id="pique" />
 	  <img src="img/trefle.png" id="trefle" />
   </div>
-  <div style="display: none" id="misc_images">
+  <div id="misc_images" class="images">
 	  <img src="img/tablecloth.png" id="tablecloth" />
 	  <img src="img/cardback.png" id="cardback" />
   </div>

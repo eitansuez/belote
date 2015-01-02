@@ -306,7 +306,7 @@ var Bubble = Group.extend({
 
 
 $(function() {
-    var a = Math.min(view.bounds.width, view.bounds.height);
+    var a = Math.min(view.size.width, view.size.height);
     setupTable(a);
     var c = a / (2 + handAspectRatio);
     var b = handAspectRatio * c;
