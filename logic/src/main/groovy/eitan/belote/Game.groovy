@@ -275,7 +275,7 @@ class Game implements Emitter
 
   def playerChooses(Card card)
   {
-    currentPlayer.playCard(card)
+    currentPlayer.playCard(card, currentRound.size() == 3)
     currentRound = currentRound.nextPlay(card, currentPlayer)
     continuePlayPhase()
   }

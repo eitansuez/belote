@@ -80,14 +80,12 @@ var cmds = {
         gameScoreArea.updateScores(team1Score, team2Score);
     },
     roundEnds: function(winner, points) {
-        //console.log(winner+" takes with "+points+" points");
+        console.log(winner+" takes with "+points+" points");
         clearTable();
     },
     gameStarts : function(gameNumber) {
         gameScoreArea.clearScores();
-        resetSuits();
-        resetDeck();
-        removeCards();
+        clearGame();
         console.log("game #"+gameNumber+" starting")
     },
     gameEnds : function(winningTeam, team1, score1, team2, score2) {
@@ -111,11 +109,18 @@ var cmds = {
         gameScoreArea.setTeams(team1, team2);
         partieScoreArea.setTeams(team1, team2);
         paintPlayerNames(playerNames);
-        resetSuits();
-        resetDeck();
-        removeCards();
+        clearGame();
     }
 };
+
+function clearGame() {
+    resetSuits();
+    resetDeck();
+    for (var i=0; i<groups.length; i++)
+    {
+        groups[i].nextPosition = null;
+    }
+}
 
 var client;
 
@@ -317,7 +322,7 @@ $(function() {
     setupBubbles();
 
     var card = randomCard();
-    cardSeparation = [card.bounds.width / 2, 0];
+    cardSeparation = card.bounds.width / 2;
     selectDelta = [0, card.bounds.height / 5];
 
     $("#side-panel").css('left', (a + 10)+"px");
@@ -417,40 +422,49 @@ function deselect(cards) {
 
 function playCard(card) {
     var group = card.parent;
-    doInGroupCoordinates(group, function(group) {
-        var verticalOffset = ( group.hand.bounds.height + card.bounds.height ) / 2 + (card.bounds.height / 4);
-        var position = group.hand.position - [0, verticalOffset];
-        moveCardToPosition(card, position);
-    });
+    var verticalOffset = ( groups[0].hand.bounds.height + card.bounds.height ) / 2 + (card.bounds.height / 4);
+    var offset = new Size(0, verticalOffset);
+    var vector = vectorize(offset);
+    var position = group.hand.position - vector.rotate(90*groups.indexOf(group));
+    moveCardToPosition(card, position);
     played.push(card);
 }
 
 function placeCards(cards, group, backface) {
-    doInGroupCoordinates(group, function() {
-        _.each(cards, function(card) {
-            placeCardInGroup(card, group, backface);
-        });
+    _.each(cards, function(card) {
+        placeCardInGroup(card, group, backface);
     });
-}
-
-function doInGroupCoordinates(group, what) {
-    var index = groups.indexOf(group);
-    group.rotate(-90*index, table.bounds.center);
-    what.call(null, group);
-    group.rotate(90*index, table.bounds.center);
 }
 
 function turnUpCard(card) {
     placeCardToPosition(card, table.bounds.center + new Size(card.bounds.width/2 + 10, 0));
 }
 
+function rotate(group, point)
+{
+    var index = groups.indexOf(group);
+    return point.rotate(90*index);
+}
+
+function vectorize(size)
+{
+    return (table.bounds.topLeft + size) - table.bounds.topLeft;
+}
+
 function nextPosition(group, card) {
-    if (group.nextPosition) {
-        group.nextPosition = group.nextPosition + cardSeparation;
-    } else {
-        var verticalOffset = (group.hand.bounds.height - card.bounds.height) / 2;
-        var horizontalOffset = (group.hand.bounds.width - card.bounds.width ) / 2;
-        group.nextPosition = group.hand.position - [horizontalOffset, verticalOffset];
+    var angle = 90 * groups.indexOf(group);
+    if (group.nextPosition)
+    {
+        var offset = vectorize(new Size(cardSeparation, 0));
+        group.nextPosition += offset.rotate(angle);
+    }
+    else
+    {
+        var verticalOffset = (groups[0].hand.bounds.height - card.bounds.height) / 2;
+        var horizontalOffset = (groups[0].hand.bounds.width - card.bounds.width ) / 2;
+        var offset = vectorize(new Size(horizontalOffset, verticalOffset));
+
+        group.nextPosition = group.hand.position - offset.rotate(angle);
     }
     return group.nextPosition;
 }
@@ -460,7 +474,10 @@ function placeCardInGroup(card, group, backface) {
     var otherSide = backface ? card : card.cardback;
     var position = nextPosition(group, cardToPlace);
 
-    moveCardToPosition(card, position, backface, function() {
+    cardToPlace.rotate(90*groups.indexOf(group));
+    otherSide.rotate(90*groups.indexOf(group));
+
+    moveCardToPosition(card, position, backface, function(card) {
         group.addChild(cardToPlace);
         group.addChild(otherSide);
     });
@@ -486,10 +503,10 @@ function moveCardToPosition(card, position, backface, doneFn)
     cardToPlace.visible = true;
     otherSide.visible = false;
     cardToPlace.bringToFront();
-    animateToPosition(cardToPlace, position, doneFn);
+    animateToPosition(cardToPlace, otherSide, position, doneFn);
 }
 
-function animateToPosition(card, destination, doneFn)
+function animateToPosition(card, otherSide, destination, doneFn)
 {
     var duration = 0.5; // seconds
     var vector = destination - card.position;
@@ -501,37 +518,38 @@ function animateToPosition(card, destination, doneFn)
         var distToDestination = (card.position - destination).length;
         if (distToDestination < 5) {
             card.position = destination;
+            otherSide.position = destination;
             card.onFrame = null;
-            if (doneFn) {
-                doneFn.call(undefined);
+            if (doneFn)
+            {
+                doneFn.call(undefined, card);
             }
         }
     };
+
 }
 
 function onFrame(event) {
 }
 
 
-function removeCards() {
-    var cardName;
-    for (cardName in cards) {
-        var card = cards[cardName];
+function clearTable() {
+    _.each(played, function(card) {
+        var group = card.parent;
+        var index = groups.indexOf(group);
+        if (index >= 0)
+        {
+            card.rotate(-90*index);  // reset rotation
+            card.cardback.rotate(-90*index);
+        }
         card.remove();
         card.cardback.remove();
         cardsLayer.addChild(card);
         cardsLayer.addChild(card.cardback);
-    }
 
-    for (var i=0; i<groups.length; i++)
-    {
-        groups[i].nextPosition = null;
-    }
-}
-
-function clearTable() {
-    _.each(played, function(card) {
         card.visible = false;
+
+        card.cardback.visible = false;
     });
     played = [];
 }
@@ -652,12 +670,11 @@ function setupAreas(c, b) {
     {
         var group = new Group(path);
         group.hand = path;
-        group.transformContent = false;
+
         groups.push(group);
-        path = path.clone();
 
         var playerNameField = new PointText({
-            point: path.bounds.center + [0, path.bounds.height/2 - 3],
+            point: path.bounds.center + new Point(0, path.bounds.height/2 - 3),
             content: 'p'+i,
             justification: 'center',
             fillColor: new Color(1, 1, 1),
@@ -668,7 +685,12 @@ function setupAreas(c, b) {
         group.playerName = playerNameField;
         playerNameField.bringToFront();
 
-        group.rotate(90*i, table.bounds.center);
+        path = path.clone();
+    }
+
+    for (var i=0; i<4; i++)
+    {
+        groups[i].rotate(90*i, table.bounds.center);
     }
 
     return groups;

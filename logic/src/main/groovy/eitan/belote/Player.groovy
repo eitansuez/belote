@@ -45,12 +45,12 @@ class Player implements Emitter
     strategy.play(game, validCards, round)
   }
 
-  def playCard(Card card)
+  def playCard(Card card, boolean lastCard = false)
   {
     assert hand.contains(card)
 
     if (hand.remove(card)) {
-      emit('playCard', [this, card])
+      emit('playCard', [this, card], lastCard ? Delay.Long : Delay.Standard)
       return card
     }
   }

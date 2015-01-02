@@ -5,10 +5,8 @@
 - onResize handler to redraw table
 
 - transitions/animations:
-- animate dealer dealing cards to players
+- win round (cards move towards winning player, perhaps highlight/fade winning player)
 - show dealing 3, then 2, then 3
-- animate play card
-- win round (cards move towards winning player, perhaps highlight/fade winnig player)
 - score update (highlight/fade)
 
 - option for ui to display other players' cards face up

@@ -72,13 +72,13 @@ class Partie implements Emitter
   Game startNextGame()
   {
     nextGame()
-    emit("gameStarts", [games.size()])
+    emit('gameStarts', [games.size()])
     currentGame.begin()
   }
 
   def gameDone(Game game)
   {
-    emit('gameEnds', [game.winningTeam, team1, game.scores[team1], team2, game.scores[team2]], Delay.Long)
+    emit('gameEnds', [game.winningTeam, team1, game.scores[team1], team2, game.scores[team2]], Delay.ExtraLong)
 
     if (!game.forfeited()) {
       transferScores(game)
