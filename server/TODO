@@ -24,6 +24,7 @@ learn:
 -----features
  - show dernier pli
  - show a table of rounds for game on sidebar with points in each round
+   -- tree with game expand rounds.
  - scrolling log of events:  dedans, capot, messages notifying players of events
 
  - review time delays setup to pace the game
