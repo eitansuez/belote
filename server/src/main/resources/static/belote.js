@@ -81,7 +81,7 @@ var cmds = {
     },
     roundEnds: function(winner, points) {
         console.log(winner+" takes with "+points+" points");
-        clearTable();
+        clearTable(players[winner]);
     },
     gameStarts : function(gameNumber) {
         gameScoreArea.clearScores();
@@ -533,24 +533,32 @@ function onFrame(event) {
 }
 
 
-function clearTable() {
+function clearTable(winningGroup) {
     _.each(played, function(card) {
-        var group = card.parent;
-        var index = groups.indexOf(group);
-        if (index >= 0)
-        {
-            card.rotate(-90*index);  // reset rotation
-            card.cardback.rotate(-90*index);
-        }
-        card.remove();
-        card.cardback.remove();
-        cardsLayer.addChild(card);
-        cardsLayer.addChild(card.cardback);
 
-        card.visible = false;
+        var verticalOffset = ( groups[0].hand.bounds.height + card.bounds.height ) / 2 + (card.bounds.height / 4);
+        var offset = new Size(0, verticalOffset);
+        var vector = vectorize(offset);
+        var position = winningGroup.hand.position - vector.rotate(90*groups.indexOf(winningGroup));
 
-        card.cardback.visible = false;
+        moveCardToPosition(card, position, false, function(card) {
+            var group = card.parent;
+            var index = groups.indexOf(group);
+            if (index >= 0)
+            {
+                card.rotate(-90*index);  // reset rotation
+                card.cardback.rotate(-90*index);
+            }
+            card.remove();
+            card.cardback.remove();
+            cardsLayer.addChild(card);
+            cardsLayer.addChild(card.cardback);
+
+            card.visible = false;
+            card.cardback.visible = false;
+        });
     });
+
     played = [];
 }
 

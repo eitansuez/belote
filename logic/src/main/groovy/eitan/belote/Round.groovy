@@ -34,7 +34,7 @@ class Round implements Emitter
     points = calculateScore()
     winner = master()
     game.roundDone(this)
-    emit('roundEnds', [winner, points])
+    emit('roundEnds', [winner, points], Delay.Long)
   }
 
   ArrayList<Card> atouts()
