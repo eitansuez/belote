@@ -16,6 +16,27 @@
 		.images {
 			display: none;
 		}
+
+		.prompt {
+			visibility: hidden;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			position: absolute;
+			top: 60%;
+			background-color: rgba(255, 255, 255, 0.5);
+			width: 100%;
+			padding: 1em;
+			margin: auto;
+		}
+		.prompt > div {
+			margin: 1em 0;
+		}
+		.prompt button {
+			margin: 0 3em;
+			width: 5em;
+		}
 	</style>
 	<script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
 	<script type="text/javascript" src="bower_components/underscore/underscore-min.js"></script>
@@ -30,14 +51,23 @@
 	<script type="text/paperscript" src="belote.js" canvas="myCanvas"></script>
 </head>
 <body>
-	<canvas id="myCanvas" resize></canvas>
+  <div>
+	  <canvas id="myCanvas" resize></canvas>
+	  <div id="prompt1" class="prompt">
+		  <div>Would you like to envoi?</div>
+		  <div>
+			  <button id="envoi-btn">Yes</button>
+			  <button id="pass-btn">No</button>
+		  </div>
+	  </div>
+  </div>
 
-	<div id="side-panel">
-		<div id="button-area">
-			<button id="newPartie-btn">New Partie</button>
-			<button id="disconnect-btn">Disconnect</button>
-		</div>
+  <div id="side-panel">
+	<div id="button-area">
+		<button id="newPartie-btn">New Partie</button>
+		<button id="disconnect-btn">Disconnect</button>
 	</div>
+  </div>
 
   <div id="card_images" class="images">
 	  <img src="img/Sept_de_Trefle.png" id="Sept_de_Trefle" />

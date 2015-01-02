@@ -38,17 +38,7 @@ var cmds = {
         var firstRound = (typeof suitName !== 'undefined');
         if (firstRound)
         {
-            var prompt = "Would you like to envoi a "+suitName+"?";
-            bootbox.confirm(prompt, function(envoi) {
-                if (envoi)
-                {
-                    sendResponse("envoi");
-                }
-                else
-                {
-                    sendResponse("pass");
-                }
-            });
+            $("#prompt1").css("visibility", "visible");
         }
         else
         {
@@ -328,6 +318,16 @@ $(function() {
     selectDelta = [0, card.bounds.height / 5];
 
     $("#side-panel").css('left', (a + 10)+"px");
+    $(".prompt").width(a);
+    $("#envoi-btn").on('click', function() {
+        $("#prompt1").css("visibility", "hidden");
+        sendResponse("envoi");
+    });
+    $("#pass-btn").on('click', function() {
+        $("#prompt1").css("visibility", "hidden");
+        sendResponse("pass");
+    });
+
 
     groupsLayer.activate();
 
