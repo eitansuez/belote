@@ -301,13 +301,19 @@ $(function() {
     loadCards();
     scaleCards(c);
     setupCardbacks(c);
-
     setupBubbles();
 
     var card = randomCard();
     cardSeparation = card.bounds.width / 2;
     selectDelta = [0, card.bounds.height / 5];
 
+    htmlInit();
+    groupsLayer.activate();
+    resetDeck();
+    connectToServer();
+});
+
+function htmlInit() {
     $("#side-panel").css('left', (a + 10)+"px");
     $(".prompt").width(a);
     $("#envoi-btn").on('click', function() {
@@ -326,13 +332,7 @@ $(function() {
         $("#prompt2").css("visibility", "hidden");
         sendResponse("envoi", [$(this).data("atout")]);
     });
-
-    groupsLayer.activate();
-
-    resetDeck();
-
-    connectToServer();
-});
+}
 
 function isPlayerMe(playerName) {
     return playerName == thisPlayerName;
@@ -643,8 +643,8 @@ function placeSuit(suit, index)
 }
 
 function resetSuits() {
-    for (var suit in suits) {
-        suits[suit].visible = false;
+    for (var suitName in suits) {
+        suits[suitName].visible = false;
     }
 }
 

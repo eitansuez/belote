@@ -1,3 +1,6 @@
+
+- delay after last card dealt
+
 - implement an alert for notification to replace scaffold window.alert
 - onResize handler to redraw table
 
