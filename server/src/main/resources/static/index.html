@@ -2,24 +2,27 @@
 <html>
 <head>
 <title>Belote</title>
-<style>
-	body {
-		margin: 0;
-		overflow: hidden;
-	}
-	#side-panel {
-		position: absolute;
-		top: 0;
-		left: 0;
-	}
-</style>
-	<script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
-	<script type="text/javascript" src="js/underscore-min.js"></script>
+	<link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+	<style>
+		body {
+			margin: 0;
+			overflow: hidden;
+		}
+		#side-panel {
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+	</style>
+	<script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
+	<script type="text/javascript" src="bower_components/underscore/underscore-min.js"></script>
+	<script type="text/javascript" src="bower_components/paper/dist/paper-full.min.js"></script>
 
-	<script type="text/javascript" src="js/stomp.js"></script>
-	<script type="text/javascript" src="js/sockjs-0.3.4.js"></script>
+	<script type="text/javascript" src="bower_components/stomp-websocket/lib/stomp.min.js"></script>
+	<script type="text/javascript" src="bower_components/sockjs-client/dist/sockjs.js"></script>
 
-	<script type="text/javascript" src="js/paper-full.js"></script>
+	<script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="bower_components/bootbox/bootbox.js"></script>
 
 	<script type="text/paperscript" src="belote.js" canvas="myCanvas"></script>
 </head>

@@ -39,27 +39,29 @@ var cmds = {
         if (firstRound)
         {
             var prompt = "Would you like to envoi a "+suitName+"?";
-            var envoi = window.confirm(prompt);  // TODO: remove scaffold
-            if (envoi)
-            {
-                sendResponse("envoi");
-            }
-            else
-            {
-                sendResponse("pass");
-            }
+            bootbox.confirm(prompt, function(envoi) {
+                if (envoi)
+                {
+                    sendResponse("envoi");
+                }
+                else
+                {
+                    sendResponse("pass");
+                }
+            });
         }
         else
         {
             var promptCaption = "Second round, envoi? (pass/pique/coeur/carreau/trefle)";
-            var response = window.prompt(promptCaption, "");
-            if (response === "pass" || (response == null))
-            {
-                sendResponse("pass2");
-            } else
-            {
-                sendResponse("envoi", [response]);
-            }
+            bootbox.prompt(promptCaption, function(response) {
+                if (response === "pass" || (response == null))
+                {
+                    sendResponse("pass2");
+                } else
+                {
+                    sendResponse("envoi", [response]);
+                }
+            });
         }
     },
     play: function(playerName, cardNames) {
@@ -103,7 +105,7 @@ var cmds = {
         partieScoreArea.updateScores(team1Score, team2Score);
     },
     partieEnds: function(winningTeam) {
-        window.alert("Partie is over.  Winner is "+winningTeam);  // TODO: for now
+        bootbox.alert("Partie is over.  Winner is "+winningTeam);  // TODO: for now
     },
     partieStarts: function(team1, team2, playerNames) {
         gameScoreArea.setTeams(team1, team2);
