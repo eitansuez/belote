@@ -1,12 +1,10 @@
-- implement a confirm for envoi to replace scaffold window.confirm
 - implement an alert for notification to replace scaffold window.alert
-
 - onResize handler to redraw table
 
 - transitions/animations:
-- win round (cards move towards winning player, perhaps highlight/fade winning player)
-- show dealing 3, then 2, then 3
-- score update (highlight/fade)
+    - score update (highlight/fade)
+    - introduce rotation in animations
+    - employ fade/appear effect
 
 - option for ui to display other players' cards face up
 
@@ -25,8 +23,6 @@ learn:
  - show a table of rounds for game on sidebar with points in each round
    -- tree with game expand rounds.
  - scrolling log of events:  dedans, capot, messages notifying players of events
-
- - review time delays setup to pace the game
 
 ---server side:
 

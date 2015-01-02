@@ -42,16 +42,7 @@ var cmds = {
         }
         else
         {
-            var promptCaption = "Second round, envoi? (pass/pique/coeur/carreau/trefle)";
-            bootbox.prompt(promptCaption, function(response) {
-                if (response === "pass" || (response == null))
-                {
-                    sendResponse("pass2");
-                } else
-                {
-                    sendResponse("envoi", [response]);
-                }
-            });
+            $("#prompt2").css("visibility", "visible");
         }
     },
     play: function(playerName, cardNames) {
@@ -327,7 +318,14 @@ $(function() {
         $("#prompt1").css("visibility", "hidden");
         sendResponse("pass");
     });
-
+    $("#pass2-btn").on('click', function() {
+        $("#prompt2").css("visibility", "hidden");
+        sendResponse("pass2");
+    });
+    $("button.envoi").on('click', function() {
+        $("#prompt2").css("visibility", "hidden");
+        sendResponse("envoi", [$(this).data("atout")]);
+    });
 
     groupsLayer.activate();
 

@@ -37,6 +37,11 @@
 			margin: 0 3em;
 			width: 5em;
 		}
+		#prompt2 button {
+			margin: 0 1.5em;
+			width: 5em;
+			height: 4em;
+		}
 	</style>
 	<script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
 	<script type="text/javascript" src="bower_components/underscore/underscore-min.js"></script>
@@ -58,6 +63,16 @@
 		  <div>
 			  <button id="envoi-btn">Yes</button>
 			  <button id="pass-btn">No</button>
+		  </div>
+	  </div>
+	  <div id="prompt2" class="prompt">
+		  <div>Would you like to envoi?</div>
+		  <div>
+			  <button class="envoi" data-atout="trefle"><img src="img/trefle.png" width="50" /></button>
+			  <button class="envoi" data-atout="carreau"><img src="img/carreau.png" width="50" /></button>
+			  <button class="envoi" data-atout="pique"><img src="img/pique.png" width="50" /></button>
+			  <button class="envoi" data-atout="coeur"><img src="img/coeur.png" width="50" /></button>
+			  <button id="pass2-btn">No</button>
 		  </div>
 	  </div>
   </div>
