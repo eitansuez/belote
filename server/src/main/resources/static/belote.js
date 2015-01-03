@@ -98,11 +98,13 @@ var cmds = {
 
 function clearGame() {
     resetSuits();
+    _.each(groups, function(group) {
+        group.nextPosition = null;
+    });
+    _.each(cards, function(card) {
+        clearCard(card);
+    });
     resetDeck();
-    for (var i=0; i<groups.length; i++)
-    {
-        groups[i].nextPosition = null;
-    }
 }
 
 var client;
@@ -544,24 +546,30 @@ function clearTable(winningGroup) {
         var position = winningGroup.hand.position - vector.rotate(90*groups.indexOf(winningGroup));
 
         moveCardToPosition(card, position, false, function(card) {
-            var group = card.parent;
-            var index = groups.indexOf(group);
-            if (index >= 0)
-            {
-                card.rotate(-90*index);  // reset rotation
-                card.cardback.rotate(-90*index);
-            }
-            card.remove();
-            card.cardback.remove();
-            cardsLayer.addChild(card);
-            cardsLayer.addChild(card.cardback);
-
-            card.visible = false;
-            card.cardback.visible = false;
+            clearCard(card);
         });
     });
 
     played = [];
+}
+
+function clearCard(card) {
+    var group = card.parent;
+    var index = groups.indexOf(group);
+    if (index >= 0)
+    {
+        card.rotation = 0;
+        card.cardback.rotation = 0;
+        //card.rotate(-90*index);  // reset rotation
+        //card.cardback.rotate(-90*index);
+    }
+    card.remove();
+    card.cardback.remove();
+    cardsLayer.addChild(card);
+    cardsLayer.addChild(card.cardback);
+
+    card.visible = false;
+    card.cardback.visible = false;
 }
 
 function resetDeck() {
