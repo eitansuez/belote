@@ -77,7 +77,6 @@ class Application extends AbstractWebSocketMessageBrokerConfigurer
         }
       })
 
-
     }
 
   }

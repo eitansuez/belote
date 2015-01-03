@@ -307,15 +307,27 @@ $(function() {
     cardSeparation = card.bounds.width / 2;
     selectDelta = [0, card.bounds.height / 5];
 
-    htmlInit();
+    htmlInit(a);
     groupsLayer.activate();
     resetDeck();
     connectToServer();
 });
 
-function htmlInit() {
+function htmlInit(a) {
     $("#side-panel").css('left', (a + 10)+"px");
     $(".prompt").width(a);
+
+    $("#disconnect-btn").on('click', function() {
+        client.disconnect(function() {
+            console.log("disconnected");
+        });
+    });
+
+    $("#newPartie-btn").on('click', function() {
+        client.send('/app/newPartie');
+    });
+
+
     $("#envoi-btn").on('click', function() {
         $("#prompt1").css("visibility", "hidden");
         sendResponse("envoi");
@@ -361,16 +373,6 @@ function connectToServer() {
 
         client.subscribe("/topic/belote", handleCmd);
         client.subscribe("/user/queue/belote", handleCmd);
-
-        $("#disconnect-btn").on('click', function() {
-            client.disconnect(function() {
-                console.log("disconnected");
-            });
-        });
-
-        $("#newPartie-btn").on('click', function() {
-            client.send('/app/newPartie');
-        });
 
     }, function(error) {
         console.log('error: '+error.headers.message);
