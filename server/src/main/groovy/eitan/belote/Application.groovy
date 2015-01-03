@@ -13,6 +13,7 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
@@ -63,9 +64,7 @@ class Application extends AbstractWebSocketMessageBrokerConfigurer
 
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
-
       auth.authenticationProvider(new AuthenticationProvider() {
-
         boolean supports(Class<?> authentication) {
           UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication)
         }
@@ -76,7 +75,18 @@ class Application extends AbstractWebSocketMessageBrokerConfigurer
           new UsernamePasswordAuthenticationToken(token.name, token.credentials, null)
         }
       })
+    }
 
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+      http.csrf().disable()
+          .authorizeRequests()
+          .anyRequest().fullyAuthenticated()
+          .and()
+          .formLogin()
+          .loginPage("/login.html").defaultSuccessUrl("/index.html").permitAll()
+          .and()
+          .logout().logoutSuccessUrl("/login.html").permitAll()
     }
 
   }
