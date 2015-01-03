@@ -275,7 +275,11 @@ class Game implements Emitter
 
   def playerChooses(Card card)
   {
-    currentPlayer.playCard(card, currentRound.size() == 3)
+    boolean lastRound = rounds.size() == 7
+    boolean lastCard = currentRound.size() == 3
+    def delay = lastRound && lastCard ? Delay.ExtraLong :
+        lastCard == 3 ? Delay.Long : Delay.Standard
+    currentPlayer.playCard(card, delay)
     currentRound = currentRound.nextPlay(card, currentPlayer)
     continuePlayPhase()
   }
