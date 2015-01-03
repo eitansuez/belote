@@ -1,16 +1,4 @@
 
-- delay after last card dealt
-
-- implement an alert for notification to replace scaffold window.alert
-- onResize handler to redraw table
-
-- transitions/animations:
-    - score update (highlight/fade)
-    - introduce rotation in animations
-    - employ fade/appear effect
-
-- option for ui to display other players' cards face up
-
 ----ui componentization & cleanup & finish implementation:
 
 - use paperjs properly
@@ -26,6 +14,16 @@ learn:
  - show a table of rounds for game on sidebar with points in each round
    -- tree with game expand rounds.
  - scrolling log of events:  dedans, capot, messages notifying players of events
+
+- implement an alert for notification to replace scaffold window.alert
+- onResize handler to redraw table
+
+- transitions/animations:
+    - score update (highlight/fade)
+    - introduce rotation in animations
+    - employ fade/appear effect
+
+- option for ui to display other players' cards face up
 
 ---server side:
 
