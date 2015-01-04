@@ -1,0 +1,53 @@
+Prioritized:
+---
+
+> fix:  player selects a new position and he's already on board, should move him to that position, rather than put two copies of him in same partie
+> refactor positioning logic relative to group into a function
+> fix animation logic bug:  does not always hit its mark
+
+> object oriented javascript
+> externalize definitions of ScoreArea and Bubble
+> implement an alert for notification to replace scaffold window.alert
+
+> for a partie, show all games, and rounds within each game, with scores, so can review
+> ability for a client to receive a full log of events to reconstruct game state in the event
+
+> organize/sort player's hand by suit, by value/ordinal
+
+>  make card placement log wording semantic:  "Eitan cuts with ..", or "Johnny follows suit with ..", or "Corinne monte with .."
+   likewise, should state at end of each game "stat" such as:  "team x wins after having committed to trefle"
+> scrolling log of events:  dedans, capot, messages notifying players of events
+
+
+------and more..
+
+- switch to using actors between game and players?
+
+- play strategies:
+ how to build a decent playing strategy?
+ should human players plug in as a strategy?
+ should Strategy be mixed in to Player with groovy traits?
+
+ introduce a more intelligent strategy and try it out for an ai
+ then setup three ai's and play with them to see how well this works out.
+ or.. come up with an algorithm to teach behavior based on desired outcomes.
+
+
+- deeper into paperjs:  how to write components for paperjs?
+- show dernier pli
+- onResize handler to redraw table
+
+- transitions/animations:
+    - score update (highlight/fade)
+    - introduce rotation in animations
+    - employ fade/appear effect
+
+- option for ui to display other players' cards face up
+
+- perhaps:  similar to collabedit:  unique url for a game room that can go back to
+- ability to leave game (close window) and get back to it
+- ability to cancel/stop a game in progress
+- support multiple games in progress
+- monitor all games in progress
+
+-javascript tests
