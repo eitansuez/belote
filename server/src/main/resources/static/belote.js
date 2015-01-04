@@ -1,15 +1,85 @@
 var cards = {};
 var suits = {};
 var players = {};
+var hands;
+
 var cardsLayer, groupsLayer;
 var cardSeparation, selectDelta;
 var handAspectRatio = 2.5;
 var played = [];
 var thisPlayerName;
 
-var table, groups;
+var table;
 var gameScoreArea, partieScoreArea;
 var client;
+
+var Hand = Base.extend({
+    initialize: function(orientation, path) {
+        this.orientation = orientation;
+        this.path = path.clone();
+
+        this.group = new Group(this.path);
+        this.group.hand = this;
+
+        this.playerNameField = new PointText({
+            point: this.path.bounds.center + new Point(0, this.path.bounds.height/2 - 3),
+            content: '',
+            justification: 'center',
+            fillColor: new Color(1, 1, 1),
+            fontWeight: 'bold',
+            fontSize: 12
+        });
+        this.group.addChild(this.playerNameField);
+        this.playerNameField.bringToFront();
+
+        this.group.rotate(this.angle(), table.bounds.center);
+    },
+    rotate: function(point) {
+        return point.rotate(this.angle());
+    },
+    angle: function() {
+        return 90 * this.orientation;
+    },
+    nextPosition: function(cardBounds) {
+        if (this.nextPos)
+        {
+            this.nextPos = this.addVectorToPosition(this.nextPos, new Size(cardSeparation, 0));
+        }
+        else
+        {
+            var verticalOffset = (hands[0].path.bounds.height - cardBounds.height) / 2;
+            var horizontalOffset = (hands[0].path.bounds.width - cardBounds.width ) / 2;
+            this.nextPos = this.addVectorToPosition(this.path.position, new Size(-horizontalOffset, -verticalOffset));
+        }
+        return this.nextPos;
+    },
+    addVectorToPosition: function(position, offset) {
+        var vector = vectorize(offset);
+        var transformedVector = this.rotate(vector);
+        return position + transformedVector;
+    },
+    clear: function() {
+        this.nextPos = null;
+    },
+    setPlayerName: function(name) {
+        this.playerNameField.content = name;
+    },
+    candidateCards: function() {
+        return this.group.getItems({className: 'Raster', candidate: true});
+    },
+    deselect: function() {
+        var self = this;
+        _.each(this.candidateCards(), function(cardFace) {
+            cardFace.off('click');
+            cardFace.candidate = false;
+            cardFace.position = self.addVectorToPosition(cardFace.position, new Size(0, selectDelta));
+        });
+    },
+    addCard: function(card) {
+        this.group.addChild(card.face);
+        this.group.addChild(card.back);
+    }
+});
 
 var Card = Base.extend({
     initialize: function(name, cardback, desiredHeight) {
@@ -28,6 +98,10 @@ var Card = Base.extend({
     placeAt: function(position) {
         this.face.position = position;
         this.back.position = position;
+    },
+    rotate: function(angle) {
+        this.face.rotate(angle);
+        this.back.rotate(angle);
     },
     moveTo: function (destination, doneFn) {
         var duration = 0.5; // seconds
@@ -68,25 +142,21 @@ var Card = Base.extend({
         cardsLayer.addChild(this.back);
         this.back.visible = false;
     },
-    placeInGroup: function(group, frontFace) {
-        var position = nextPosition(group, this.face.bounds);
+    placeInHand: function(hand, frontFace) {
+        var position = hand.nextPosition(this.face.bounds);
 
-        var index = groups.indexOf(group);
-        var angle = 90 * index;
-        this.face.rotate(angle);
-        this.back.rotate(angle);
+        this.rotate(hand.angle());
 
         this.flip(frontFace);
         this.moveTo(position, function(card) {
-            group.addChild(card.face);
-            group.addChild(card.back);
+            hand.addCard(card);
         });
     },
     play: function() {
-        var group = this.face.parent;
-        var bounds = this.face.bounds;
-        var verticalOffset = ( groups[0].hand.bounds.height + bounds.height ) / 2 + (bounds.height / 4);
-        var position = addVectorToPosition(group.hand.position, new Size(0, -verticalOffset), group);
+        var hand = this.face.parent.hand;
+        var cardBounds = this.face.bounds;
+        var verticalOffset = ( hands[0].path.bounds.height + cardBounds.height ) / 2 + (cardBounds.height / 4);
+        var position = hand.addVectorToPosition(hand.path.position, new Size(0, -verticalOffset));
         this.flip(true);
         this.moveTo(position);
         played.push(this);
@@ -94,10 +164,9 @@ var Card = Base.extend({
     arm: function() {
         var self = this;
         this.face.on('click', function() {
-            var group = self.face.parent;
-            deselect(candidateCards(group));
+            var hand = self.face.parent.hand;
+            hand.deselect();
             self.play();
-            console.log("sending back player chooses "+self.name);
             sendResponse("playerChooses", [ self.name ]);
         });
     },
@@ -107,11 +176,27 @@ var Card = Base.extend({
     }
 });
 
+
+function chooseCard(validCards) {
+    _.each(validCards, function(card) {
+        card.face.candidate = true;
+        var hand = card.face.parent.hand;
+        card.face.position = hand.addVectorToPosition(card.face.position, new Size(0, -selectDelta));
+        card.arm();
+    });
+}
+
+function vectorize(size)
+{
+    return (table.bounds.topLeft + size) - table.bounds.topLeft;
+}
+
+
 var cmds = {
     receiveCard : function(playerName, cardName) {
         var frontFace = isPlayerMe(playerName);
-        var group = players[playerName];
-        cards[cardName].placeInGroup(group, frontFace);
+        var hand = players[playerName];
+        cards[cardName].placeInHand(hand, frontFace);
     },
     turnUpCard : function(cardName) {
         cards[cardName].turnUp();
@@ -123,12 +208,12 @@ var cmds = {
             text += suitName;
         }
 
-        var playerIndex = groups.indexOf(players[playerName]);
+        var hand = players[playerName];
         if (envoi) {
-            placeSuit(suits[suitName.toLowerCase()], playerIndex);
+            placeSuit(suits[suitName.toLowerCase()], hand.angle());
         }
 
-        groups[playerIndex].bubble.say(text);
+        hand.bubble.say(text);
     },
     offer : function(playerName, suitName) {
         var firstRound = (typeof suitName !== 'undefined');
@@ -182,25 +267,10 @@ var cmds = {
     partieStarts: function(team1, team2, playerNames) {
         gameScoreArea.setTeams(team1, team2);
         partieScoreArea.setTeams(team1, team2);
-        paintPlayerNames(playerNames);
+        setupPlayers(playerNames);
         clearGame();
     }
 };
-
-function clearGame() {
-    resetSuits();
-    _.each(groups, function(group) {
-        clearGroup(group);
-    });
-    _.each(cards, function(card) {
-        card.clear();
-    });
-    resetDeck();
-}
-
-function clearGroup(group) {
-    group.nextPosition = null;
-}
 
 var ScoreArea = Group.extend({
     _class: 'ScoreArea',
@@ -390,7 +460,7 @@ $(function() {
     loadSuits();
     scaleSuits(b);
 
-    groups = setupAreas(c, b);
+    hands = setupAreas(c, b);
     setupScoreAreas(c, b);
 
     loadCards(0.8*c);
@@ -495,68 +565,15 @@ function sendResponse(cmd, args) {
     client.send('/app/respond', {}, JSON.stringify(msg));
 }
 
-function addVectorToPosition(position, offset, group) {
-    var vector = vectorize(offset);
-    var index = groups.indexOf(group);
-    var angle = 90*index;
-    var transformedVector = vector.rotate(angle);
-    return position + transformedVector;
-}
-
-function chooseCard(validCards) {
-    _.each(validCards, function(card) {
-        card.face.candidate = true;
-        card.face.position = addVectorToPosition(card.face.position, new Size(0, -selectDelta), card.face.parent);
-        card.arm();
-    });
-}
-
-function candidateCards(group) {
-    return group.getItems({className: 'Raster', candidate: true});
-}
-
-function deselect(candidateCards) {
-    _.each(candidateCards, function(cardFace) {
-        cardFace.off('click');
-        cardFace.candidate = false;
-        cardFace.position = addVectorToPosition(cardFace.position, new Size(0, selectDelta), cardFace.parent);
-    });
-}
-
-function rotate(group, point)
-{
-    var index = groups.indexOf(group);
-    return point.rotate(90*index);
-}
-
-function vectorize(size)
-{
-    return (table.bounds.topLeft + size) - table.bounds.topLeft;
-}
-
-function nextPosition(group, cardBounds) {
-    if (group.nextPosition)
-    {
-        group.nextPosition = addVectorToPosition(group.nextPosition, new Size(cardSeparation, 0), group);
-    }
-    else
-    {
-        var verticalOffset = (groups[0].hand.bounds.height - cardBounds.height) / 2;
-        var horizontalOffset = (groups[0].hand.bounds.width - cardBounds.width ) / 2;
-        group.nextPosition = addVectorToPosition(group.hand.position, new Size(-horizontalOffset, -verticalOffset), group);
-    }
-    return group.nextPosition;
-}
-
 function onFrame(event) {
 }
 
 
-function clearTable(winningGroup) {
+function clearTable(winningHand) {
     _.each(played, function(card) {
 
-        var verticalOffset = ( groups[0].hand.bounds.height + card.face.bounds.height ) / 2 + (card.face.bounds.height / 4);
-        var position = addVectorToPosition(winningGroup.hand.position, new Size(0, -verticalOffset), winningGroup);
+        var verticalOffset = ( hands[0].path.bounds.height + card.face.bounds.height ) / 2 + (card.face.bounds.height / 4);
+        var position = winningHand.addVectorToPosition(winningHand.path.position, new Size(0, -verticalOffset));
 
         card.flip(true);
         card.moveTo(position, function(card) {
@@ -566,6 +583,18 @@ function clearTable(winningGroup) {
 
     played = [];
 }
+
+function clearGame() {
+    resetSuits();
+    _.each(hands, function(hand) {
+        hand.clear();
+    });
+    _.each(cards, function(card) {
+        card.clear();
+    });
+    resetDeck();
+}
+
 
 function resetDeck() {
     var delta = new Size(0, 0);
@@ -616,10 +645,10 @@ function scaleSuits(b) {
     }
 }
 
-function placeSuit(suit, index)
+function placeSuit(suit, angle)
 {
     var point = table.bounds.center + [0, table.bounds.width / 5];
-    var position = point.rotate(index * 90, table.bounds.center);
+    var position = point.rotate(angle, table.bounds.center);
     suit.position = position;
     suit.visible = true;
     suit.bringToFront();
@@ -649,52 +678,20 @@ function setupTable(a) {
 function setupAreas(c, b) {
     groupsLayer = new Layer({name: 'groups'});
 
-    var groups = [];
-
     var path = new Path.Rectangle(
         new Rectangle(
             new Point(c, c + b),
             new Size(b, c))
     );
 
+    var hands = [];
     for (var i=0; i<4; i++)
     {
-        var group = new Group(path);
-        group.hand = path;
-
-        groups.push(group);
-
-        var playerNameField = new PointText({
-            point: path.bounds.center + new Point(0, path.bounds.height/2 - 3),
-            content: 'p'+i,
-            justification: 'center',
-            fillColor: new Color(1, 1, 1),
-            fontWeight: 'bold',
-            fontSize: 12
-        });
-        group.addChild(playerNameField);
-        group.playerName = playerNameField;
-        playerNameField.bringToFront();
-
-        path = path.clone();
+        hands.push(new Hand(i, path));
     }
 
-    for (var i=0; i<4; i++)
-    {
-        groups[i].rotate(90*i, table.bounds.center);
-    }
-
-    return groups;
-}
-
-function paintPlayerNames(playerNames)
-{
-    for (var i=0; i<groups.length; i++)
-    {
-        var playerName = playerNames[i];
-        groups[i].playerName.content = playerName;
-        players[playerName] = groups[i];
-    }
+    path.remove();
+    return hands;
 }
 
 function setupBubbles() {
@@ -702,8 +699,8 @@ function setupBubbles() {
 
     for (var i=0; i<4; i++) {
         var bubble = new Bubble({ orientation: i, text: '...' });
-        bubble.position = groups[i].position;
-        groups[i].bubble = bubble;
+        bubble.position = hands[i].path.position;
+        hands[i].bubble = bubble;
     }
 }
 
@@ -721,3 +718,15 @@ function setupScoreAreas(c, b)
         size: new Size(c, c)
     });
 }
+
+
+function setupPlayers(playerNames)
+{
+    for (var i=0; i<hands.length; i++)
+    {
+        var playerName = playerNames[i];
+        hands[i].setPlayerName(playerName);
+        players[playerName] = hands[i];
+    }
+}
+
