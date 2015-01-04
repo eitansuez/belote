@@ -409,16 +409,18 @@ function cardFor(serverSideCardName) {
 }
 
 
+function addVectorToPosition(position, offset, group) {
+    var vector = vectorize(offset);
+    var index = groups.indexOf(group);
+    var angle = 90*index;
+    var transformedVector = vector.rotate(angle);
+    return position + transformedVector;
+}
 
 function chooseCard(validCards) {
     _.each(validCards, function(card) {
         card.candidate = true;
-
-        var group = card.parent;
-        var offset = new Size(0, -selectDelta);
-        var vector = vectorize(offset);
-        card.position += vector.rotate(90*groups.indexOf(group));
-
+        card.position = addVectorToPosition(card.position, new Size(0, -selectDelta), card.parent);
         armCard(card);
     });
 }
@@ -439,20 +441,14 @@ function deselect(cards) {
     _.each(cards, function(card) {
         card.off('click');
         card.candidate = false;
-
-        var group = card.parent;
-        var offset = new Size(0, selectDelta);
-        var vector = vectorize(offset);
-        card.position += vector.rotate(90*groups.indexOf(group));
+        card.position = addVectorToPosition(card.position, new Size(0, selectDelta), card.parent);
     });
 }
 
 function playCard(card) {
     var group = card.parent;
     var verticalOffset = ( groups[0].hand.bounds.height + card.bounds.height ) / 2 + (card.bounds.height / 4);
-    var offset = new Size(0, verticalOffset);
-    var vector = vectorize(offset);
-    var position = group.hand.position - vector.rotate(90*groups.indexOf(group));
+    var position = addVectorToPosition(group.hand.position, new Size(0, -verticalOffset), group);
     moveCardToPosition(card, position);
     played.push(card);
 }
@@ -479,19 +475,15 @@ function vectorize(size)
 }
 
 function nextPosition(group, card) {
-    var angle = 90 * groups.indexOf(group);
     if (group.nextPosition)
     {
-        var offset = vectorize(new Size(cardSeparation, 0));
-        group.nextPosition += offset.rotate(angle);
+        group.nextPosition = addVectorToPosition(group.nextPosition, new Size(cardSeparation, 0), group);
     }
     else
     {
         var verticalOffset = (groups[0].hand.bounds.height - card.bounds.height) / 2;
         var horizontalOffset = (groups[0].hand.bounds.width - card.bounds.width ) / 2;
-        var offset = vectorize(new Size(horizontalOffset, verticalOffset));
-
-        group.nextPosition = group.hand.position - offset.rotate(angle);
+        group.nextPosition = addVectorToPosition(group.hand.position, new Size(-horizontalOffset, -verticalOffset), group);
     }
     return group.nextPosition;
 }
@@ -564,9 +556,7 @@ function clearTable(winningGroup) {
     _.each(played, function(card) {
 
         var verticalOffset = ( groups[0].hand.bounds.height + card.bounds.height ) / 2 + (card.bounds.height / 4);
-        var offset = new Size(0, verticalOffset);
-        var vector = vectorize(offset);
-        var position = winningGroup.hand.position - vector.rotate(90*groups.indexOf(winningGroup));
+        var position = addVectorToPosition(winningGroup.hand.position, new Size(0, -verticalOffset), winningGroup);
 
         moveCardToPosition(card, position, false, function(card) {
             clearCard(card);

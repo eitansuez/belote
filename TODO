@@ -1,7 +1,6 @@
 Prioritized:
 ---
 
-> refactor positioning logic relative to group into a function
 > fix animation logic bug:  does not always hit its mark
 
 > object oriented javascript
