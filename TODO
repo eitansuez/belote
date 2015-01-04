@@ -2,10 +2,8 @@ Prioritized:
 ---
 
 > object oriented javascript
- - what library to use?
- - do this for Card, do it for Group/Hand
-
-- replace underscore with lodash
+ - what library to use?  paper already uses its own "straps.js" -- perhaps piggyback on that?
+ - oopify suit
 
 > externalize definitions of ScoreArea and Bubble
 > implement an alert for notification to replace scaffold window.alert
