@@ -1,6 +1,4 @@
 
-- bug:  "monter" does not account for 8 greater than 7 etc..
-
 1. organize/sort player's hand by suit, by value/ordinal
 
 2.-----logging wording:
