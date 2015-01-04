@@ -31,7 +31,7 @@ class Card
 
   static Card fromName(String name)
   {
-    def (typeName, discard, suitName) = name.split("_")
+    def (typeName, discard, suitName) = name.split(/[_ ]/)
     new Card(type: CardType.valueOf(typeName), suit: Suit.valueOf(suitName))
   }
 

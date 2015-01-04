@@ -18,10 +18,10 @@ public class BeloteController {
 
     @Autowired ActorSystem system
     ActorRef stompActor
-    Partie partie
     def users = [] as Set
     def builder = [team1: [first: 'Bot1', second: 'Bot2'],
                    team2: [first: 'Bot3', second: 'Bot4']]
+    Partie partie
 
 
     @MessageMapping("/respond")

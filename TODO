@@ -2,6 +2,11 @@ Prioritized:
 ---
 
 > object oriented javascript
+ - what library to use?
+ - do this for Card, do it for Group/Hand
+
+- replace underscore with lodash
+
 > externalize definitions of ScoreArea and Bubble
 > implement an alert for notification to replace scaffold window.alert
 
@@ -14,6 +19,7 @@ Prioritized:
    likewise, should state at end of each game "stat" such as:  "team x wins after having committed to trefle"
 > scrolling log of events:  dedans, capot, messages notifying players of events
 
+> partie build should visually come before table is even drawn, or perhaps should be overlaid on top of table.
 
 ------and more..
 

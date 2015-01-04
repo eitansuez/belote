@@ -68,4 +68,13 @@ class CardSpec extends Specification
     Card.fromName(cardName) == new Card(type: Dix, suit: Coeur)
   }
 
+  def "unmarshal from name is flexible, allows spaces instead of underscores"()
+  {
+    when:
+    def cardName = "Dix de Coeur"
+
+    then:
+    Card.fromName(cardName) == new Card(type: Dix, suit: Coeur)
+  }
+
 }
