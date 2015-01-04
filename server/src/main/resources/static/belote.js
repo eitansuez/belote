@@ -1,9 +1,9 @@
 var cards = {};
 var suits = {};
 var players = {};
-var hands;
+var hands = [];
 
-var cardsLayer, groupsLayer;
+var cardsLayer, handsLayer;
 var cardSeparation, selectDelta;
 var handAspectRatio = 2.5;
 var played = [];
@@ -92,6 +92,11 @@ var Hand = Base.extend({
         suit.position = point.rotate(this.angle(), table.bounds.center);
         suit.visible = true;
         suit.bringToFront();
+    },
+    setupBubble: function() {
+        var bubble = new Bubble({ orientation: this.orientation });
+        bubble.position = this.path.position;
+        this.bubble = bubble;
     }
 });
 
@@ -459,24 +464,8 @@ var Bubble = Group.extend({
 $(function() {
     var a = Math.min(view.size.width, view.size.height);
     setupTable(a);
-    var c = a / (2 + handAspectRatio);
-    var b = handAspectRatio * c;
-
-    loadSuits(b/2);
-
-    hands = setupAreas(c, b);
-    setupScoreAreas(c, b);
-
-    loadCards(0.8*c);
-
-    setupBubbles();
-
-    var card = randomCard();
-    cardSeparation = card.face.bounds.width / 2;
-    selectDelta = card.face.bounds.height / 5;
-
     htmlInit(a);
-    groupsLayer.activate();
+    handsLayer.activate();
     resetDeck();
     connectToServer();
 });
@@ -659,12 +648,29 @@ function setupTable(a) {
     new Layer({name: 'table'});
 
     table = new Raster("tablecloth");
-    table.position = [a/2, a/2];
+    table.position = new Point(a/2, a/2);
     table.scale(a / table.bounds.height);
+
+    var c = a / (2 + handAspectRatio);
+    var b = handAspectRatio * c;
+
+    loadSuits(b/2);
+
+    setupHands(c, b);
+    setupScoreAreas(c, b);
+
+    loadCards(0.8*c);
+
+    setupBubbles();
+
+    var card = randomCard();
+    cardSeparation = card.face.bounds.width / 2;
+    selectDelta = card.face.bounds.height / 5;
+
 }
 
-function setupAreas(c, b) {
-    groupsLayer = new Layer({name: 'groups'});
+function setupHands(c, b) {
+    handsLayer = new Layer({name: 'hands'});
 
     var path = new Path.Rectangle(
         new Rectangle(
@@ -672,7 +678,6 @@ function setupAreas(c, b) {
             new Size(b, c))
     );
 
-    var hands = [];
     for (var i=0; i<4; i++)
     {
         hands.push(new Hand(i, path));
@@ -686,9 +691,7 @@ function setupBubbles() {
     new Layer({name: 'bubbles'});
 
     for (var i=0; i<4; i++) {
-        var bubble = new Bubble({ orientation: i, text: '...' });
-        bubble.position = hands[i].path.position;
-        hands[i].bubble = bubble;
+        hands[i].setupBubble();
     }
 }
 
