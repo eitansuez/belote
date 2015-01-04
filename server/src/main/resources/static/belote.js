@@ -9,16 +9,112 @@ var thisPlayerName;
 
 var table, groups;
 var gameScoreArea, partieScoreArea;
+var client;
+
+var Card = Base.extend({
+    initialize: function(name, cardback, desiredHeight) {
+        this.name = name;
+        var raster = new Raster(name);
+        this.face = raster.scale(desiredHeight / raster.height);
+        this.back = cardback.place();
+    },
+    flip: function(faceUp) {
+        var faceToShow = faceUp ? this.face : this.back;
+        var faceToHide = faceUp ? this.back : this.face;
+        faceToShow.visible = true;
+        faceToHide.visible = false;
+        faceToShow.bringToFront();
+    },
+    placeAt: function(position) {
+        this.face.position = position;
+        this.back.position = position;
+    },
+    moveTo: function (destination, doneFn) {
+        var duration = 0.5; // seconds
+        var timeRemaining = duration;
+
+        var face = (this.face.visible ? this.face : this.back);
+        var self = this;
+
+        face.onFrame = function(event) {
+            var vector = destination - face.position;
+
+            var distance = event.delta/timeRemaining * vector.length;
+            var trans = new Point({length: distance, angle: vector.angle});
+
+            timeRemaining -= event.delta;
+
+            if (timeRemaining < 0) {
+                self.placeAt(destination);
+                face.onFrame = null;
+                if (doneFn)
+                {
+                    doneFn.call(undefined, self);
+                }
+            }
+            else {
+                face.translate(trans);
+            }
+        };
+    },
+    clear: function() {
+        this.face.rotation = 0;
+        this.face.remove();
+        cardsLayer.addChild(this.face);
+        this.face.visible = false;
+
+        this.back.rotation = 0;
+        this.back.remove();
+        cardsLayer.addChild(this.back);
+        this.back.visible = false;
+    },
+    placeInGroup: function(group, frontFace) {
+        var position = nextPosition(group, this.face.bounds);
+
+        var index = groups.indexOf(group);
+        var angle = 90 * index;
+        this.face.rotate(angle);
+        this.back.rotate(angle);
+
+        this.flip(frontFace);
+        this.moveTo(position, function(card) {
+            group.addChild(card.face);
+            group.addChild(card.back);
+        });
+    },
+    play: function() {
+        var group = this.face.parent;
+        var bounds = this.face.bounds;
+        var verticalOffset = ( groups[0].hand.bounds.height + bounds.height ) / 2 + (bounds.height / 4);
+        var position = addVectorToPosition(group.hand.position, new Size(0, -verticalOffset), group);
+        this.flip(true);
+        this.moveTo(position);
+        played.push(this);
+    },
+    arm: function() {
+        var self = this;
+        this.face.on('click', function() {
+            var group = self.face.parent;
+            deselect(candidateCards(group));
+            self.play();
+            console.log("sending back player chooses "+self.name);
+            sendResponse("playerChooses", [ self.name ]);
+        });
+    },
+    turnUp: function() {
+        this.flip(true);
+        this.placeAt(table.bounds.center + new Size(this.face.bounds.width/2 + 10, 0));
+    }
+});
 
 var cmds = {
     receiveCard : function(playerName, cardName) {
-        var useBackface = !isPlayerMe(playerName);
+        var frontFace = isPlayerMe(playerName);
         var group = players[playerName];
-        var card = cardFor(cardName);
-        placeCards([card], group, useBackface);
+        cards[cardName].placeInGroup(group, frontFace);
     },
     turnUpCard : function(cardName) {
-        turnUpCard(cardFor(cardName));
+        cards[cardName].turnUp();
     },
     playerDecision : function(playerName, envoi, suitName) {
         var passesText = (suitName ? " passes at " : " passes again.");
@@ -46,18 +142,13 @@ var cmds = {
         }
     },
     play: function(playerName, cardNames) {
-        var cards = _.map(cardNames, function(cardName) {
-            return cardFor(cardName);
+        var validCards = _.map(cardNames, function(cardName) {
+            return cards[cardName];
         });
-        chooseCard(cards);
+        chooseCard(validCards);
     },
     playCard: function(playerName, cardName) {
-        var card = cardFor(cardName);
-        if (!isPlayerMe(playerName))
-        {
-            card.cardback.visible = false;
-        }
-        playCard(card);
+        cards[cardName].play();
     },
     gameUpdate: function(team1, team1Score, team2, team2Score) {
         gameScoreArea.updateScores(team1Score, team2Score);
@@ -99,15 +190,17 @@ var cmds = {
 function clearGame() {
     resetSuits();
     _.each(groups, function(group) {
-        group.nextPosition = null;
+        clearGroup(group);
     });
     _.each(cards, function(card) {
-        clearCard(card);
+        card.clear();
     });
     resetDeck();
 }
 
-var client;
+function clearGroup(group) {
+    group.nextPosition = null;
+}
 
 var ScoreArea = Group.extend({
     _class: 'ScoreArea',
@@ -300,14 +393,13 @@ $(function() {
     groups = setupAreas(c, b);
     setupScoreAreas(c, b);
 
-    loadCards();
-    scaleCards(c);
-    setupCardbacks(c);
+    loadCards(0.8*c);
+
     setupBubbles();
 
     var card = randomCard();
-    cardSeparation = card.bounds.width / 2;
-    selectDelta = card.bounds.height / 5;
+    cardSeparation = card.face.bounds.width / 2;
+    selectDelta = card.face.bounds.height / 5;
 
     htmlInit(a);
     groupsLayer.activate();
@@ -403,12 +495,6 @@ function sendResponse(cmd, args) {
     client.send('/app/respond', {}, JSON.stringify(msg));
 }
 
-function cardFor(serverSideCardName) {
-    var card_name = serverSideCardName.replace(/ /g, '_');
-    return cards[card_name];
-}
-
-
 function addVectorToPosition(position, offset, group) {
     var vector = vectorize(offset);
     var index = groups.indexOf(group);
@@ -419,17 +505,9 @@ function addVectorToPosition(position, offset, group) {
 
 function chooseCard(validCards) {
     _.each(validCards, function(card) {
-        card.candidate = true;
-        card.position = addVectorToPosition(card.position, new Size(0, -selectDelta), card.parent);
-        armCard(card);
-    });
-}
-
-function armCard(card) {
-    card.on('click', function() {
-        deselect(candidateCards(card.parent), true);
-        playCard(card);
-        sendResponse("playerChooses", [ card.name ]);
+        card.face.candidate = true;
+        card.face.position = addVectorToPosition(card.face.position, new Size(0, -selectDelta), card.face.parent);
+        card.arm();
     });
 }
 
@@ -437,30 +515,12 @@ function candidateCards(group) {
     return group.getItems({className: 'Raster', candidate: true});
 }
 
-function deselect(cards) {
-    _.each(cards, function(card) {
-        card.off('click');
-        card.candidate = false;
-        card.position = addVectorToPosition(card.position, new Size(0, selectDelta), card.parent);
+function deselect(candidateCards) {
+    _.each(candidateCards, function(cardFace) {
+        cardFace.off('click');
+        cardFace.candidate = false;
+        cardFace.position = addVectorToPosition(cardFace.position, new Size(0, selectDelta), cardFace.parent);
     });
-}
-
-function playCard(card) {
-    var group = card.parent;
-    var verticalOffset = ( groups[0].hand.bounds.height + card.bounds.height ) / 2 + (card.bounds.height / 4);
-    var position = addVectorToPosition(group.hand.position, new Size(0, -verticalOffset), group);
-    moveCardToPosition(card, position);
-    played.push(card);
-}
-
-function placeCards(cards, group, backface) {
-    _.each(cards, function(card) {
-        placeCardInGroup(card, group, backface);
-    });
-}
-
-function turnUpCard(card) {
-    placeCardToPosition(card, table.bounds.center + new Size(card.bounds.width/2 + 10, 0));
 }
 
 function rotate(group, point)
@@ -474,84 +534,18 @@ function vectorize(size)
     return (table.bounds.topLeft + size) - table.bounds.topLeft;
 }
 
-function nextPosition(group, card) {
+function nextPosition(group, cardBounds) {
     if (group.nextPosition)
     {
         group.nextPosition = addVectorToPosition(group.nextPosition, new Size(cardSeparation, 0), group);
     }
     else
     {
-        var verticalOffset = (groups[0].hand.bounds.height - card.bounds.height) / 2;
-        var horizontalOffset = (groups[0].hand.bounds.width - card.bounds.width ) / 2;
+        var verticalOffset = (groups[0].hand.bounds.height - cardBounds.height) / 2;
+        var horizontalOffset = (groups[0].hand.bounds.width - cardBounds.width ) / 2;
         group.nextPosition = addVectorToPosition(group.hand.position, new Size(-horizontalOffset, -verticalOffset), group);
     }
     return group.nextPosition;
-}
-
-function placeCardInGroup(card, group, backface) {
-    var cardToPlace = backface ? card.cardback : card;
-    var otherSide = backface ? card : card.cardback;
-    var position = nextPosition(group, cardToPlace);
-
-    cardToPlace.rotate(90*groups.indexOf(group));
-    otherSide.rotate(90*groups.indexOf(group));
-
-    moveCardToPosition(card, position, backface, function(card) {
-        group.addChild(cardToPlace);
-        group.addChild(otherSide);
-    });
-}
-
-function placeCardToPosition(card, position, backface)
-{
-    var cardToPlace = backface ? card.cardback : card;
-    var otherSide = backface ? card : card.cardback;
-
-    cardToPlace.visible = true;
-    otherSide.visible = false;
-    cardToPlace.bringToFront();
-    cardToPlace.position = position;
-    otherSide.position = position;
-}
-
-function moveCardToPosition(card, position, backface, doneFn)
-{
-    var cardToPlace = backface ? card.cardback : card;
-    var otherSide = backface ? card : card.cardback;
-
-    cardToPlace.visible = true;
-    otherSide.visible = false;
-    cardToPlace.bringToFront();
-    animateToPosition(cardToPlace, otherSide, position, doneFn);
-}
-
-function animateToPosition(card, otherSide, destination, doneFn)
-{
-    var duration = 0.5; // seconds
-    var timeRemaining = duration;
-
-    card.onFrame = function(event) {
-        var vector = destination - card.position;
-
-        var distance = event.delta/timeRemaining * vector.length;
-        var trans = new Point({length: distance, angle: vector.angle});
-
-        timeRemaining -= event.delta;
-
-        if (timeRemaining < 0) {
-            card.position = destination;
-            otherSide.position = destination;
-            card.onFrame = null;
-            if (doneFn)
-            {
-                doneFn.call(undefined, card);
-            }
-        }
-        else {
-            card.translate(trans);
-        }
-    };
-
 }
 
 function onFrame(event) {
@@ -561,76 +555,43 @@ function onFrame(event) {
 function clearTable(winningGroup) {
     _.each(played, function(card) {
 
-        var verticalOffset = ( groups[0].hand.bounds.height + card.bounds.height ) / 2 + (card.bounds.height / 4);
+        var verticalOffset = ( groups[0].hand.bounds.height + card.face.bounds.height ) / 2 + (card.face.bounds.height / 4);
         var position = addVectorToPosition(winningGroup.hand.position, new Size(0, -verticalOffset), winningGroup);
 
-        moveCardToPosition(card, position, false, function(card) {
-            clearCard(card);
+        card.flip(true);
+        card.moveTo(position, function(card) {
+            card.clear();
         });
     });
 
     played = [];
 }
 
-function clearCard(card) {
-    card.rotation = 0;
-    card.cardback.rotation = 0;
-    card.remove();
-    card.cardback.remove();
-    cardsLayer.addChild(card);
-    cardsLayer.addChild(card.cardback);
-
-    card.visible = false;
-    card.cardback.visible = false;
-}
-
 function resetDeck() {
     var delta = new Size(0, 0);
-    for (var cardName in cards) {
-        var card = cards[cardName];
-        card.visible = false;
-        var spot = table.bounds.center - new Size(card.bounds.width/2 + 10, 0) - delta;
-        placeCardToPosition(card, spot, true);
+    _.each(cards, function(card) {
+        var spot = table.bounds.center - new Size(card.face.bounds.width/2 + 10, 0) - delta;
+        card.flip(false);
+        card.placeAt(spot);
         delta += new Size(0.25, 0.25);
-    }
+    });
 }
 
 
 // initial rendering setup..
 
-function loadCards() {
+function loadCards(desiredHeight) {
     cardsLayer = new Layer({name: 'cards'});
 
-    $("#card_images").find("img").each(function() {
-        var img = $(this);
-        var id = img.attr("id");
-        var card = new Raster(id);
-        card.name = id;
-        card.childType = 'card';
-        cards[id] = card;
-    });
-}
-
-function scaleCards(c) {
-    for (var card in cards) {
-        var scale = (0.8 * c) / cards[card].height;
-        cards[card].scale(scale);
-    }
-}
-
-function setupCardbacks(c) {
     var cardback = new Raster('cardback');
-    var scale = (0.8 * c) / cardback.height;
-    cardback.scale(scale);
+    cardback.scale(desiredHeight / cardback.height);
     cardback.remove();
     var symbol = new Symbol(cardback);
 
-    for (var card in cards) {
-        var placedCardback = symbol.place();
-        placedCardback.visible = false;
-        placedCardback.childType = 'card';
-        cards[card].cardback = placedCardback;
-    }
+    $("#card_images").find("img").each(function() {
+        var id = $(this).attr("id");
+        cards[id] = new Card(id, symbol, desiredHeight);
+    });
 }
 
 function loadSuits() {

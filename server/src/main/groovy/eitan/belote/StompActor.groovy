@@ -50,7 +50,7 @@ class StompActor extends UntypedActor
     }
     else if (arg instanceof Card)
     {
-      ((Card) arg).toString()
+      ((Card) arg).toString().replaceAll(' ', '_')
     }
     else if (arg instanceof Enum)
     {
