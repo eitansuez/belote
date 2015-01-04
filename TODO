@@ -1,7 +1,6 @@
 Prioritized:
 ---
 
-> fix:  player selects a new position and he's already on board, should move him to that position, rather than put two copies of him in same partie
 > refactor positioning logic relative to group into a function
 > fix animation logic bug:  does not always hit its mark
 

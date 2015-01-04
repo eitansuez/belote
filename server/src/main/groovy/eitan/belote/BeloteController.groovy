@@ -97,8 +97,32 @@ public class BeloteController {
     @SendTo("/topic/enterPartie")
     def joinPartie(Principal user, Map<String, String> msg)
     {
+        if (builder[msg.team][msg.position] == user.name) {
+            return  // user already set there
+        }
+
+        def pos = positionOf(user.name)
+        if ( pos != null )
+        {
+            def otherUser = builder[msg.team][msg.position]
+            builder[pos.team][pos.position] = otherUser
+        }
         builder[msg.team][msg.position] = user.name
         builder
+    }
+
+    private positionOf(username)
+    {
+        if (builder.team1.first == username) {
+            return [team: 'team1', position: 'first']
+        } else if (builder.team1.second == username) {
+            return [team: 'team1', position: 'second']
+        } else if (builder.team2.first == username) {
+            return [team: 'team2', position: 'first']
+        } else if (builder.team2.second == username) {
+            return [team: 'team2', position: 'second']
+        }
+        return null
     }
 
 
