@@ -1,8 +1,6 @@
 Prioritized:
 ---
 
-> fix animation logic bug:  does not always hit its mark
-
 > object oriented javascript
 > externalize definitions of ScoreArea and Bubble
 > implement an alert for notification to replace scaffold window.alert

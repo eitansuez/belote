@@ -528,14 +528,17 @@ function moveCardToPosition(card, position, backface, doneFn)
 function animateToPosition(card, otherSide, destination, doneFn)
 {
     var duration = 0.5; // seconds
-    var vector = destination - card.position;
+    var timeRemaining = duration;
 
     card.onFrame = function(event) {
-        var distance = event.delta/duration * vector.length;
+        var vector = destination - card.position;
+
+        var distance = event.delta/timeRemaining * vector.length;
         var trans = new Point({length: distance, angle: vector.angle});
-        card.translate(trans);
-        var distToDestination = (card.position - destination).length;
-        if (distToDestination < 5) {
+
+        timeRemaining -= event.delta;
+
+        if (timeRemaining < 0) {
             card.position = destination;
             otherSide.position = destination;
             card.onFrame = null;
@@ -543,6 +546,9 @@ function animateToPosition(card, otherSide, destination, doneFn)
             {
                 doneFn.call(undefined, card);
             }
+        }
+        else {
+            card.translate(trans);
         }
     };
 
