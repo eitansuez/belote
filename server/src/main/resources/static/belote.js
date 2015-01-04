@@ -86,6 +86,12 @@ var Hand = Base.extend({
             card.face.position = self.addVectorToPosition(card.face.position, new Size(0, -selectDelta));
             card.arm();
         });
+    },
+    placeSuit: function(suit) {
+        var point = table.bounds.center + [0, table.bounds.width / 5];
+        suit.position = point.rotate(this.angle(), table.bounds.center);
+        suit.visible = true;
+        suit.bringToFront();
     }
 });
 
@@ -209,7 +215,7 @@ var cmds = {
 
         var hand = players[playerName];
         if (envoi) {
-            placeSuit(suits[suitName.toLowerCase()], hand);
+            hand.placeSuit(suits[suitName.toLowerCase()]);
         }
 
         hand.bubble.say(text);
@@ -634,15 +640,6 @@ function loadSuits(desiredHeight) {
         suit.visible = false;
         suits[id] = suit;
     });
-}
-
-function placeSuit(suit, hand)
-{
-    var point = table.bounds.center + [0, table.bounds.width / 5];
-    var position = point.rotate(hand.angle(), table.bounds.center);
-    suit.position = position;
-    suit.visible = true;
-    suit.bringToFront();
 }
 
 function resetSuits() {
