@@ -319,17 +319,6 @@ function htmlInit(a) {
     $("#side-panel").css('left', (a + 10)+"px");
     $(".prompt").width(a);
 
-    $("#disconnect-btn").on('click', function() {
-        client.disconnect(function() {
-            console.log("disconnected");
-        });
-    });
-
-    $("#newPartie-btn").on('click', function() {
-        client.send('/app/newPartie');
-    });
-
-
     $("#envoi-btn").on('click', function() {
         $("#prompt1").css("visibility", "hidden");
         sendResponse("envoi");
@@ -375,6 +364,31 @@ function connectToServer() {
 
         client.subscribe("/topic/belote", handleCmd);
         client.subscribe("/user/queue/belote", handleCmd);
+
+        client.subscribe("/topic/enterPartie", function(msg) {
+            var partie = JSON.parse(msg.body);
+            $("#t1p1").val(partie.team1.first);
+            $("#t1p2").val(partie.team1.second);
+            $("#t2p1").val(partie.team2.first);
+            $("#t2p2").val(partie.team2.second);
+        });
+        $("#t1p1").on('click', function() {
+            client.send("/app/joinPartie", {}, JSON.stringify({team: 'team1', position: 'first'}));
+        });
+        $("#t1p2").on('click', function() {
+            client.send("/app/joinPartie", {}, JSON.stringify({team: 'team1', position: 'second'}));
+        });
+        $("#t2p1").on('click', function() {
+            client.send("/app/joinPartie", {}, JSON.stringify({team: 'team2', position: 'first'}));
+        });
+        $("#t2p2").on('click', function() {
+            client.send("/app/joinPartie", {}, JSON.stringify({team: 'team2', position: 'second'}));
+        });
+        client.send("/app/enterPartie");
+
+        $("#startPartie-btn").on('click', function() {
+           client.send("/app/startPartie");
+        });
 
     }, function(error) {
         console.log('error: '+error.headers.message);
@@ -554,15 +568,8 @@ function clearTable(winningGroup) {
 }
 
 function clearCard(card) {
-    var group = card.parent;
-    var index = groups.indexOf(group);
-    if (index >= 0)
-    {
-        card.rotation = 0;
-        card.cardback.rotation = 0;
-        //card.rotate(-90*index);  // reset rotation
-        //card.cardback.rotate(-90*index);
-    }
+    card.rotation = 0;
+    card.cardback.rotation = 0;
     card.remove();
     card.cardback.remove();
     cardsLayer.addChild(card);

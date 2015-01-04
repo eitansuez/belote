@@ -1,9 +1,7 @@
 package eitan.belote
 
 import akka.actor.ActorRef
-import org.springframework.stereotype.Component
 
-@Component
 class RemoteStrategy implements Strategy
 {
   Player player
