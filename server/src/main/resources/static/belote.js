@@ -307,7 +307,7 @@ $(function() {
 
     var card = randomCard();
     cardSeparation = card.bounds.width / 2;
-    selectDelta = [0, card.bounds.height / 5];
+    selectDelta = card.bounds.height / 5;
 
     htmlInit(a);
     groupsLayer.activate();
@@ -413,7 +413,12 @@ function cardFor(serverSideCardName) {
 function chooseCard(validCards) {
     _.each(validCards, function(card) {
         card.candidate = true;
-        card.position -= selectDelta;
+
+        var group = card.parent;
+        var offset = new Size(0, -selectDelta);
+        var vector = vectorize(offset);
+        card.position += vector.rotate(90*groups.indexOf(group));
+
         armCard(card);
     });
 }
@@ -434,7 +439,11 @@ function deselect(cards) {
     _.each(cards, function(card) {
         card.off('click');
         card.candidate = false;
-        card.position += selectDelta;
+
+        var group = card.parent;
+        var offset = new Size(0, selectDelta);
+        var vector = vectorize(offset);
+        card.position += vector.rotate(90*groups.indexOf(group));
     });
 }
 
