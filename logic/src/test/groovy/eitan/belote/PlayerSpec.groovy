@@ -213,6 +213,27 @@ class PlayerSpec extends Specification
     set == [new Card(type: Roi, suit: Trefle), new Card(type: Ace, suit: Trefle)] as HashSet<Card>
   }
 
+  def "a round of atout, an eight is above a seven"()
+  {
+    given:
+    eitan.receiveCard(new Card(type: Huit, suit: Trefle))
+    eitan.receiveCard(new Card(type: Dix, suit: Trefle))
+    eitan.receiveCard(new Card(type: Ace, suit: Trefle))
+    eitan.receiveCard(new Card(type: Huit, suit: Carreau))
+    eitan.receiveCard(new Card(type: Dame, suit: Coeur))
+
+    def placed = [new Card(type: Sept, suit: Trefle)]
+
+    when:
+    def round = new Round(cards: placed, players: [corinne], game: new Game(atout:Trefle))
+    def set = eitan.validCards(round)
+
+    then:
+    set == [new Card(type: Huit, suit: Trefle),
+            new Card(type: Dix, suit: Trefle),
+            new Card(type: Ace, suit: Trefle)] as HashSet<Card>
+  }
+
   def "a round of atout, player 3 cannot raise"()
   {
     given:

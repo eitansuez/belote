@@ -125,7 +125,7 @@ class Player implements Emitter
     Suit atout = round.game.atout
     Card highestAtout = round.highest(round.atouts())
     hand.findAll { card ->
-      (card.suit == atout) && (card.points(atout) > highestAtout.points(atout))
+      (card.suit == atout) && (card.higherThan(highestAtout, atout))
     }
   }
 
