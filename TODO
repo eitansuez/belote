@@ -1,10 +1,7 @@
 Prioritized:
 ---
 
-remove bower_components from git, add bower.json, check that 'bower install' works.
-
 > object oriented javascript
- - what library to use?  paper already uses its own "straps.js" -- perhaps piggyback on that?
  - oopify suit
 
 > externalize definitions of ScoreArea and Bubble

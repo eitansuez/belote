@@ -78,6 +78,14 @@ var Hand = Base.extend({
     addCard: function(card) {
         this.group.addChild(card.face);
         this.group.addChild(card.back);
+    },
+    chooseCard: function(validCards) {
+        var self = this;
+        _.each(validCards, function(card) {
+            card.face.candidate = true;
+            card.face.position = self.addVectorToPosition(card.face.position, new Size(0, -selectDelta));
+            card.arm();
+        });
     }
 });
 
@@ -177,15 +185,6 @@ var Card = Base.extend({
 });
 
 
-function chooseCard(validCards) {
-    _.each(validCards, function(card) {
-        card.face.candidate = true;
-        var hand = card.face.parent.hand;
-        card.face.position = hand.addVectorToPosition(card.face.position, new Size(0, -selectDelta));
-        card.arm();
-    });
-}
-
 function vectorize(size)
 {
     return (table.bounds.topLeft + size) - table.bounds.topLeft;
@@ -210,7 +209,7 @@ var cmds = {
 
         var hand = players[playerName];
         if (envoi) {
-            placeSuit(suits[suitName.toLowerCase()], hand.angle());
+            placeSuit(suits[suitName.toLowerCase()], hand);
         }
 
         hand.bubble.say(text);
@@ -230,7 +229,7 @@ var cmds = {
         var validCards = _.map(cardNames, function(cardName) {
             return cards[cardName];
         });
-        chooseCard(validCards);
+        players[playerName].chooseCard(validCards);
     },
     playCard: function(playerName, cardName) {
         cards[cardName].play();
@@ -457,8 +456,7 @@ $(function() {
     var c = a / (2 + handAspectRatio);
     var b = handAspectRatio * c;
 
-    loadSuits();
-    scaleSuits(b);
+    loadSuits(b/2);
 
     hands = setupAreas(c, b);
     setupScoreAreas(c, b);
@@ -623,13 +621,14 @@ function loadCards(desiredHeight) {
     });
 }
 
-function loadSuits() {
+function loadSuits(desiredHeight) {
     new Layer({name: 'suits'});
 
     $("#suit_images").find("img").each(function() {
         var img = $(this);
         var id = img.attr("id");
         var suit = new Raster(id);
+        suit.scale(desiredHeight / suit.bounds.height);
         suit.name = id;
         suit.opacity = 0.5;
         suit.visible = false;
@@ -637,18 +636,10 @@ function loadSuits() {
     });
 }
 
-function scaleSuits(b) {
-    var desiredHeight = b / 2;
-    var scale = desiredHeight / suits['trefle'].bounds.height ;
-    for (var suit in suits) {
-        suits[suit].scale(scale);
-    }
-}
-
-function placeSuit(suit, angle)
+function placeSuit(suit, hand)
 {
     var point = table.bounds.center + [0, table.bounds.width / 5];
-    var position = point.rotate(angle, table.bounds.center);
+    var position = point.rotate(hand.angle(), table.bounds.center);
     suit.position = position;
     suit.visible = true;
     suit.bringToFront();
