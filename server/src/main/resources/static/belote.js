@@ -1,17 +1,20 @@
+var table;
 var cards = {};
 var suits = {};
 var players = {};
 var hands = [];
+var gameScoreArea, partieScoreArea;
 
 var cardsLayer, handsLayer;
+
 var cardSeparation, selectDelta;
 var handAspectRatio = 2.5;
+
 var played = [];
+
+var client;
 var thisPlayerName;
 
-var table;
-var gameScoreArea, partieScoreArea;
-var client;
 
 var Hand = Base.extend({
     initialize: function(orientation, path) {
@@ -666,7 +669,6 @@ function setupTable(a) {
     var card = randomCard();
     cardSeparation = card.face.bounds.width / 2;
     selectDelta = card.face.bounds.height / 5;
-
 }
 
 function setupHands(c, b) {
