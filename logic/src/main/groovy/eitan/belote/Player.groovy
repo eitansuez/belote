@@ -23,8 +23,8 @@ class Player implements Emitter
 
   def receiveCard(Card card, Suit atout = null)
   {
-    addCard(card, atout)
-    emit('receiveCard', [this, card])
+    def order = addCard(card, atout)
+    emit('receiveCard', [this, card, order])
   }
 
   private addCard(Card card, Suit atout)
@@ -34,7 +34,11 @@ class Player implements Emitter
                                { it.suit.ordinal() },
                                { it.points(atout) },
                                { it.type.ordinal() }])
-    hand.sort(true, orderBy)
+    def newHand = hand.sort(false, orderBy)
+
+    def order = newHand.collect { hand.indexOf(it) }
+    hand = newHand
+    order
   }
 
   def receiveCards(List<Card> cards, Suit atout = null)
