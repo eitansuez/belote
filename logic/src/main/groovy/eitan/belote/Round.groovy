@@ -49,11 +49,7 @@ class Round implements Emitter
 
   Card highest(Collection<Card> cardSet)
   {
-    cardSet.max { Card a, Card b ->
-      int result = a.points(game.atout) <=> b.points(game.atout)
-      if (result != 0) return result
-      a.type.ordinal() <=> b.type.ordinal()
-    }
+    cardSet.max(new OrderBy([{ it.points(game.atout) }, { it.type.ordinal() }]))
   }
 
   boolean containsAtout()

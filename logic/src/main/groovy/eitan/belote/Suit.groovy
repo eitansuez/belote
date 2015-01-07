@@ -2,7 +2,7 @@ package eitan.belote
 
 enum Suit
 {
-  Coeur, Carreau, Pique, Trefle
+  Coeur, Pique, Carreau, Trefle
 
   List<Card> cards = []
 

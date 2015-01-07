@@ -74,8 +74,8 @@ class GameSpec extends Specification
     game.begin()
 
     then:
-    5 * eitan.receiveCard(_)
-    5 * johnny.receiveCard(_)
+    5 * eitan.receiveCard(_, _)
+    5 * johnny.receiveCard(_, _)
 
     when:
     def candidate = game.dealer.candidate
@@ -127,7 +127,7 @@ class GameSpec extends Specification
     game.envoi()
 
     then:
-    1 * game.dealer.dealRemaining(_, _)
+    1 * game.dealer.dealRemaining(_, _, _)
     deck.empty()
     game.starter == eitan
   }
@@ -435,8 +435,8 @@ class GameSpec extends Specification
     game.begin()
 
     then:
-    5 * eitan.receiveCard(_)
-    5 * johnny.receiveCard(_)
+    5 * eitan.receiveCard(_, _)
+    5 * johnny.receiveCard(_, _)
   }
 
 
@@ -452,9 +452,9 @@ class GameSpec extends Specification
     then:
     game.committedPlayer == eitan
     game.committedTeam == game.team1
-    8 * eitan.receiveCard(_)
-    8 * johnny.receiveCard(_)
-    1 * game.dealer.dealRemaining(players, eitan)
+    8 * eitan.receiveCard(_, _)
+    8 * johnny.receiveCard(_, _)
+    1 * game.dealer.dealRemaining(players, eitan, _)
   }
 
   def "everyone passes first round, game is not done, and score is 0"()
@@ -503,7 +503,7 @@ class GameSpec extends Specification
     game.committedPlayer == game.team1.first
     game.atout == Pique
     ! game.done
-    1 * game.dealer.dealRemaining(_, _)
+    1 * game.dealer.dealRemaining(_, _, _)
   }
 
 

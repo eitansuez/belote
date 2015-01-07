@@ -2,6 +2,8 @@ package eitan.belote
 
 import spock.lang.Specification
 
+import static eitan.belote.Suit.Trefle
+
 class DealerSpec extends Specification
 {
   Dealer dealer
@@ -40,7 +42,7 @@ class DealerSpec extends Specification
     Card candidate = dealer.turnUpCandidateCard()
 
     when:
-    dealer.dealRemaining([eitan, rony, johnny, corinne], eitan)
+    dealer.dealRemaining([eitan, rony, johnny, corinne], eitan, Trefle)
 
     then:
     dealer.deck.empty()

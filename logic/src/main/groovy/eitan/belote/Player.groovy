@@ -21,16 +21,26 @@ class Player implements Emitter
     s.player = this
   }
 
-  def receiveCard(Card card)
+  def receiveCard(Card card, Suit atout = null)
   {
-    hand << card
+    addCard(card, atout)
     emit('receiveCard', [this, card])
   }
 
-  def receiveCards(List<Card> cards)
+  private addCard(Card card, Suit atout)
+  {
+    hand << card
+    def orderBy = new OrderBy([{ it.suit == atout },
+                               { it.suit.ordinal() },
+                               { it.points(atout) },
+                               { it.type.ordinal() }])
+    hand.sort(true, orderBy)
+  }
+
+  def receiveCards(List<Card> cards, Suit atout = null)
   {
     cards.each { card ->
-      receiveCard(card)
+      receiveCard(card, atout)
     }
   }
 

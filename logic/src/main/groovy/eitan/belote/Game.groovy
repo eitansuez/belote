@@ -84,7 +84,7 @@ class Game implements Emitter
 
     emit('playerDecision', [committedPlayer, true, suit])
 
-    dealer.dealRemaining(players(), committedPlayer)
+    dealer.dealRemaining(players(), committedPlayer, atout)
 
     Player playerWithBeloteRebelote = beloteRebelote()
     if (playerWithBeloteRebelote) {

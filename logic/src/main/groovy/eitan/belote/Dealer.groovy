@@ -28,23 +28,23 @@ class Dealer implements Emitter
     candidate
   }
 
-  def dealRemaining(List<Player> players, Player committer)
+  def dealRemaining(List<Player> players, Player committer, Suit atout)
   {
     log.info("Dealing remaining cards..")
     assert deck.size() == 11
 
-    committer.receiveCard(candidate)
+    committer.receiveCard(candidate, atout)
     candidate = null
 
     players.each { player ->
       int count = (player == committer) ? 2 : 3
-      dealToPlayer(player, deck.takeCards(count))
+      dealToPlayer(player, deck.takeCards(count), atout)
     }
   }
 
-  private void dealToPlayer(Player player, List<Card> cards)
+  private void dealToPlayer(Player player, List<Card> cards, Suit atout = null)
   {
-    player.receiveCards(cards)
+    player.receiveCards(cards, atout)
   }
 
 

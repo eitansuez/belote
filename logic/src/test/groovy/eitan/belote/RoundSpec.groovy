@@ -120,8 +120,8 @@ class RoundSpec extends Specification
     def round = new Round(cards: cards, players: players, game: gameWithAtout(Trefle))
 
     then:
-    round.masterCard() == cards[2]
-    round.master() == players[2]
+    round.masterCard() == new Card(type: CardType.Huit, suit: Pique)
+    round.master() == corinne
   }
 
   def "9 wins over 8 and 7 even though they're all 0 points"()

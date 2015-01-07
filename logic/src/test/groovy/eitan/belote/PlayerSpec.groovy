@@ -6,6 +6,7 @@ import static eitan.belote.CardType.Ace
 import static eitan.belote.CardType.Dame
 import static eitan.belote.CardType.Dix
 import static eitan.belote.CardType.Huit
+import static eitan.belote.CardType.Neuf
 import static eitan.belote.CardType.Roi
 import static eitan.belote.CardType.Sept
 import static Suit.Carreau
@@ -381,5 +382,49 @@ class PlayerSpec extends Specification
     then:
     eitan.hasBeloteRebelote(Trefle)
     !eitan.hasBeloteRebelote(Coeur)
+  }
+
+  def "hand should be sorted by suit, points, ordinal"()
+  {
+    when:
+    eitan.receiveCard(new Card(type: Huit, suit: Carreau))
+    eitan.receiveCard(new Card(type: Dame, suit: Coeur))
+    eitan.receiveCard(new Card(type: Dix, suit: Coeur))
+    eitan.receiveCard(new Card(type: Sept, suit: Carreau))
+    eitan.receiveCard(new Card(type: Ace, suit: Coeur))
+    eitan.receiveCard(new Card(type: Neuf, suit: Pique))
+
+    then:
+    eitan.hand == [
+        new Card(type: Dame, suit: Coeur),
+        new Card(type: Dix, suit: Coeur),
+        new Card(type: Ace, suit: Coeur),
+        new Card(type: Neuf, suit: Pique),
+        new Card(type: Sept, suit: Carreau),
+        new Card(type: Huit, suit: Carreau)
+      ]
+  }
+
+  def "hand should be sorted by suit, points, ordinal, atouts special"()
+  {
+    when:
+    eitan.receiveCard(new Card(type: Huit, suit: Carreau), Trefle)
+    eitan.receiveCard(new Card(type: Dame, suit: Coeur), Trefle)
+    eitan.receiveCard(new Card(type: Ace, suit: Trefle), Trefle)
+    eitan.receiveCard(new Card(type: Dix, suit: Coeur), Trefle)
+    eitan.receiveCard(new Card(type: Sept, suit: Carreau), Trefle)
+    eitan.receiveCard(new Card(type: Ace, suit: Coeur), Trefle)
+    eitan.receiveCard(new Card(type: Neuf, suit: Trefle), Trefle)
+
+    then:
+    eitan.hand == [
+        new Card(type: Dame, suit: Coeur),
+        new Card(type: Dix, suit: Coeur),
+        new Card(type: Ace, suit: Coeur),
+        new Card(type: Sept, suit: Carreau),
+        new Card(type: Huit, suit: Carreau),
+        new Card(type: Ace, suit: Trefle),
+        new Card(type: Neuf, suit: Trefle)
+    ]
   }
 }
