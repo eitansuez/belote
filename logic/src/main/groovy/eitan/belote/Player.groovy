@@ -31,6 +31,7 @@ class Player implements Emitter
   {
     hand << card
     def orderBy = new OrderBy([
+        { it.suit == atout ? 1 : 0 },
         { it.suit.ordinal() },
         { it.points(atout) },
         { it.type.ordinal() }
