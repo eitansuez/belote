@@ -30,10 +30,11 @@ class Player implements Emitter
   private addCard(Card card, Suit atout)
   {
     hand << card
-    def orderBy = new OrderBy([{ it.suit == atout },
-                               { it.suit.ordinal() },
-                               { it.points(atout) },
-                               { it.type.ordinal() }])
+    def orderBy = new OrderBy([
+        { it.suit.ordinal() },
+        { it.points(atout) },
+        { it.type.ordinal() }
+    ])
     def newHand = hand.sort(false, orderBy)
 
     def order = newHand.collect { hand.indexOf(it) }

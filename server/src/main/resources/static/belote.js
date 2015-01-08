@@ -36,6 +36,8 @@ var Hand = Base.extend({
         this.playerNameField.bringToFront();
 
         this.group.rotate(this.angle(), table.bounds.center);
+
+        this.cards = [];
     },
     rotate: function(point) {
         return point.rotate(this.angle());
@@ -43,18 +45,40 @@ var Hand = Base.extend({
     angle: function() {
         return 90 * this.orientation;
     },
-    nextPosition: function(cardBounds) {
-        if (this.nextPos)
-        {
-            this.nextPos = this.addVectorToPosition(this.nextPos, new Size(cardSeparation, 0));
+    receiveCard: function(card, frontFace, order) {
+
+        this.cards.push(card);
+
+        var newCards = [];
+        for (var i=0; i<order.length; i++) {
+            newCards.push(this.cards[order[i]]);
         }
-        else
-        {
-            var verticalOffset = (hands[0].path.bounds.height - cardBounds.height) / 2;
-            var horizontalOffset = (hands[0].path.bounds.width - cardBounds.width ) / 2;
-            this.nextPos = this.addVectorToPosition(this.path.position, new Size(-horizontalOffset, -verticalOffset));
-        }
-        return this.nextPos;
+        this.cards = newCards;
+
+        card.rotate(this.angle());
+        card.flip(frontFace);
+
+        var self = this;
+
+        _.each(this.cards, function(card, index) {
+            var position = self.cardPosition(index, card.face.bounds);
+
+            card.moveTo(position, function(card) {
+                //self.addCard(card);
+                var face = frontFace ? card.face : card.back;
+                var otherSide = frontFace ? card.back : card.face;
+                self.group.insertChild(index, face);
+                self.group.addChild(otherSide);
+            });
+
+        });
+    },
+    cardPosition: function(index, cardBounds) {
+        var verticalOffset = (hands[0].path.bounds.height - cardBounds.height) / 2;
+        var horizontalOffset = (hands[0].path.bounds.width - cardBounds.width ) / 2;
+        var startingPosition = this.addVectorToPosition(this.path.position, new Size(-horizontalOffset, -verticalOffset));
+
+        return this.addVectorToPosition(startingPosition, new Size(cardSeparation * index, 0));
     },
     addVectorToPosition: function(position, offset) {
         var vector = vectorize(offset);
@@ -62,7 +86,7 @@ var Hand = Base.extend({
         return position + transformedVector;
     },
     clear: function() {
-        this.nextPos = null;
+        this.cards = [];
     },
     setPlayerName: function(name) {
         this.playerNameField.content = name;
@@ -164,16 +188,6 @@ var Card = Base.extend({
         cardsLayer.addChild(this.back);
         this.back.visible = false;
     },
-    placeInHand: function(hand, frontFace) {
-        var position = hand.nextPosition(this.face.bounds);
-
-        this.rotate(hand.angle());
-
-        this.flip(frontFace);
-        this.moveTo(position, function(card) {
-            hand.addCard(card);
-        });
-    },
     play: function() {
         var hand = this.face.parent.hand;
         var cardBounds = this.face.bounds;
@@ -206,10 +220,10 @@ function vectorize(size)
 
 
 var cmds = {
-    receiveCard : function(playerName, cardName) {
+    receiveCard : function(playerName, cardName, order) {
         var frontFace = isPlayerMe(playerName);
         var hand = players[playerName];
-        cards[cardName].placeInHand(hand, frontFace);
+        hand.receiveCard(cards[cardName], frontFace, order);
     },
     turnUpCard : function(cardName) {
         cards[cardName].turnUp();
@@ -667,7 +681,7 @@ function setupTable(a) {
     setupBubbles();
 
     var card = randomCard();
-    cardSeparation = card.face.bounds.width / 2;
+    cardSeparation = card.face.bounds.width / 2.5;
     selectDelta = card.face.bounds.height / 5;
 }
 
