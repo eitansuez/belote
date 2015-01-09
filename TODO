@@ -1,6 +1,12 @@
 Prioritized:
 ---
 
+>  make card placement log wording semantic:  "Eitan cuts with ..", or "Johnny follows suit with ..", or "Corinne monte with .."
+   likewise, should state at end of each game "stat" such as:  "team x wins after having committed to trefle"
+> scrolling log of events:  dedans, capot, messages notifying players of events
+
+> partie build should visually come before table is even drawn, or perhaps should be overlaid on top of table.
+
 > object oriented javascript
  - oopify table
 
@@ -8,15 +14,7 @@ Prioritized:
 > implement an alert for notification to replace scaffold window.alert
 
 > for a partie, show all games, and rounds within each game, with scores, so can review
-> ability for a client to receive a full log of events to reconstruct game state in the event
-
-> organize/sort player's hand by suit, by value/ordinal
-
->  make card placement log wording semantic:  "Eitan cuts with ..", or "Johnny follows suit with ..", or "Corinne monte with .."
-   likewise, should state at end of each game "stat" such as:  "team x wins after having committed to trefle"
-> scrolling log of events:  dedans, capot, messages notifying players of events
-
-> partie build should visually come before table is even drawn, or perhaps should be overlaid on top of table.
+> ability for a client to receive a full log of events to reconstruct game state
 
 ------and more..
 
