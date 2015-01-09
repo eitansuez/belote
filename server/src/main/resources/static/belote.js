@@ -8,7 +8,7 @@ var gameScoreArea, partieScoreArea;
 var cardsLayer, handsLayer;
 
 var cardSeparation, selectDelta;
-var handAspectRatio = 2.5;
+var handAspectRatio = 2;
 
 var played = [];
 
@@ -33,10 +33,7 @@ var Hand = Base.extend({
             fontSize: 12
         });
         this.group.addChild(this.playerNameField);
-        this.playerNameField.bringToFront();
-
         this.group.rotate(this.angle(), table.bounds.center);
-
         this.cards = [];
     },
     rotate: function(point) {
@@ -64,14 +61,28 @@ var Hand = Base.extend({
             var position = self.cardPosition(index, card.face.bounds);
 
             card.moveTo(position, function(card) {
-                //self.addCard(card);
-                var face = frontFace ? card.face : card.back;
-                var otherSide = frontFace ? card.back : card.face;
-                self.group.insertChild(index, face);
-                self.group.addChild(otherSide);
+                self.addCard(card);
+                if (self.isLastCard(card)) {
+                    self.zOrderCards();
+                }
             });
 
         });
+    },
+    isLastCard: function(card) {
+        return (this.cards[this.cards.length-1].name == card.name);
+    },
+    zOrderCards: function() {
+        for (var i=1; i<this.cards.length; i++) {
+            var prevCard = this.cards[i-1];
+            var thisCard = this.cards[i];
+            if (this.cards.length == 5 && thisPlayerName == this.playerNameField.content)
+            {
+                console.log("moving card "+thisCard.name+" above "+prevCard.name);
+            }
+            thisCard.face.moveAbove(prevCard.face);
+            thisCard.back.moveAbove(prevCard.back);
+        }
     },
     cardPosition: function(index, cardBounds) {
         var verticalOffset = (hands[0].path.bounds.height - cardBounds.height) / 2;
@@ -103,8 +114,12 @@ var Hand = Base.extend({
         });
     },
     addCard: function(card) {
-        this.group.addChild(card.face);
-        this.group.addChild(card.back);
+        if (card.face.parent != this.group) {
+            this.group.addChild(card.face);
+        }
+        if (card.back.parent != this.group) {
+            this.group.addChild(card.back);
+        }
     },
     chooseCard: function(validCards) {
         var self = this;
