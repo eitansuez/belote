@@ -7,8 +7,8 @@ var gameScoreArea, partieScoreArea;
 
 var cardsLayer, handsLayer;
 
-var cardSeparation, selectDelta;
-var handAspectRatio = 2;
+var cardSeparation, selectDelta, cardBounds;
+var handAspectRatio = 2.2;
 
 var played = [];
 
@@ -58,7 +58,7 @@ var Hand = Base.extend({
         var self = this;
 
         _.each(this.cards, function(card, index) {
-            var position = self.cardPosition(index, card.face.bounds);
+            var position = self.cardPosition(index);
 
             card.moveTo(position, function(card) {
                 self.addCard(card);
@@ -84,9 +84,9 @@ var Hand = Base.extend({
             thisCard.back.moveAbove(prevCard.back);
         }
     },
-    cardPosition: function(index, cardBounds) {
+    cardPosition: function(index) {
         var verticalOffset = (hands[0].path.bounds.height - cardBounds.height) / 2;
-        var horizontalOffset = (hands[0].path.bounds.width - cardBounds.width ) / 2;
+        var horizontalOffset = ( hands[0].path.bounds.width - cardBounds.width ) / 2;
         var startingPosition = this.addVectorToPosition(this.path.position, new Size(-horizontalOffset, -verticalOffset));
 
         return this.addVectorToPosition(startingPosition, new Size(cardSeparation * index, 0));
@@ -696,8 +696,9 @@ function setupTable(a) {
     setupBubbles();
 
     var card = randomCard();
-    cardSeparation = card.face.bounds.width / 2.5;
-    selectDelta = card.face.bounds.height / 5;
+    cardBounds = card.face.bounds;
+    cardSeparation = cardBounds.width / 2.5;
+    selectDelta = cardBounds.height / 5;
 }
 
 function setupHands(c, b) {
