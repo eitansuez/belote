@@ -76,10 +76,6 @@ var Hand = Base.extend({
         for (var i=1; i<this.cards.length; i++) {
             var prevCard = this.cards[i-1];
             var thisCard = this.cards[i];
-            if (this.cards.length == 5 && thisPlayerName == this.playerNameField.content)
-            {
-                console.log("moving card "+thisCard.name+" above "+prevCard.name);
-            }
             thisCard.face.moveAbove(prevCard.face);
             thisCard.back.moveAbove(prevCard.back);
         }
@@ -91,8 +87,11 @@ var Hand = Base.extend({
 
         return this.addVectorToPosition(startingPosition, new Size(cardSeparation * index, 0));
     },
+    vectorize: function(size) {
+        return (table.bounds.topLeft + size) - table.bounds.topLeft;
+    },
     addVectorToPosition: function(position, offset) {
-        var vector = vectorize(offset);
+        var vector = this.vectorize(offset);
         var transformedVector = this.rotate(vector);
         return position + transformedVector;
     },
@@ -228,12 +227,6 @@ var Card = Base.extend({
 });
 
 
-function vectorize(size)
-{
-    return (table.bounds.topLeft + size) - table.bounds.topLeft;
-}
-
-
 var cmds = {
     receiveCard : function(playerName, cardName, order) {
         var frontFace = isPlayerMe(playerName);
@@ -244,8 +237,8 @@ var cmds = {
         cards[cardName].turnUp();
     },
     playerDecision : function(playerName, envoi, suitName) {
-        var passesText = (suitName ? " passes at " : " passes again.");
-        var text = playerName + (envoi ? " goes for " : passesText);
+        var passesText = (suitName ? " pass at " : " pass again.");
+        var text = "I" + (envoi ? " go for " : passesText);
         if (suitName) {
             text += suitName;
         }
@@ -597,7 +590,7 @@ function onFrame(event) {
 function clearTable(winningHand) {
     _.each(played, function(card) {
 
-        var verticalOffset = ( hands[0].path.bounds.height + card.face.bounds.height ) / 2 + (card.face.bounds.height / 4);
+        var verticalOffset = ( hands[0].path.bounds.height + cardBounds.height ) / 2 + (cardBounds.height / 4);
         var position = winningHand.addVectorToPosition(winningHand.path.position, new Size(0, -verticalOffset));
 
         card.flip(true);
