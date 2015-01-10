@@ -70,7 +70,7 @@ var Hand = Base.extend({
         });
     },
     isLastCard: function(card) {
-        return (this.cards[this.cards.length-1].name == card.name);
+        return _.last(this.cards).name == card.name;
     },
     zOrderCards: function() {
         for (var i=1; i<this.cards.length; i++) {
@@ -496,7 +496,7 @@ var Bubble = Group.extend({
 
     say: function(text) {
         this.setText(text);
-        if (text.length > 0) {
+        if (! _.isEmpty(text)) {
             this.show();
             var self = this;
             setTimeout(function () {
