@@ -42,7 +42,7 @@ var Hand = Base.extend({
     angle: function() {
         return 90 * this.orientation;
     },
-    receiveCard: function(card, frontFace, order) {
+    receiveCard: function(card, playerName, order) {
 
         this.cards.push(card);
 
@@ -52,14 +52,13 @@ var Hand = Base.extend({
         }
         this.cards = newCards;
 
-        card.flip(frontFace);
-
         var self = this;
 
         _.each(this.cards, function(card, index) {
             var position = self.cardPosition(index);
 
             card.moveTo(position, self.angle(), function(card) {
+                card.flip(isPlayerMe(playerName));
                 self.addCard(card);
                 if (self.isLastCard(card)) {
                     self.zOrderCards();
@@ -85,6 +84,10 @@ var Hand = Base.extend({
         var startingPosition = this.addVectorToPosition(this.path.position, new Size(-horizontalOffset, -verticalOffset));
 
         return this.addVectorToPosition(startingPosition, new Size(cardSeparation * index, 0));
+    },
+    cardPlayPosition: function() {
+        var verticalOffset = ( hands[0].path.bounds.height + cardBounds.height ) / 2 + (cardBounds.height / 4);
+        return this.addVectorToPosition(this.path.position, new Size(0, -verticalOffset));
     },
     vectorize: function(size) {
         return (table.bounds.topLeft + size) - table.bounds.topLeft;
@@ -166,7 +169,8 @@ var Card = Base.extend({
         var duration = 0.5; // seconds
         var timeRemaining = duration;
 
-        if (typeof finalRotation !== 'undefined') {
+        var rotationSpecified = (typeof finalRotation !== 'undefined') || finalRotation != null;
+        if (rotationSpecified) {
             finalRotation %= 180;
         }
 
@@ -180,7 +184,7 @@ var Card = Base.extend({
             var distance = progress * vector.length;
             var trans = new Point({length: distance, angle: vector.angle});
 
-            if (typeof finalRotation !== 'undefined') {
+            if (rotationSpecified) {
                 var delta_angle = finalRotation - face.rotation;
                 var angle = progress * delta_angle;
             }
@@ -190,7 +194,7 @@ var Card = Base.extend({
             if (timeRemaining < 0) {
                 self.placeAt(destination);
 
-                if (typeof finalRotation !== 'undefined') {
+                if (rotationSpecified) {
                     self.face.rotation = finalRotation;
                     self.back.rotation = finalRotation;
                 }
@@ -203,7 +207,7 @@ var Card = Base.extend({
             }
             else {
                 face.translate(trans);
-                if (typeof finalRotation !== 'undefined') {
+                if (rotationSpecified) {
                     face.rotate(angle);
                 }
             }
@@ -222,10 +226,8 @@ var Card = Base.extend({
     },
     play: function() {
         var hand = this.face.parent.hand;
-        var verticalOffset = ( hands[0].path.bounds.height + cardBounds.height ) / 2 + (cardBounds.height / 4);
-        var position = hand.addVectorToPosition(hand.path.position, new Size(0, -verticalOffset));
         this.flip(true);
-        this.moveTo(position);
+        this.moveTo(hand.cardPlayPosition());
         played.push(this);
     },
     arm: function() {
@@ -246,9 +248,8 @@ var Card = Base.extend({
 
 var cmds = {
     receiveCard : function(playerName, cardName, order) {
-        var frontFace = isPlayerMe(playerName);
         var hand = players[playerName];
-        hand.receiveCard(cards[cardName], frontFace, order);
+        hand.receiveCard(cards[cardName], playerName, order);
     },
     turnUpCard : function(cardName) {
         cards[cardName].turnUp();
@@ -607,8 +608,7 @@ function onFrame(event) {
 function clearTable(winningHand) {
     _.each(played, function(card) {
 
-        var verticalOffset = ( hands[0].path.bounds.height + cardBounds.height ) / 2 + (cardBounds.height / 4);
-        var position = winningHand.addVectorToPosition(winningHand.path.position, new Size(0, -verticalOffset));
+        var position = winningHand.cardPlayPosition();
 
         card.flip(true);
         card.moveTo(position, winningHand.angle(), function(card) {
