@@ -155,8 +155,8 @@ class Player implements Emitter
 
   boolean hasBeloteRebelote(Suit atout)
   {
-    hand.contains(new Card(type: Roi, suit: atout)) &&
-        hand.contains(new Card(type: Dame, suit: atout))
+    hand.any { card -> card.type == Roi && card.suit == atout } &&
+        hand.any { card -> card.type == Dame && card.suit == atout }
   }
 
   void setBeloteRebelote(boolean haveIt)
