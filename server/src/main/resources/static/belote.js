@@ -58,7 +58,9 @@ var Hand = Base.extend({
             var position = self.cardPosition(index);
 
             card.moveTo(position, self.angle(), function(card) {
-                card.flip(isPlayerMe(playerName));
+                if (isPlayerMe(playerName)) {
+                    card.flip(true);
+                }
                 self.addCard(card);
                 if (self.isLastCard(card)) {
                     self.zOrderCards();
@@ -86,7 +88,7 @@ var Hand = Base.extend({
         return this.addVectorToPosition(startingPosition, new Size(cardSeparation * index, 0));
     },
     cardPlayPosition: function() {
-        var verticalOffset = ( hands[0].path.bounds.height + cardBounds.height ) / 2 + (cardBounds.height / 4);
+        var verticalOffset = ( hands[0].path.bounds.height + cardBounds.height ) / 2 + (cardBounds.height / 8);
         return this.addVectorToPosition(this.path.position, new Size(0, -verticalOffset));
     },
     vectorize: function(size) {
@@ -155,7 +157,6 @@ var Card = Base.extend({
         var faceToHide = faceUp ? this.back : this.face;
         faceToShow.visible = true;
         faceToHide.visible = false;
-        faceToShow.bringToFront();
     },
     placeAt: function(position) {
         this.face.position = position;
