@@ -52,7 +52,6 @@ var Hand = Base.extend({
         }
         this.cards = newCards;
 
-        card.rotate(this.angle());
         card.flip(frontFace);
 
         var self = this;
@@ -60,7 +59,7 @@ var Hand = Base.extend({
         _.each(this.cards, function(card, index) {
             var position = self.cardPosition(index);
 
-            card.moveTo(position, function(card) {
+            card.moveTo(position, self.angle(), function(card) {
                 self.addCard(card);
                 if (self.isLastCard(card)) {
                     self.zOrderCards();
@@ -163,9 +162,13 @@ var Card = Base.extend({
         this.face.rotate(angle);
         this.back.rotate(angle);
     },
-    moveTo: function (destination, doneFn) {
+    moveTo: function (destination, finalRotation, doneFn) {
         var duration = 0.5; // seconds
         var timeRemaining = duration;
+
+        if (typeof finalRotation !== 'undefined') {
+            finalRotation %= 180;
+        }
 
         var face = (this.face.visible ? this.face : this.back);
         var self = this;
@@ -173,13 +176,25 @@ var Card = Base.extend({
         face.onFrame = function(event) {
             var vector = destination - face.position;
 
-            var distance = event.delta/timeRemaining * vector.length;
+            var progress = event.delta / timeRemaining;
+            var distance = progress * vector.length;
             var trans = new Point({length: distance, angle: vector.angle});
+
+            if (typeof finalRotation !== 'undefined') {
+                var delta_angle = finalRotation - face.rotation;
+                var angle = progress * delta_angle;
+            }
 
             timeRemaining -= event.delta;
 
             if (timeRemaining < 0) {
                 self.placeAt(destination);
+
+                if (typeof finalRotation !== 'undefined') {
+                    self.face.rotation = finalRotation;
+                    self.back.rotation = finalRotation;
+                }
+
                 face.onFrame = null;
                 if (doneFn)
                 {
@@ -188,6 +203,9 @@ var Card = Base.extend({
             }
             else {
                 face.translate(trans);
+                if (typeof finalRotation !== 'undefined') {
+                    face.rotate(angle);
+                }
             }
         };
     },
@@ -204,7 +222,6 @@ var Card = Base.extend({
     },
     play: function() {
         var hand = this.face.parent.hand;
-        var cardBounds = this.face.bounds;
         var verticalOffset = ( hands[0].path.bounds.height + cardBounds.height ) / 2 + (cardBounds.height / 4);
         var position = hand.addVectorToPosition(hand.path.position, new Size(0, -verticalOffset));
         this.flip(true);
@@ -594,7 +611,7 @@ function clearTable(winningHand) {
         var position = winningHand.addVectorToPosition(winningHand.path.position, new Size(0, -verticalOffset));
 
         card.flip(true);
-        card.moveTo(position, function(card) {
+        card.moveTo(position, winningHand.angle(), function(card) {
             card.clear();
         });
     });

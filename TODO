@@ -1,8 +1,9 @@
 Prioritized:
 ---
 
-    - when player takes pli, cards move towards each other with rotation
+    - player should say "belote" and "rebelote" when he plays them
     - animate the flipping of a card
+    - still have bug with card.moveAbove(previousCard)
 
 >  make card placement log wording semantic:  "Eitan cuts with ..", or "Johnny follows suit with ..", or "Corinne monte with .."
    likewise, should state at end of each game "stat" such as:  "team x wins after having committed to trefle"
