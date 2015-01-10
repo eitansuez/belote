@@ -60,7 +60,7 @@ class PlayerSpec extends Specification
     def firstCard = eitan.hand.first()
 
     when:
-    def played = eitan.playCard(firstCard)
+    def played = eitan.playCard(firstCard, Trefle)
 
     then:
     eitan.hand.size() == 7
@@ -80,7 +80,7 @@ class PlayerSpec extends Specification
     eitan.receiveCard(new Card(suit: Pique, type: Sept))
 
     when:
-    eitan.playCard(new Card(suit: Pique, type: Huit))
+    eitan.playCard(new Card(suit: Pique, type: Huit), Trefle)
 
     then:
     thrown(AssertionError)

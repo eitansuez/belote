@@ -14,6 +14,7 @@ class Player implements Emitter
   List<Card> hand = []
   Team team
   Strategy strategy = new RandomStrategy(player: this)
+  boolean haveBeloteRebelote = false
 
   void setStrategy(Strategy s)
   {
@@ -61,12 +62,14 @@ class Player implements Emitter
     strategy.play(game, validCards, round)
   }
 
-  def playCard(Card card, Delay delay = Delay.Standard)
+  def playCard(Card card, Suit atout, Delay delay = Delay.Standard)
   {
     assert hand.contains(card)
 
+    String bRText = beloteRebeloteClaim(card, atout)
+
     if (hand.remove(card)) {
-      emit('playCard', [this, card], delay)
+      emit('playCard', [this, card, bRText], delay)
       return card
     }
   }
@@ -154,6 +157,20 @@ class Player implements Emitter
   {
     hand.contains(new Card(type: Roi, suit: atout)) &&
         hand.contains(new Card(type: Dame, suit: atout))
+  }
+
+  void setBeloteRebelote(boolean haveIt)
+  {
+    haveBeloteRebelote = haveIt
+  }
+
+  String beloteRebeloteClaim(Card card, Suit atout)
+  {
+    if (!haveBeloteRebelote) return ''
+    if ( (card.type == Roi || card.type == Dame) && card.suit == atout) {
+      return (hasBeloteRebelote(atout)) ? 'Belote' : 'Rebelote'
+    }
+    return ''
   }
 
   // events

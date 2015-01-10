@@ -276,7 +276,7 @@ class Game implements Emitter
   def playerChooses(Card card)
   {
     boolean lastCard = currentRound.size() == 3
-    currentPlayer.playCard(card, lastCard ? Delay.Long : Delay.Standard)
+    currentPlayer.playCard(card, atout, lastCard ? Delay.Long : Delay.Standard)
     currentRound = currentRound.nextPlay(card, currentPlayer)
     continuePlayPhase()
   }
@@ -313,7 +313,11 @@ class Game implements Emitter
   Player beloteRebelote()
   {
     assert atout != null
-    players().find { player -> player.hasBeloteRebelote(atout) }
+    def found = players().find { player -> player.hasBeloteRebelote(atout) }
+    players().each { player ->
+      player.setBeloteRebelote(player == found)
+    }
+    found
   }
 
   List<Player> players()

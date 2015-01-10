@@ -58,10 +58,10 @@ var Hand = Base.extend({
             var position = self.cardPosition(index);
 
             card.moveTo(position, self.angle(), function(card) {
+                self.addCard(card);
                 if (isPlayerMe(playerName)) {
                     card.flip(true);
                 }
-                self.addCard(card);
                 if (self.isLastCard(card)) {
                     self.zOrderCards();
                 }
@@ -286,7 +286,8 @@ var cmds = {
         });
         players[playerName].chooseCard(validCards);
     },
-    playCard: function(playerName, cardName) {
+    playCard: function(playerName, cardName, beloteRebeloteText) {
+        players[playerName].bubble.say(beloteRebeloteText);
         cards[cardName].play();
     },
     gameUpdate: function(team1, team1Score, team2, team2Score) {
@@ -495,11 +496,13 @@ var Bubble = Group.extend({
 
     say: function(text) {
         this.setText(text);
-        this.show();
-        var self = this;
-        setTimeout(function() {
-            self.hide();
-        }, 2000);
+        if (text.length > 0) {
+            this.show();
+            var self = this;
+            setTimeout(function () {
+                self.hide();
+            }, 2000);
+        }
     }
 
 });

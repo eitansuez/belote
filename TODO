@@ -1,9 +1,11 @@
 Prioritized:
 ---
 
-    - player should say "belote" and "rebelote" when he plays them
+    - write test for play card with belote, with rebelote
     - animate the flipping of a card
-    - still have bug with card.moveAbove(previousCard)
+    - still have bug with card.moveAbove(previousCard) -- i think i know now --
+    the zordering has to take place after the last card has finished moving.
+      it happens too early and then some other card is moved into place and brought to front.
 
 >  make card placement log wording semantic:  "Eitan cuts with ..", or "Johnny follows suit with ..", or "Corinne monte with .."
    likewise, should state at end of each game "stat" such as:  "team x wins after having committed to trefle"
