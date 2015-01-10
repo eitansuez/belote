@@ -2,17 +2,11 @@ package eitan.belote
 
 import spock.lang.Specification
 
-import static eitan.belote.CardType.Ace
-import static eitan.belote.CardType.Dame
-import static eitan.belote.CardType.Dix
-import static eitan.belote.CardType.Huit
-import static eitan.belote.CardType.Neuf
-import static eitan.belote.CardType.Roi
-import static eitan.belote.CardType.Sept
-import static Suit.Carreau
-import static Suit.Coeur
-import static Suit.Pique
-import static Suit.Trefle
+import static eitan.belote.CardType.*
+import static eitan.belote.Suit.Carreau
+import static eitan.belote.Suit.Coeur
+import static eitan.belote.Suit.Pique
+import static eitan.belote.Suit.Trefle
 
 class PlayerSpec extends Specification
 {
@@ -376,12 +370,76 @@ class PlayerSpec extends Specification
         new Card(type: Dix, suit: Coeur),
         new Card(type: Sept, suit: Pique),
         new Card(type: Huit, suit: Pique),
-        new Card(type: Roi, suit: Trefle),
+        new Card(type: Roi, suit: Trefle)
     ])
 
     then:
     eitan.hasBeloteRebelote(Trefle)
     !eitan.hasBeloteRebelote(Coeur)
+  }
+
+  def "belote rebelote claim"()
+  {
+    when:
+    eitan.setBeloteRebelote(true)
+    def cards = [
+        new Card(type: Dame, suit: Trefle),
+        new Card(type: Dix, suit: Coeur),
+        new Card(type: Sept, suit: Pique),
+        new Card(type: Huit, suit: Pique),
+        new Card(type: Roi, suit: Trefle)
+    ]
+    eitan.receiveCards(cards)
+
+    then:
+    eitan.beloteRebeloteClaim(cards[0], Trefle) == 'Belote'
+  }
+
+  def "belote rebelote claim next card"()
+  {
+    when:
+    eitan.setBeloteRebelote(true)
+    def cards = [
+        new Card(type: Dix, suit: Coeur),
+        new Card(type: Sept, suit: Pique),
+        new Card(type: Huit, suit: Pique),
+        new Card(type: Roi, suit: Trefle)
+    ]
+    eitan.receiveCards(cards)
+
+    then:
+    eitan.beloteRebeloteClaim(cards[0], Trefle) == ''
+  }
+
+  def "belote rebelote claim second card"()
+  {
+    when:
+    eitan.setBeloteRebelote(true)
+    def cards = [
+        new Card(type: Dix, suit: Coeur),
+        new Card(type: Sept, suit: Pique),
+        new Card(type: Huit, suit: Pique),
+        new Card(type: Roi, suit: Trefle)
+    ]
+    eitan.receiveCards(cards)
+
+    then:
+    eitan.beloteRebeloteClaim(cards[3], Trefle) == 'Rebelote'
+  }
+
+  def "belote rebelote claim post cards"()
+  {
+    when:
+    eitan.setBeloteRebelote(true)
+    def cards = [
+        new Card(type: Dix, suit: Coeur),
+        new Card(type: Sept, suit: Pique),
+        new Card(type: Huit, suit: Pique)
+    ]
+    eitan.receiveCards(cards)
+
+    then:
+    eitan.beloteRebeloteClaim(cards[2], Trefle) == ''
   }
 
   def "hand should be sorted by suit, points, ordinal"()

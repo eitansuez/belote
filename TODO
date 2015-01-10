@@ -1,10 +1,7 @@
 Prioritized:
 ---
-    - write test for play card with belote, with rebelote
     - animate the flipping of a card
-    - still have bug with card.moveAbove(previousCard) -- i think i know now --
-    the zordering has to take place after the last card has finished moving.
-      it happens too early and then some other card is moved into place and brought to front.
+    - still have bug with card.moveAbove(previousCard) ?? test this.  *appears* to be fixed.
 
 >  make card placement log wording semantic:  "Eitan cuts with ..", or "Johnny follows suit with ..", or "Corinne monte with .."
    likewise, should state at end of each game "stat" such as:  "team x wins after having committed to trefle"
@@ -41,8 +38,8 @@ Prioritized:
 
 - transitions/animations:
     - score update (highlight/fade)
-    - introduce rotation in animations/transitions
     - employ fade/appear effect
+    - introduce non-linear easing
 
 - option for ui to display other players' cards face up
 
