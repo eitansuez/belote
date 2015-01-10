@@ -1,7 +1,5 @@
 Prioritized:
 ---
-    - when game is forfeit, animate moving all cards to deck position
-
     - write test for play card with belote, with rebelote
     - animate the flipping of a card
     - still have bug with card.moveAbove(previousCard) -- i think i know now --

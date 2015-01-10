@@ -87,8 +87,12 @@ var Hand = Base.extend({
         return this.addVectorToPosition(startingPosition, new Size(cardSeparation * index, 0));
     },
     cardPlayPosition: function() {
-        var verticalOffset = ( hands[0].path.bounds.height + cardBounds.height ) / 2 + (cardBounds.height / 8);
+        var verticalOffset = ( hands[0].path.bounds.height + ( 1.25 * cardBounds.height ) ) / 2;
         return this.addVectorToPosition(this.path.position, new Size(0, -verticalOffset));
+    },
+    pilePosition: function() {
+        var offset = ( hands[0].path.bounds.width + ( 1.5 * cardBounds.width ) ) / 2;
+        return this.addVectorToPosition(this.path.position, new Size(-offset, 0));
     },
     vectorize: function(size) {
         return (table.bounds.topLeft + size) - table.bounds.topLeft;
@@ -217,12 +221,10 @@ var Card = Base.extend({
         this.face.rotation = 0;
         this.face.remove();
         cardsLayer.addChild(this.face);
-        this.face.visible = false;
 
         this.back.rotation = 0;
         this.back.remove();
         cardsLayer.addChild(this.back);
-        this.back.visible = false;
     },
     play: function() {
         var hand = this.face.parent.hand;
@@ -294,7 +296,7 @@ var cmds = {
     },
     roundEnds: function(winner, points) {
         console.log(winner+" takes with "+points+" points");
-        clearTable(players[winner]);
+        clearRound(players[winner]);
     },
     gameStarts : function(gameNumber) {
         gameScoreArea.clearScores();
@@ -322,7 +324,6 @@ var cmds = {
         gameScoreArea.setTeams(team1, team2);
         partieScoreArea.setTeams(team1, team2);
         setupPlayers(playerNames);
-        clearGame();
     }
 };
 
@@ -512,7 +513,6 @@ $(function() {
     setupTable(a);
     htmlInit(a);
     handsLayer.activate();
-    resetDeck();
     connectToServer();
 });
 
@@ -608,11 +608,13 @@ function onFrame(event) {
 }
 
 
-function clearTable(winningHand) {
+function clearRound(winningHand) {
     var position = winningHand.cardPlayPosition();
     _.each(played, function(card) {
         card.moveTo(position, winningHand.angle(), function(card) {
             card.clear();
+            card.flip(false);
+            card.moveTo(winningHand.pilePosition(), winningHand.angle());
         });
     });
 
@@ -624,20 +626,27 @@ function clearGame() {
     _.each(hands, function(hand) {
         hand.clear();
     });
-    _.each(cards, function(card) {
-        card.clear();
-    });
     resetDeck();
 }
 
+function deckPosition() {
+    return table.bounds.center - new Size(cardBounds.width/2 + 10, 0);
+}
 
-function resetDeck() {
-    var delta = new Size(0, 0);
+function resetDeck(place) {
+    var delta = new Size(0.25, 0.25);
+    var spot = deckPosition();
     _.each(cards, function(card) {
-        var spot = table.bounds.center - new Size(cardBounds.width/2 + 10, 0) - delta;
         card.flip(false);
-        card.placeAt(spot);
-        delta += new Size(0.25, 0.25);
+        if (place) {
+            card.placeAt(spot);
+            card.clear();
+        } else {
+            card.moveTo(spot, 0, function(card) {
+                card.clear();
+            });
+        }
+        spot -= delta;
     });
 }
 
@@ -699,16 +708,17 @@ function setupTable(a) {
     loadSuits(b/2);
 
     setupHands(c, b);
-    setupScoreAreas(c, b);
-
     loadCards(0.8*c);
 
+    setupScoreAreas(c, b);
     setupBubbles();
 
     var card = randomCard();
     cardBounds = card.face.bounds;
     cardSeparation = cardBounds.width / 2.5;
     selectDelta = cardBounds.height / 5;
+
+    resetDeck(true);
 }
 
 function setupHands(c, b) {
@@ -739,6 +749,8 @@ function setupBubbles() {
 
 function setupScoreAreas(c, b)
 {
+    new Layer({name: 'scoreAreas'});
+
     gameScoreArea = new ScoreArea({
         title: "Game Score",
         topLeft: new Point(b+c, 0),
