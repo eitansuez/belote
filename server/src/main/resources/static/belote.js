@@ -55,10 +55,9 @@ var Hand = Base.extend({
         var self = this;
 
         _.each(this.cards, function(card, index) {
-            var position = self.cardPosition(index);
             self.addCard(card);
 
-            card.moveTo(position, self.angle(), function(card) {
+            card.moveTo(self.cardPosition(index), self.angle(), function(card) {
                 if (isPlayerMe(playerName)) {
                     card.flip(true);
                 }
@@ -242,7 +241,7 @@ var Card = Base.extend({
     },
     turnUp: function() {
         this.flip(true);
-        this.placeAt(table.bounds.center + new Size(this.face.bounds.width/2 + 10, 0));
+        this.placeAt(table.bounds.center + new Size(cardBounds.width/2 + 10, 0));
     }
 });
 
@@ -635,7 +634,7 @@ function clearGame() {
 function resetDeck() {
     var delta = new Size(0, 0);
     _.each(cards, function(card) {
-        var spot = table.bounds.center - new Size(card.face.bounds.width/2 + 10, 0) - delta;
+        var spot = table.bounds.center - new Size(cardBounds.width/2 + 10, 0) - delta;
         card.flip(false);
         card.placeAt(spot);
         delta += new Size(0.25, 0.25);
