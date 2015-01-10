@@ -56,9 +56,9 @@ var Hand = Base.extend({
 
         _.each(this.cards, function(card, index) {
             var position = self.cardPosition(index);
+            self.addCard(card);
 
             card.moveTo(position, self.angle(), function(card) {
-                self.addCard(card);
                 if (isPlayerMe(playerName)) {
                     card.flip(true);
                 }
@@ -201,7 +201,7 @@ var Card = Base.extend({
                 }
 
                 face.onFrame = null;
-                if (doneFn)
+                if (typeof doneFn !== 'undefined')
                 {
                     doneFn.call(undefined, self);
                 }
@@ -610,11 +610,8 @@ function onFrame(event) {
 
 
 function clearTable(winningHand) {
+    var position = winningHand.cardPlayPosition();
     _.each(played, function(card) {
-
-        var position = winningHand.cardPlayPosition();
-
-        card.flip(true);
         card.moveTo(position, winningHand.angle(), function(card) {
             card.clear();
         });
