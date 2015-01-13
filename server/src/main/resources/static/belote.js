@@ -1,19 +1,90 @@
 var table;
-var cards = {};
+var deckCards = {};
 var suits = {};
 var players = {};
 var hands = [];
+var played = [];
 var gameScoreArea, partieScoreArea;
-
 var cardsLayer, handsLayer;
-
 var cardSeparation, selectDelta, cardBounds;
 var handAspectRatio = 2.2;
-
-var played = [];
-
 var client;
 var thisPlayerName;
+
+
+var CardAnimation = Base.extend({
+    initialize: function(card) {
+        this.card = card;
+        this.active = false;
+    },
+    animate: function(destination, rotation, flip, doneFn) {
+        this.destination = destination;
+
+        this.rotation = rotation;
+        if (this.rotationSpecified()) {
+            this.rotation %= 180;
+        }
+
+        // TODO: replace with xor
+        if (this.flip == true) {
+            if (flip == true) {
+                this.flip = false;
+            } else {
+                this.flip = true;
+            }
+        } else {
+            this.flip = flip;
+        }
+
+        this.doneFn = doneFn;
+        this.timeRemaining = 0.5;  // seconds
+        this.face = (this.card.face.visible ? this.card.face : this.card.back);
+        this.active = true;
+    },
+    rotationSpecified: function() {
+        return (typeof this.rotation !== 'undefined') && this.rotation != null;
+    },
+    onFrame: function(event) {
+        if (!this.active) {
+            return;
+        }
+        var vector = this.destination - this.face.position;
+
+        var progress = event.delta / this.timeRemaining;
+        var distance = progress * vector.length;
+        var trans = new Point({length: distance, angle: vector.angle});
+
+        if (this.rotationSpecified()) {
+            var delta_angle = this.rotation - this.face.rotation;
+            var angle = progress * delta_angle;
+        }
+
+        this.timeRemaining -= event.delta;
+
+        if (this.timeRemaining > 0) {
+            this.face.translate(trans);
+            if (this.rotationSpecified()) {
+                this.face.rotate(angle);
+            }
+        }
+        else {
+            this.active = false;
+
+            this.card.placeAt(this.destination);
+            if (this.rotationSpecified()) {
+                this.card.face.rotation = this.rotation;
+                this.card.back.rotation = this.rotation;
+            }
+            if (this.flip) {
+                this.card.toggleFlip();
+                this.flip = false;
+            }
+            if (typeof this.doneFn !== 'undefined') {
+                this.doneFn.call(undefined, this.card);
+            }
+        }
+    }
+});
 
 
 var Hand = Base.extend({
@@ -42,30 +113,26 @@ var Hand = Base.extend({
     angle: function() {
         return 90 * this.orientation;
     },
-    receiveCard: function(card, playerName, order) {
-
-        this.cards.push(card);
-
+    sortCards: function(order) {
         var newCards = [];
         for (var i=0; i<order.length; i++) {
             newCards.push(this.cards[order[i]]);
         }
-        this.cards = newCards;
+        return newCards;
+    },
+    receiveCard: function(receivedCard, playerName, order) {
+        this.cards.push(receivedCard);
+        this.cards = this.sortCards(order);
 
         var self = this;
-
         _.each(this.cards, function(card, index) {
             self.addCard(card);
-
-            card.moveTo(self.cardPosition(index), self.angle(), function(card) {
-                if (isPlayerMe(playerName)) {
-                    card.flip(true);
-                }
+            var flipIt = (card.name == receivedCard.name) && isPlayerMe(playerName) && (card.face.visible == false);
+            card.moveTo(self.cardPosition(index), self.angle(), flipIt, function(card) {
                 if (self.isLastCard(card)) {
                     self.zOrderCards();
                 }
             });
-
         });
     },
     isLastCard: function(card) {
@@ -154,12 +221,20 @@ var Card = Base.extend({
         var raster = new Raster(name);
         this.face = raster.scale(desiredHeight / raster.height);
         this.back = cardback.place();
+        this.animation = new CardAnimation(this);
+        var self = this;
+        this.face.onFrame = function(event) {
+            self.animation.onFrame(event);
+        }
     },
     flip: function(faceUp) {
         var faceToShow = faceUp ? this.face : this.back;
         var faceToHide = faceUp ? this.back : this.face;
         faceToShow.visible = true;
         faceToHide.visible = false;
+    },
+    toggleFlip: function() {
+        this.flip(!this.face.visible);
     },
     placeAt: function(position) {
         this.face.position = position;
@@ -169,53 +244,8 @@ var Card = Base.extend({
         this.face.rotate(angle);
         this.back.rotate(angle);
     },
-    moveTo: function (destination, finalRotation, doneFn) {
-        var duration = 0.5; // seconds
-        var timeRemaining = duration;
-
-        var rotationSpecified = (typeof finalRotation !== 'undefined') || finalRotation != null;
-        if (rotationSpecified) {
-            finalRotation %= 180;
-        }
-
-        var face = (this.face.visible ? this.face : this.back);
-        var self = this;
-
-        face.onFrame = function(event) {
-            var vector = destination - face.position;
-
-            var progress = event.delta / timeRemaining;
-            var distance = progress * vector.length;
-            var trans = new Point({length: distance, angle: vector.angle});
-
-            if (rotationSpecified) {
-                var delta_angle = finalRotation - face.rotation;
-                var angle = progress * delta_angle;
-            }
-
-            timeRemaining -= event.delta;
-
-            if (timeRemaining < 0) {
-                self.placeAt(destination);
-
-                if (rotationSpecified) {
-                    self.face.rotation = finalRotation;
-                    self.back.rotation = finalRotation;
-                }
-
-                face.onFrame = null;
-                if (typeof doneFn !== 'undefined')
-                {
-                    doneFn.call(undefined, self);
-                }
-            }
-            else {
-                face.translate(trans);
-                if (rotationSpecified) {
-                    face.rotate(angle);
-                }
-            }
-        };
+    moveTo: function (destination, rotation, flip, doneFn) {
+        this.animation.animate(destination, rotation, flip, doneFn);
     },
     clear: function() {
         this.face.rotation = 0;
@@ -228,8 +258,7 @@ var Card = Base.extend({
     },
     play: function() {
         var hand = this.face.parent.hand;
-        this.flip(true);
-        this.moveTo(hand.cardPlayPosition());
+        this.moveTo(hand.cardPlayPosition(), null, !isPlayerMe(hand.playerNameField.content));
         played.push(this);
     },
     arm: function() {
@@ -251,10 +280,10 @@ var Card = Base.extend({
 var cmds = {
     receiveCard : function(playerName, cardName, order) {
         var hand = players[playerName];
-        hand.receiveCard(cards[cardName], playerName, order);
+        hand.receiveCard(deckCards[cardName], playerName, order);
     },
     turnUpCard : function(cardName) {
-        cards[cardName].turnUp();
+        deckCards[cardName].turnUp();
     },
     playerDecision : function(playerName, envoi, suitName) {
         var passesText = (suitName ? " pass at " : " pass again.");
@@ -283,13 +312,13 @@ var cmds = {
     },
     play: function(playerName, cardNames) {
         var validCards = _.map(cardNames, function(cardName) {
-            return cards[cardName];
+            return deckCards[cardName];
         });
         players[playerName].chooseCard(validCards);
     },
     playCard: function(playerName, cardName, beloteRebeloteText) {
         players[playerName].bubble.say(beloteRebeloteText);
-        cards[cardName].play();
+        deckCards[cardName].play();
     },
     gameUpdate: function(team1, team1Score, team2, team2Score) {
         gameScoreArea.updateScores(team1Score, team2Score);
@@ -610,11 +639,12 @@ function onFrame(event) {
 
 function clearRound(winningHand) {
     var position = winningHand.cardPlayPosition();
-    _.each(played, function(card) {
-        card.moveTo(position, winningHand.angle(), function(card) {
+    var pilePosition = winningHand.pilePosition();
+    var angle = winningHand.angle();
+    _.each(played, function(playedCard) {
+        playedCard.moveTo(position, angle, false, function(card) {
             card.clear();
-            card.flip(false);
-            card.moveTo(winningHand.pilePosition(), winningHand.angle());
+            card.moveTo(pilePosition, angle, true);
         });
     });
 
@@ -636,13 +666,13 @@ function deckPosition() {
 function resetDeck(place) {
     var delta = new Size(0.25, 0.25);
     var spot = deckPosition();
-    _.each(cards, function(card) {
+    _.each(deckCards, function(card) {
         card.flip(false);
         if (place) {
             card.placeAt(spot);
             card.clear();
         } else {
-            card.moveTo(spot, 0, function(card) {
+            card.moveTo(spot, 0, false, function(card) {
                 card.clear();
             });
         }
@@ -662,8 +692,8 @@ function loadCards(desiredHeight) {
     var symbol = new Symbol(cardback);
 
     $("#card_images").find("img").each(function() {
-        var id = $(this).attr("id");
-        cards[id] = new Card(id, symbol, desiredHeight);
+        var name = $(this).attr("id");
+        deckCards[name] = new Card(name, symbol, desiredHeight);
     });
 }
 
@@ -691,8 +721,8 @@ function resetSuits() {
 
 function randomCard() {
     var index = parseInt(Math.random()*32);
-    var key = Object.keys(cards)[index];
-    return cards[key];
+    var key = Object.keys(deckCards)[index];
+    return deckCards[key];
 }
 
 function setupTable(a) {
