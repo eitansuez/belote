@@ -37,8 +37,14 @@ var CardAnimation = Base.extend({
         }
 
         this.doneFn = doneFn;
-        this.timeRemaining = 0.5;  // seconds
         this.face = (this.card.face.visible ? this.card.face : this.card.back);
+
+        this.duration = 0.7;  // seconds
+        this.vector = this.destination - this.face.position;
+        this.initialPosition = this.face.position;
+        this.timeElapsed = 0;
+        this.k = this.vector.length / (this.duration * this.duration);
+
         this.active = true;
     },
     rotationSpecified: function() {
@@ -48,24 +54,39 @@ var CardAnimation = Base.extend({
         if (!this.active) {
             return;
         }
-        var vector = this.destination - this.face.position;
 
-        var progress = event.delta / this.timeRemaining;
-        var distance = progress * vector.length;
-        var trans = new Point({length: distance, angle: vector.angle});
+        this.timeElapsed += event.delta;
+
+        var distance = this.vector.length - this.k * Math.pow(this.duration - this.timeElapsed, 2);
+        var trans = new Point({length: distance, angle: this.vector.angle});
+        var progress = this.timeElapsed / this.duration;
 
         if (this.rotationSpecified()) {
             var delta_angle = this.rotation - this.face.rotation;
             var angle = progress * delta_angle;
         }
 
-        this.timeRemaining -= event.delta;
-
-        if (this.timeRemaining > 0) {
-            this.face.translate(trans);
+        if (this.timeElapsed < this.duration) {
+            this.face.position = this.initialPosition + trans;
             if (this.rotationSpecified()) {
                 this.face.rotate(angle);
             }
+
+            //if (this.flip) {
+            //    var scaleX =  1 - (progress * 2);
+            //    if (scaleX > 0)
+            //    {
+            //        // scale it here
+            //    } else {
+            //        //this.card.toggleFlip();
+            //        //this.flip = false;
+            //        //this.continueFlip = true;
+            //    }
+            //}
+            //if (this.continueFlip) {
+            //    var scaleX = (progress - 0.5) * 2;
+            //    // scale it here
+            //}
         }
         else {
             this.active = false;
