@@ -1,7 +1,6 @@
 Prioritized:
 ---
     - animate the flipping of a card
-    - still have bug with card.moveAbove(previousCard) ?? test this.  *appears* to be fixed.
 
 >  make card placement log wording semantic:  "Eitan cuts with ..", or "Johnny follows suit with ..", or "Corinne monte with .."
    likewise, should state at end of each game "stat" such as:  "team x wins after having committed to trefle"
@@ -39,7 +38,6 @@ Prioritized:
 - transitions/animations:
     - score update (highlight/fade)
     - employ fade/appear effect
-    - introduce non-linear easing
 
 - option for ui to display other players' cards face up
 
