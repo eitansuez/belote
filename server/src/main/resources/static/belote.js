@@ -11,6 +11,9 @@ var handAspectRatio = 2.2;
 var client;
 var thisPlayerName;
 
+function xor(a, b) {
+    return ( a || b ) && !( a && b );
+}
 
 var CardAnimation = Base.extend({
     initialize: function(card) {
@@ -27,16 +30,7 @@ var CardAnimation = Base.extend({
             this.rotation %= 180;
         }
 
-        // TODO: replace with xor
-        if (this.flip == true) {
-            if (flip == true) {
-                this.flip = false;
-            } else {
-                this.flip = true;
-            }
-        } else {
-            this.flip = flip;
-        }
+        this.flip = xor(this.flip, flip);
 
         this.doneFn = doneFn;
         this.face = this.card.upFace();
