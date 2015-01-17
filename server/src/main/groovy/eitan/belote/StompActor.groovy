@@ -60,7 +60,12 @@ class StompActor extends UntypedActor
     {
       arg.collect { item -> marshal(item) }
     }
-    else {
+    else if (arg instanceof GString)
+    {
+      arg.toString()
+    }
+    else
+    {
       arg
     }
   }

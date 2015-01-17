@@ -100,7 +100,7 @@ class Partie implements Emitter
     if (game.litige()) {
       def otherTeam = game.otherTeam
       scores[otherTeam] += roundScore(game.scores[otherTeam])
-      log.info("${game.committedTeam} is litige")
+      emit('message', ["${game.committedTeam} is litige"])
     }
     else
     {
@@ -114,10 +114,10 @@ class Partie implements Emitter
       {
         if (game.winningTeam == prevGame.committedTeam) {
           scores[game.committedTeam] += roundScore(prevGame.scores[game.committedTeam])
-          log.info("${game.committedTeam} recuperates its points from last game")
+          emit('message', ["${game.committedTeam} recuperates its points from last game"])
         } else {
           scores[game.otherTeam] += roundScore(prevGame.scores[game.committedTeam])
-          log.info("${game.otherTeam} gains points from other team that were held litige in previous game")
+          emit('message', ["${game.otherTeam} gains points from other team that were held litige in previous game"])
         }
         prevGame = previousGame(prevGame)
       }

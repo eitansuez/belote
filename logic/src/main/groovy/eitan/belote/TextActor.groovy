@@ -79,4 +79,9 @@ class TextActor extends UntypedActor
     log.info("partie is over;  team ${winner} has won")
   }
 
+  void message(String text)
+  {
+    log.info(text)
+  }
+
 }

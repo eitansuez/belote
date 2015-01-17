@@ -181,7 +181,7 @@ class Game implements Emitter
 
     Round lastRound = rounds.last()
     if (capot()) {
-      log.info("${losingTeam} are capot")
+      emit('message', ["${losingTeam} are capot"])
       addCapotCredit()
     } else {
       addDixDedere(lastRound.winner.team)
@@ -190,7 +190,7 @@ class Game implements Emitter
     addBeloteRebelote()
 
     if (dedans()) {
-      log.info("${committedTeam} are dedans")
+      emit('message', ["${committedTeam} are dedans"])
       scores[otherTeam] += scores[committedTeam]
       scores[committedTeam] = 0
     }
@@ -227,7 +227,7 @@ class Game implements Emitter
   boolean dedans() {
     boolean isDedans = scores[committedTeam] < scores[otherTeam]
     if (isDedans) {
-      log.info("dedans with score: ${scores[committedTeam]}/${scores[otherTeam]}")
+      emit('message', ["dedans with score: ${scores[committedTeam]}/${scores[otherTeam]}"])
     }
     isDedans
   }

@@ -7,7 +7,11 @@ trait Emitter
   ActorRef actorRef
 
   void emit(String event, args) {
-    emit(event, args, Delay.Standard)
+    if (event == 'message') {
+      emit(event, args, Delay.Short)
+    } else {
+      emit(event, args, Delay.Standard)
+    }
   }
   void emit(String event, args, delay) {
     delay = delay ?: Delay.Standard

@@ -426,6 +426,9 @@ var cmds = {
         gameScoreArea.setTeams(team1, team2);
         partieScoreArea.setTeams(team1, team2);
         setupPlayers(playerNames);
+    },
+    message: function(text) {
+        console.log(text);
     }
 };
 
