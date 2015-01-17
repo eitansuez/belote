@@ -21,6 +21,7 @@ var CardAnimation = Base.extend({
         this.active = false;
         this.flipActive = false;
         this.duration = 0.7;  // seconds
+        this.flipDuration = 0.35;
     },
     animate: function(destination, rotation, flip, doneFn) {
         this.destination = destination;
@@ -47,10 +48,10 @@ var CardAnimation = Base.extend({
     },
     onFrame: function(event) {
         this.timeElapsed += event.delta;
-        var progress = this.timeElapsed / this.duration;
 
         if (this.flipActive)
         {
+            var progress = this.timeElapsed / this.flipDuration;
             this.card.animateFlipFrame(progress);
             this.flipActive = progress < 1.0;
             if (!this.flipActive) {
@@ -61,6 +62,8 @@ var CardAnimation = Base.extend({
         if (!this.active) {
             return;
         }
+
+        var progress = this.timeElapsed / this.duration;
 
         var distance = this.vector.length - this.k * Math.pow(this.duration - this.timeElapsed, 2);
         var dist_vector = new Point({length: distance, angle: this.vector.angle});
@@ -85,8 +88,11 @@ var CardAnimation = Base.extend({
                 this.card.back.rotation = this.rotation;
             }
             if (this.flip) {
-                this.card.flip();
                 this.flip = false;
+                var self = this;
+                setTimeout(function() {
+                    self.card.startFlipping();
+                }, 50);
             }
             if (typeof this.doneFn !== 'undefined') {
                 this.doneFn.call(undefined, this.card);
@@ -169,7 +175,15 @@ var Card = Base.extend({
     },
     play: function() {
         var hand = this.face.parent.hand;
-        this.moveTo(hand.cardPlayPosition(), null, !isPlayerMe(hand.playerNameField.content));
+        if (isPlayerMe(hand.playerNameField.content)) {
+            this.moveTo(hand.cardPlayPosition());
+        }
+        else {
+            var self = this;
+            this.startFlipping(function() {
+                self.moveTo(hand.cardPlayPosition());
+            });
+        }
         played.push(this);
     },
     arm: function() {
@@ -194,11 +208,16 @@ var Card = Base.extend({
     doneFlipping: function() {
         this.placedItem.remove();
         this.flip();
+        if (this.flipCallback) {
+            setTimeout(this.flipCallback, 50);
+            this.flipCallback = null;
+        }
     },
-    startFlipping: function() {
+    startFlipping: function(callback) {
         this.hide();
         this.animation.timeElapsed = 0;
         this.animation.flipActive = true;
+        this.flipCallback = callback;
     }
 });
 
@@ -629,7 +648,7 @@ function isPlayerMe(playerName) {
 function connectToServer() {
     var ws = new SockJS('/belote');
     client = Stomp.over(ws);
-    //client.debug = null;
+    client.debug = null;
 
     client.connect({}, function(frame) {
         console.log('connected');
@@ -698,7 +717,9 @@ function clearRound(winningHand) {
     _.each(played, function(playedCard) {
         playedCard.moveTo(position, angle, false, function(card) {
             card.clear();
-            card.moveTo(pilePosition, angle, true);
+            card.startFlipping(function() {
+                card.moveTo(pilePosition, angle);
+            });
         });
     });
 
