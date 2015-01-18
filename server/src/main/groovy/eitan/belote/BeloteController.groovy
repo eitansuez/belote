@@ -10,7 +10,7 @@ import org.springframework.stereotype.Controller
 
 import java.security.Principal
 
-import static eitan.belote.SpringExtension.SpringExtProvider
+import static springactor.SpringExtension.SpringExtProvider
 
 @Controller
 @Slf4j

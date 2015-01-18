@@ -1,4 +1,4 @@
-package eitan.belote
+package springactor
 
 import akka.actor.Actor
 import akka.actor.IndirectActorProducer
@@ -9,20 +9,21 @@ class SpringActorProducer implements IndirectActorProducer
   final ApplicationContext applicationContext
   final String actorBeanName
 
-  SpringActorProducer(ApplicationContext applicationContext,
-      String actorBeanName)
+  SpringActorProducer(ApplicationContext applicationContext, String actorBeanName)
   {
     this.applicationContext = applicationContext
     this.actorBeanName = actorBeanName
   }
 
   @Override
-  Actor produce() {
+  Actor produce()
+  {
     applicationContext.getBean(actorBeanName)
   }
 
   @Override
-  Class<? extends Actor> actorClass() {
+  Class<? extends Actor> actorClass()
+  {
     applicationContext.getType(actorBeanName)
   }
 }

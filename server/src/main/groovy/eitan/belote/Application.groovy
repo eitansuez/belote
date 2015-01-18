@@ -21,7 +21,7 @@ import org.springframework.web.socket.config.annotation.AbstractWebSocketMessage
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
 
-import static eitan.belote.SpringExtension.SpringExtProvider
+import static springactor.SpringExtension.SpringExtProvider
 
 @SpringBootApplication
 @EnableWebSocketMessageBroker
