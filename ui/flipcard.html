@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Belote</title>
+	<link rel="stylesheet" type="text/css" href="../server/src/main/resources/static/bower_components/bootstrap/dist/css/bootstrap.min.css">
+	<style>
+		body { margin: 0; overflow: hidden; }
+		.images { display: none; }
+	</style>
+	<script type="text/javascript" src="../server/src/main/resources/static/bower_components/jquery/dist/jquery.min.js"></script>
+	<script type="text/javascript" src="../server/src/main/resources/static/bower_components/lodash/dist/lodash.min.js"></script>
+	<script type="text/javascript" src="../server/src/main/resources/static/bower_components/paper/dist/paper-full.min.js"></script>
+	<script type="text/paperscript" src="flipcard.js" canvas="myCanvas"></script>
+</head>
+<body>
+  <canvas id="myCanvas" resize keepalive="true"></canvas>
+  <div class="images">
+	  <img src="../server/src/main/resources/static/img/Roi_de_Coeur.png" id="Roi_de_Coeur" />
+	  <img src="../server/src/main/resources/static/img/cardback.png" id="cardback" />
+  </div>
+</body>
+</html>
