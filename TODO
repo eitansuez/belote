@@ -1,25 +1,25 @@
 Prioritized:
 ---
 
+> externalize definitions of ScoreArea and Bubble
+
 > object oriented javascript
  - oopify table
 
->  make card placement log wording semantic:  "Eitan cuts with ..", or "Johnny follows suit with ..", or "Corinne monte with .."
-   likewise, should state at end of each game "stat" such as:  "team x wins after having committed to trefle"
-
 > scrolling log of events:  dedans, capot, messages notifying players of events
 
-> externalize definitions of ScoreArea and Bubble
-
 > partie build should visually come before table is even drawn, or perhaps should be overlaid on top of table.
-
-> implement an alert for notification to replace scaffold window.alert
 
 > ability for a client to receive a full log of events to reconstruct game state (i.e. join in the middle of a game and reconstruct game state)
 
 > for a partie, show all games, and rounds within each game, with scores, so can review
 
 > human should always be at bottom of table -- even if in p2, p3, p4 positions.
+
+>  make card placement log wording semantic:  "Eitan cuts with ..", or "Johnny follows suit with ..", or "Corinne monte with .."
+   likewise, should state at end of each game "stat" such as:  "team x wins after having committed to trefle"
+
+> implement an alert for notification to replace scaffold window.alert
 
 ------and more..
 
