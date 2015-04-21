@@ -52,3 +52,11 @@ Prioritized:
 - monitor all games in progress
 
 -javascript tests
+
+
+----------
+
+- can ui implementation be separated into its own app?  not bundled with server?
+- second fabric-based implementation of ui
+- controller needs to have tests / to be tested
+

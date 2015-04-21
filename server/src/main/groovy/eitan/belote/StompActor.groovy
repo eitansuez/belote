@@ -39,7 +39,7 @@ class StompActor extends UntypedActor
     template.convertAndSendToUser(user, '/queue/belote', [cmd: cmd, args: args.collect { arg -> marshal(arg) }])
   }
 
-  public static marshal(arg) {
+  static marshal(arg) {
     if (arg instanceof Player)
     {
       ((Player) arg).name

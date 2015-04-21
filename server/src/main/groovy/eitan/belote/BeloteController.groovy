@@ -19,8 +19,7 @@ public class BeloteController {
     @Autowired ActorSystem system
     ActorRef stompActor
     def users = [] as Set
-    def builder = [team1: [first: 'Bot1', second: 'Bot2'],
-                   team2: [first: 'Bot3', second: 'Bot4']]
+    def builder = new TeamsBuilder()
     Partie partie
 
 
@@ -68,7 +67,7 @@ public class BeloteController {
                 SpringExtProvider.get(system).props("StompActor"), "stompActor")
         }
 
-        def players = [builder.team1.first, builder.team1.second, builder.team2.first, builder.team2.second].collect { name ->
+        def players = builder.playerNames().collect { name ->
             def player = new Player(name: name, actorRef: stompActor)
             if (users.contains(name))
             {
@@ -90,40 +89,24 @@ public class BeloteController {
     def enterPartie(Principal user)
     {
         users << user.name
-        builder
+        builder.teams()
     }
 
     @MessageMapping("/joinPartie")
     @SendTo("/topic/enterPartie")
     def joinPartie(Principal user, Map<String, String> msg)
     {
-        if (builder[msg.team][msg.position] == user.name) {
+        if (builder.playerAt(msg.team, msg.position) == user.name) {
             return  // user already set there
         }
 
-        def pos = positionOf(user.name)
+        def pos = builder.positionOf(user.name)
         if ( pos != null )
         {
-            def otherUser = builder[msg.team][msg.position]
-            builder[pos.team][pos.position] = otherUser
+            def otherUser = builder.playerAt(msg.team, msg.position)
+            builder.setPlayerAt(pos.team, pos.position, otherUser)
         }
-        builder[msg.team][msg.position] = user.name
-        builder
+        builder.setPlayerAt(msg.team, msg.position, user.name)
+        builder.teams()
     }
-
-    private positionOf(username)
-    {
-        if (builder.team1.first == username) {
-            return [team: 'team1', position: 'first']
-        } else if (builder.team1.second == username) {
-            return [team: 'team1', position: 'second']
-        } else if (builder.team2.first == username) {
-            return [team: 'team2', position: 'first']
-        } else if (builder.team2.second == username) {
-            return [team: 'team2', position: 'second']
-        }
-        return null
-    }
-
-
 }
