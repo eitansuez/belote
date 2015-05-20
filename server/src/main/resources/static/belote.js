@@ -44,7 +44,7 @@ var CardAnimation = Base.extend({
         this.active = true;
     },
     rotationSpecified: function() {
-        return (typeof this.rotation !== 'undefined') && this.rotation != null;
+        return (typeof this.rotation !== 'undefined') && this.rotation !== null;
     },
     onFrame: function(event) {
         this.timeElapsed += event.delta;
@@ -261,7 +261,7 @@ var Hand = Base.extend({
         var self = this;
         _.each(this.cards, function(card, index) {
             self.addCard(card);
-            var flipIt = (card.name == receivedCard.name) && isPlayerMe(playerName) && (card.faceUp == false);
+            var flipIt = (card.name === receivedCard.name) && isPlayerMe(playerName) && (card.faceUp === false);
             card.moveTo(self.cardPosition(index), self.angle(), flipIt, function(card) {
                 if (self.isLastCard(card)) {
                     self.zOrderCards();
@@ -270,7 +270,7 @@ var Hand = Base.extend({
         });
     },
     isLastCard: function(card) {
-        return _.last(this.cards).name == card.name;
+        return _.last(this.cards).name === card.name;
     },
     zOrderCards: function() {
         for (var i=1; i<this.cards.length; i++) {
@@ -321,10 +321,10 @@ var Hand = Base.extend({
         });
     },
     addCard: function(card) {
-        if (card.face.parent != this.group) {
+        if (card.face.parent !== this.group) {
             this.group.addChild(card.face);
         }
-        if (card.back.parent != this.group) {
+        if (card.back.parent !== this.group) {
             this.group.addChild(card.back);
         }
     },
@@ -534,19 +534,19 @@ var Bubble = Group.extend({
         chupchik.shear(-0.6, 0);
 
         chupchik.rotate(90*this.orientation, body.bottomLeft);
-        if (this.orientation == 0)
+        if (this.orientation === 0)
         {
             chupchik.translate(0.25*size.width, size.height + chupchikOffset+2);
         }
-        else if (this.orientation == 1)
+        else if (this.orientation === 1)
         {
             chupchik.translate(-chupchikOffset-5, 0.5*size.height);
         }
-        else if (this.orientation == 2)
+        else if (this.orientation === 2)
         {
             chupchik.translate(0.75 * size.width, -chupchikOffset);
         }
-        else if (this.orientation == 3)
+        else if (this.orientation === 3)
         {
             chupchik.translate(size.width+chupchikOffset-3, 0.5*size.height);
         }
@@ -644,7 +644,7 @@ function htmlInit(a) {
 }
 
 function isPlayerMe(playerName) {
-    return playerName == thisPlayerName;
+    return playerName === thisPlayerName;
 }
 
 
