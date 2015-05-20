@@ -1,19 +1,19 @@
 from saba..
 
 orientation of players should be rotated where "me" is at the bottom
+
 other players should know who's currently being waited on
 
 score area can be smaller / font size should be bigger / would make it white letters, straight against the green
+
 player name fonts should be large
 
 prompt is on top of the cards / obstructs them
 
-place "current" atout to the side of the player (instead of in front of)
+add sounds (e.g. when play a card)
 
-sounds when play a card
-
-bug:
-
-sometimes one of the cards in a player's hand appears flipped on other players' screen.
+bug:  sometimes one of the cards in a player's hand appears flipped on other players' screen.
 then when card is played, it gets flipped and ends up hidden
 
+
+place "current" atout to the side of the player (instead of in front of)
