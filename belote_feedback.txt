@@ -1,3 +1,16 @@
+bug:  sometimes one of the cards in a player's hand appears flipped on other players' screen.
+then when card is played, it gets flipped and ends up hidden
+
+so, context is as follows:
+  - all four players are human
+  - i'm at the bottom and i see the player on my right had one card uncovered.
+
+what i'm not certain about is when did card get uncovered.  i would guess it happens when card is dealt?  but not necessarily.
+find all points where a card is flipped or turned up.
+
+can i write a test to reproduce this?
+
+
 from saba..
 
 orientation of players should be rotated where "me" is at the bottom
@@ -11,9 +24,5 @@ player name fonts should be large
 prompt is on top of the cards / obstructs them
 
 add sounds (e.g. when play a card)
-
-bug:  sometimes one of the cards in a player's hand appears flipped on other players' screen.
-then when card is played, it gets flipped and ends up hidden
-
 
 place "current" atout to the side of the player (instead of in front of)
