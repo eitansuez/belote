@@ -1,0 +1,46 @@
+1. custom login form -- enter your name -- name field only.  submit -> take to Parties page
+2. keep track of all users logged in (see chat server example)
+----------
+
+Current parties
+---
+
+parties.each { partie ->
+  linkTo(partie)  
+} || "<none>"
+
+<new partie button>
+
+Partie with Unique Identifier (xasdf)
+send request to create a new partie on server, it returns unique identifier, and notifies all users
+each user maintains a list of parties
+
+page/template:  create partie
+
+team1:
+player1: _____
+player2: _____
+
+team2:
+player1: _____
+player2: _____
+
+start
+
+only action a user above can take is place himself in one of the available slots.
+once you select a slot, that event needs to be communicated to other users so their view can reflect your action,
+  and that slot is now marked taken
+
+ -> newPartie is basically a stomp call (client.send /newPartie with partie data (json-marshalled))
+  but also need to ensure that ui is ready to receive events from server for each human player.
+
+{
+  'team1' : {
+    'first': 'Eitan'
+    'second': ''
+  },
+  'team2' : {
+    'first': ''
+    'second': 'Leslie'
+  }
+}
