@@ -8,11 +8,6 @@ class Card
   Suit suit
   CardType type
 
-  def points()
-  {
-    return type.points
-  }
-
   def points(Suit atout)
   {
     atout == suit ? type.pointsWhenAtout : type.points
@@ -24,9 +19,9 @@ class Card
     int result = points(atout) <=> otherCard.points(atout)
     if (result != 0)
     {
-      return result > 0 ? true : false
+      return result > 0
     }
-    return type.ordinal() > otherCard.type.ordinal()
+    return type.ordinal() > otherCard.type.ordinal()  // e.g. an eight beats a seven
   }
 
   static Card fromName(String name)

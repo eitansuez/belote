@@ -5,11 +5,16 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 import static eitan.belote.CardType.Ace
+import static eitan.belote.CardType.Dame
 import static eitan.belote.CardType.Dix
+import static eitan.belote.CardType.Huit
 import static eitan.belote.CardType.Neuf
 import static Suit.Carreau
 import static Suit.Coeur
 import static Suit.Trefle
+import static eitan.belote.CardType.Sept
+import static eitan.belote.CardType.Valet
+import static eitan.belote.Suit.Pique
 
 class CardSpec extends Specification
 {
@@ -18,7 +23,7 @@ class CardSpec extends Specification
 
 
   @Unroll
-  def "expect card titles to match pattern <cardtype> de <suit>"(card)
+  def "expect card titles to match pattern <card type> de <suit>"(card)
   {
     expect:
     card.toString() =~ /\w+ de \w+/
@@ -28,11 +33,11 @@ class CardSpec extends Specification
   }
 
   @Unroll
-  def "should have card title reflecting type and suit, and points"(card, title, points)
+  def "should have title reflecting type and suit, and points"(Card card, String title, int points)
   {
     expect:
     card.toString() == title
-    card.points() == points
+    card.points(Suit.values().find { it != card.suit }) == points
 
     where:
     card         | title            | points
@@ -59,7 +64,7 @@ class CardSpec extends Specification
     new Card(type: Dix, suit: Trefle) == new Card(type: Dix, suit: Trefle)
   }
 
-  def "unmarshal from name"()
+  def "should unmarshal card from name"()
   {
     when:
     def cardName = "Dix_de_Coeur"
@@ -77,4 +82,21 @@ class CardSpec extends Specification
     Card.fromName(cardName) == new Card(type: Dix, suit: Coeur)
   }
 
+  def "an eight of Trefle should beat a seven of Trefle when atout is #atout"(Suit atout) {
+    when:
+    def seven = new Card(type: Sept, suit: Trefle)
+    def eight = new Card(type: Huit, suit: Trefle)
+
+    then:
+    eight.higherThan(seven, atout)
+
+    where:
+    atout << [Trefle, Pique, Coeur, Carreau]
+  }
+
+  def "a valet should beat a dame when atout"() {
+    expect:
+    new Card(type: Valet, suit: Trefle).higherThan(new Card(type: Dame, suit: Trefle), Trefle)
+    new Card(type: Dame, suit: Trefle).higherThan(new Card(type: Valet, suit: Trefle), Coeur)
+  }
 }
