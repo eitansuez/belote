@@ -9,28 +9,12 @@ import static eitan.belote.Suit.Trefle
 
 class SuitSpec extends Specification
 {
-  def "toString should return suit name"()
-  {
+  def "suit #suit should have eight cards"(suit) {
     expect:
-    Trefle.toString() == "Trefle"
-  }
+    suit.cards.size() == 8
 
-  def "interprets suite from acronym"()
-  {
-    expect:
-    Suit.interpretSuitFromAcronym("c") == Trefle
-    Suit.interpretSuitFromAcronym("h") == Coeur
-    Suit.interpretSuitFromAcronym("s") == Pique
-    Suit.interpretSuitFromAcronym("d") == Carreau
-  }
-
-  def "throws assertion error when for invalid suit acronym"()
-  {
-    when:
-    Suit.interpretSuitFromAcronym("e")
-
-    then:
-    thrown(AssertionError)
+    where:
+    suit << Suit.values()
   }
 
   def "can interpret suit from its name, irrespective of capitalization"()

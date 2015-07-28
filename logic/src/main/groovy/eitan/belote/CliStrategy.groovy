@@ -1,5 +1,10 @@
 package eitan.belote
 
+import static eitan.belote.Suit.Carreau
+import static eitan.belote.Suit.Coeur
+import static eitan.belote.Suit.Pique
+import static eitan.belote.Suit.Trefle
+
 class CliStrategy implements Strategy
 {
   Player player
@@ -9,28 +14,21 @@ class CliStrategy implements Strategy
   {
     def response = prompt("Would you like to go for ${candidate.suit} (y/n) ?")
     boolean envoi = response?.toLowerCase()?.startsWith("y")
-    if (envoi)
-    {
-      game.envoi()
-    }
-    else
-    {
-      game.pass()
-    }
+    envoi ? game.envoi() : game.pass()
   }
 
   @Override
   void offer(Game game)
   {
     def response = ''
-    while (!Suit.isValidAcronym(response)) {
+    while (!isValidAcronym(response)) {
       response = prompt("Any other suit you'd like to go for? (h=heart,d=diamond,s=spade,c=clubs, or p for pass)")
       if (response?.toLowerCase() == 'p') {
         game.passDeuxFois()
         return
       }
     }
-    def suit = Suit.interpretSuitFromAcronym(response)
+    def suit = interpretFromAcronym(response)
     game.envoi(suit)
   }
 
@@ -60,4 +58,19 @@ class CliStrategy implements Strategy
     println "${player}: ${caption} "
     br.readLine()
   }
+
+  static def map = ['s' : Pique, 'c' : Trefle, 'h' : Coeur, 'd' : Carreau]
+
+  private static boolean isValidAcronym(String acronym)
+  {
+    acronym != null && map.keySet().contains(acronym)
+  }
+
+  static Suit interpretFromAcronym(String acronym)
+  {
+    assert isValidAcronym(acronym)
+    map[acronym]
+  }
+
+
 }

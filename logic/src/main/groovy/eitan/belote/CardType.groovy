@@ -26,8 +26,4 @@ enum CardType
     this.pointsWhenAtout = valueAsAtout
   }
 
-  @Override
-  String toString() {
-    name()
-  }
 }
