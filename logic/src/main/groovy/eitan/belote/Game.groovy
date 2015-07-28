@@ -212,12 +212,12 @@ class Game implements Emitter
   private void addCapotCredit()
   {
     assert capot()
-    Team creditee = ( scores[team2] == 0 ) ? team1 : team2
-    scores[creditee] += 100
+    Team winner = ( scores[team2] == 0 ) ? team1 : team2
+    scores[winner] += 100
   }
 
   boolean capot() {
-    def rawScores = rounds.inject([(team1): 0, (team2): 0], { acc, round ->
+    def rawScores = rounds.inject([(team1): 0, (team2): 0], { LinkedHashMap<Team, Integer> acc, round ->
       acc[round.winner.team] += round.points
       acc
     })
