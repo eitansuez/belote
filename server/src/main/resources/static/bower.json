@@ -1,12 +1,12 @@
 {
   "name": "Belote",
-  "version": "0.1.0",
+  "homepage": "https://github.com/eitansuez/belote",
   "authors": [
-    "Eitan Suez <esuez@thoughtworks.com>"
+    "Eitan Suez <eitan.suez@gmail.com>"
   ],
-  "description": "Belote Card Game",
+  "description": "Belote card game",
   "main": "index.html",
-  "license": "Not Yet Decided",
+  "license": "MIT",
   "private": true,
   "ignore": [
     "**/.*",
@@ -19,7 +19,7 @@
     "bootbox": "~4.3.0",
     "bootstrap": "~3.3.1",
     "lodash": "~2.4.1",
-    "paper": "~0.9.21",
+    "paper": "0.9.21",
     "sockjs-client": "~0.3.4",
     "stomp-websocket": "~2.3.4",
     "jquery": "~2.1.3"
