@@ -195,9 +195,15 @@ class GameSpec extends Specification
     players.each { player ->
       player.hand.empty
     }
+
+    and:
     game.rounds.size() == 8
+
+    and:
     int totalScore = game.scores[game.team1] + game.scores[game.team2]
     totalScore == 162 || totalScore == 252
+
+    and:
     game.done
   }
 
@@ -335,7 +341,6 @@ class GameSpec extends Specification
     given:
     game.isLastRound() >> true
     game.done = true
-    def lastRound =
     game.rounds << new Round(winner: eitan, points: 10)
     game.rounds << new Round(winner: corinne, points: 12)
     game.scores[game.team1] = 81
