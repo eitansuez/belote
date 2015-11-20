@@ -197,7 +197,7 @@ class GameSpec extends Specification
     }
     game.rounds.size() == 8
     int totalScore = game.scores[game.team1] + game.scores[game.team2]
-    totalScore == 162 || totalScore == 250
+    totalScore == 162 || totalScore == 252
     game.done
   }
 
