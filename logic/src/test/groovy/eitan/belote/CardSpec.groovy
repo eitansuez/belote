@@ -9,9 +9,9 @@ import static eitan.belote.CardType.Dame
 import static eitan.belote.CardType.Dix
 import static eitan.belote.CardType.Huit
 import static eitan.belote.CardType.Neuf
-import static Suit.Carreau
-import static Suit.Coeur
-import static Suit.Trefle
+import static eitan.belote.Suit.Carreau
+import static eitan.belote.Suit.Coeur
+import static eitan.belote.Suit.Trefle
 import static eitan.belote.CardType.Sept
 import static eitan.belote.CardType.Valet
 import static eitan.belote.Suit.Pique
@@ -20,7 +20,6 @@ class CardSpec extends Specification
 {
   @Shared Card aceDeCarreau = new Card(type: Ace, suit: Carreau)
   @Shared Card neufDeCoeur = new Card(type: Neuf, suit: Coeur)
-
 
   @Unroll
   def "expect card titles to match pattern <card type> de <suit>"(card)

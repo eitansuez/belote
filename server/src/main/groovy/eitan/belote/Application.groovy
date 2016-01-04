@@ -52,7 +52,7 @@ class Application extends AbstractWebSocketMessageBrokerConfigurer
   }
 
   static void main(String[] args) {
-    SpringApplication.run(Application.class, args)
+    SpringApplication.run(Application, args)
   }
 
   @Configuration
@@ -66,7 +66,7 @@ class Application extends AbstractWebSocketMessageBrokerConfigurer
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
       auth.authenticationProvider(new AuthenticationProvider() {
         boolean supports(Class<?> authentication) {
-          UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication)
+          UsernamePasswordAuthenticationToken.isAssignableFrom(authentication)
         }
 
         Authentication authenticate(Authentication authentication) throws AuthenticationException {
